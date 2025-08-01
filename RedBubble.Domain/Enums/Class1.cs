@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RedBubble.Infrastructure.Data
+namespace RedBubble.Domain.Enums
 {
-    class AppDbContext
+    internal class Class1
     {
     }
 }
