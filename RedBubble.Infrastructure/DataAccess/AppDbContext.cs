@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RedBubble.Domain.Entities.Models;
 using RedBubble.Infrastructure.DataAccess;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,10 @@ namespace RedBubble.Infrastructure.Data
         {
 
         }
+        
+        public DbSet<Color> Colors { get; set; }
+        public DbSet<Size> Sizes { get; set; }
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(AssemblyInformation).Assembly);
