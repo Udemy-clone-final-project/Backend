@@ -15,9 +15,14 @@ namespace RedBubble.Application
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
-            services.AddAutoMapper(t => t.AddProfile<MappingProfile>());
+ services.AddAutoMapper(t => t.AddProfile<MappingProfile>());
             services.AddScoped(typeof(IServiceManager), typeof(ServiceManager));
+
+            services.AddScoped<IRoleService, RoleService>();
+
            
+
+
             return services;
         }
     }
