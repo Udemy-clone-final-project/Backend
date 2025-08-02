@@ -1,5 +1,7 @@
 
 using RedBubble.Infrastructure;
+using RedBubble.Application;
+
 
 namespace RedBubble.WebAPI
 {
@@ -15,7 +17,18 @@ namespace RedBubble.WebAPI
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+
+            // Which is shorthand for:
+            // Register AppDbContext
+            // Register ApplicationUser, ApplicationRole, Identity
+            // (Optionally) Register repositories like IRoleRepository
+            // AddPersistenceServices => from Infra/DependencyInjection
             builder.Services.AddPersistenceServices(builder.Configuration);
+
+            builder.Services.AddApplicationServices();
+
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

@@ -1,6 +1,6 @@
 ﻿using RedBubble.Domain.Entities.Base;
 using RedBubble.Domain.Interfaces;
-using RedBubble.Infrastructure.Data;
+using RedBubble.Infrastructure.DataAccess;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

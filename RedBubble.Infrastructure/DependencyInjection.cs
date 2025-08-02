@@ -1,14 +1,32 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using RedBubble.Infrastructure.Data;
+using RedBubble.Domain.Entities.Models;
+using RedBubble.Domain.Interfaces;
+using RedBubble.Infrastructure.DataAccess;
+using RedBubble.Infrastructure.Implementations.Repositories;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using static System.Net.Mime.MediaTypeNames;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace RedBubble.Infrastructure
 {
+    // This class is a central place to register Infrastructure layer services — such as:
+    // The database context
+    // The Identity system
+    // Any repositories, if needed
+    // It’s used to separate infrastructure configuration from the main Program.cs / Startup.cs,
+    // so your application setup stays clean and layered.
+
+
     public static class DependencyInjection
     {
         public static IServiceCollection AddPersistenceServices(this IServiceCollection services, IConfiguration configuration)
@@ -20,7 +38,13 @@ namespace RedBubble.Infrastructure
                 optionsBuilder.UseSqlServer(configuration.GetConnectionString("StoreContext"));
             });
 
-            
+            //  Add Identity using custom ApplicationUser and ApplicationRole
+            services.AddIdentity<ApplicationUser, ApplicationRole>()
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();
+
+            services.AddScoped<IRoleRepository, RoleRepository>();
+
 
             return services;
         }
