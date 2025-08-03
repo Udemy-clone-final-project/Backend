@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using RedBubble.Application.DTOs.Products;
+using RedBubble.Application.DTOs.User;
+using RedBubble.Domain.Entities.Models;
 using RedBubble.Domain.Entities.Models.Products;
 using System;
 using System.Collections.Generic;
@@ -15,6 +17,9 @@ namespace RedBubble.Application.Mappers
         {
             CreateMap<BaseProduct,BaseProductDto>().ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category!=null?src.Category.CategoryName:null));
             CreateMap<CreateBaseProductDto, BaseProduct>();
+            CreateMap<ApplicationUser, UserDTO>();
+            CreateMap<AccountCreateDTO, ApplicationUser>();
+            CreateMap<AccountUpdateDTO, ApplicationUser>();
         }
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RedBubble.Domain.Entities.Models
 {
-    public class ApplicationRole : IdentityRole
+    public class ApplicationRole : IdentityRole<Guid>
     {
         public string Description { get; set; }
     }
