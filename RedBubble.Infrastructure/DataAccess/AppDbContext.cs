@@ -16,7 +16,7 @@ namespace RedBubble.Infrastructure.DataAccess
     // DbSet<IdentityUser> (for users)
     // DbSet<IdentityRole> (for roles)
     // and other Identity tables like UserRoles, UserClaims, etc.
-    public class AppDbContext:IdentityDbContext<ApplicationUser , ApplicationRole , string>
+    public class AppDbContext:IdentityDbContext<ApplicationUser , ApplicationRole , Guid>
     {
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)

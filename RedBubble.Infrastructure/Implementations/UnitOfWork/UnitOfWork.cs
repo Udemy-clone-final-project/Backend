@@ -1,6 +1,6 @@
 ﻿using RedBubble.Domain.Entities.Base;
 using RedBubble.Domain.Interfaces;
-using RedBubble.Infrastructure.Data;
+using RedBubble.Infrastructure.DataAccess;
 using RedBubble.Infrastructure.Implementations.Base;
 using System;
 using System.Collections.Concurrent;
@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace RedBubble.Infrastructure.Implementations.UnitOfWork
 {
-    internal class UnitOfWork(AppDbContext dbContext) : IUnitOfWork
+    public class UnitOfWork(AppDbContext dbContext) : IUnitOfWork
     {
         private readonly ConcurrentDictionary<string, object> repositories = new();
         public async Task<int> CompleteAsync() => await dbContext.SaveChangesAsync();

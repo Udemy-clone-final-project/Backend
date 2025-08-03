@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RedBubble.Application\RedBubble.Application.csproj" />
-    <ProjectReference Include="..\RedBubble.Infrastructure\RedBubble.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
