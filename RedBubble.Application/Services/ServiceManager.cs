@@ -22,6 +22,8 @@ namespace RedBubble.Application.Services
             this.mapper = mapper;
             _baseProductService = baseProductService;
         }
-        public  IBaseProductService baseProductService => _baseProductService.Value;
+
+        public IBaseProductService baseProductService => _baseProductService.Value;
+
     }
 }

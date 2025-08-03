@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RedBubble.Application.Interfaces
 {
-    public class IServiceManager
+    public interface IServiceManager
     {
         public IBaseProductService baseProductService { get; }
     }

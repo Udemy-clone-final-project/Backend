@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace RedBubble.Infrastructure.Implementations.UnitOfWork
 {
-    internal class UnitOfWork(AppDbContext dbContext) : IUnitOfWork
+    public class UnitOfWork(AppDbContext dbContext) : IUnitOfWork
     {
         private readonly ConcurrentDictionary<string, object> repositories = new();
         public async Task<int> CompleteAsync() => await dbContext.SaveChangesAsync();
