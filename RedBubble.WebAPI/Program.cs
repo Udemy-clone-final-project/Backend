@@ -26,6 +26,7 @@ namespace RedBubble.WebAPI
             // AddPersistenceServices => from Infra/DependencyInjection
             builder.Services.AddPersistenceServices(builder.Configuration);
 
+            //AddApplicationServices() => from App/DependencyInjection
             builder.Services.AddApplicationServices();
 
 

@@ -61,11 +61,10 @@ namespace RedBubble.WebAPI.Controllers
             return Ok();
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRole(string id)
         {
-
-            _roleService.DeleteAsync(id);
+            await  _roleService.DeleteAsync(id);
 
             return Ok();
         }
