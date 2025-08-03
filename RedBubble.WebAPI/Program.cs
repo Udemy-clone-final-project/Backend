@@ -1,7 +1,8 @@
-
-using RedBubble.Infrastructure;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using RedBubble.Application;
-
+using RedBubble.Infrastructure;
+using System.Text;
 
 namespace RedBubble.WebAPI
 {
@@ -12,23 +13,42 @@ namespace RedBubble.WebAPI
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-
-            // Which is shorthand for:
-            // Register AppDbContext
-            // Register ApplicationUser, ApplicationRole, Identity
-            // (Optionally) Register repositories like IRoleRepository
-            // AddPersistenceServices => from Infra/DependencyInjection
+            // Register Persistence Services
             builder.Services.AddPersistenceServices(builder.Configuration);
 
+<<<<<<< HEAD
             //AddApplicationServices() => from App/DependencyInjection
+=======
+            // Register Application Services
+>>>>>>> 03e832afabc9f6b6e8cce7091854ea18a044c97f
             builder.Services.AddApplicationServices();
 
+            // Add Authentication
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                    ValidAudience = builder.Configuration["Jwt:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+                };
+            });
+
+            // Add Authorization
+            builder.Services.AddAuthorization();
 
             var app = builder.Build();
 
@@ -40,10 +60,8 @@ namespace RedBubble.WebAPI
             }
 
             app.UseHttpsRedirection();
-
+            app.UseAuthentication();
             app.UseAuthorization();
-
-
             app.MapControllers();
 
             app.Run();

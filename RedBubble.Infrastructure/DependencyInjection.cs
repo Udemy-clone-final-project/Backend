@@ -3,10 +3,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using RedBubble.Application.Interfaces;
 using RedBubble.Domain.Entities.Models;
 using RedBubble.Domain.Interfaces;
 using RedBubble.Infrastructure.DataAccess;
+using RedBubble.Infrastructure.Implementations.Base;
 using RedBubble.Infrastructure.Implementations.Repositories;
+using RedBubble.Infrastructure.Implementations.UnitOfWork;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -33,9 +36,9 @@ namespace RedBubble.Infrastructure
         {
 
 
-            services.AddDbContext<AppDbContext>((optionsBuilder) =>
+            services.AddDbContext<AppDbContext>(options =>
             {
-                optionsBuilder.UseSqlServer(configuration.GetConnectionString("StoreContext"));
+                options.UseSqlServer(configuration.GetConnectionString("StoreContext"));
             });
 
             //  Add Identity using custom ApplicationUser and ApplicationRole
@@ -44,8 +47,8 @@ namespace RedBubble.Infrastructure
                 .AddDefaultTokenProviders();
 
             services.AddScoped<IRoleRepository, RoleRepository>();
-
-
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
             return services;
         }
     }
