@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RedBubble.Application\RedBubble.Application.csproj" />
+    <ProjectReference Include="..\RedBubble.WebAPI\RedBubble.WebAPI.csproj" />
   </ItemGroup>
 
 </Project>

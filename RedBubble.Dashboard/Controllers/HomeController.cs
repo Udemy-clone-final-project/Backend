@@ -1,8 +1,8 @@
-using DashBourd.Models;
 using Microsoft.AspNetCore.Mvc;
+using RedBubble.Dashboard.Models;
 using System.Diagnostics;
 
-namespace DashBourd.Controllers
+namespace RedBubble.Dashboard.Controllers
 {
     public class HomeController : Controller
     {
