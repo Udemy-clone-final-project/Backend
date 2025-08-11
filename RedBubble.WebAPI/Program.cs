@@ -1,14 +1,17 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using RedBubble.Application;
+using RedBubble.Domain.Entities.Identity;
 using RedBubble.Infrastructure;
+using RedBubble.Infrastructure.DataAccess;
 using System.Text;
 
 namespace RedBubble.WebAPI
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -18,7 +21,7 @@ namespace RedBubble.WebAPI
             builder.Services.AddSwaggerGen();
 
             // Register Persistence Services
-            builder.Services.AddPersistenceServices(builder.Configuration);
+            builder.Services.AddPersistenceServicesAsync(builder.Configuration);
 
             // Register Application Services
             builder.Services.AddApplicationServices();
@@ -43,11 +46,40 @@ namespace RedBubble.WebAPI
                 };
             });
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             // Add Authorization
             builder.Services.AddAuthorization();
 
             var app = builder.Build();
-
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                try
+                {
+                    var userManager = services.GetRequiredService<UserManager<AppUser>>();
+                    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+                    await AppIdentityDbContextSeed.SeedUsersAsync(userManager, roleManager);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error during seeding: {ex.Message}");
+                }
+            }
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {

@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RedBubble.Application.Interfaces;
+using RedBubble.Domain.Entities.Identity;
 using RedBubble.Domain.Entities.Models;
 using RedBubble.Domain.Interfaces;
 using RedBubble.Infrastructure.DataAccess;
 using RedBubble.Infrastructure.Implementations.Base;
-using RedBubble.Infrastructure.Implementations.Repositories;
 using RedBubble.Infrastructure.Implementations.UnitOfWork;
 using System;
 using System.Collections;
@@ -32,7 +32,7 @@ namespace RedBubble.Infrastructure
 
     public static class DependencyInjection
     {
-        public static IServiceCollection AddPersistenceServices(this IServiceCollection services, IConfiguration configuration)
+        public static async Task<IServiceCollection> AddPersistenceServicesAsync(this IServiceCollection services, IConfiguration configuration)
         {
 
 
@@ -42,11 +42,20 @@ namespace RedBubble.Infrastructure
             });
 
             //  Add Identity using custom ApplicationUser and ApplicationRole
-            services.AddIdentity<ApplicationUser, ApplicationRole>()
+            services.AddIdentity<AppUser,IdentityRole>()
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
-
-            services.AddScoped<IRoleRepository, RoleRepository>();
+            //try
+            //{
+            //    var userManager = services.GetRequiredService<UserManager<Domain.Entities.Identity.AppUser>>();
+            //    var roleManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
+            //    await AppIdentityDbContextSeed.SeedUsersAsync(userManager, roleManager);
+            //}
+            //catch (Exception ex)
+            //{
+            //    Console.WriteLine($"Error during seeding: {ex.Message}");
+            //}
+            //services.AddScoped<IRoleRepository, RoleRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
             return services;

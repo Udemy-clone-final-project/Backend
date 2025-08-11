@@ -19,9 +19,9 @@ namespace RedBubble.Application
             services.AddAutoMapper(t => t.AddProfile<MappingProfile>());
 
             // Register individual services first
-            services.AddScoped<IRoleService, RoleService>();
-            services.AddScoped<IUserService, UserService>();
-            services.AddScoped<ITokenService, TokenService>();
+            //services.AddScoped<IRoleService, RoleService>();
+            //services.AddScoped<IUserService, UserService>();
+            //services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IBaseProductService, BaseProductService>();
 
             // Register Lazy services

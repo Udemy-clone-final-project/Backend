@@ -15,15 +15,16 @@ namespace RedBubble.Application.Services
         private readonly IUnitOfWork unitOfWork;
         private readonly IMapper mapper;
         private readonly Lazy<IBaseProductService> _baseProductService;
-
         public ServiceManager(IUnitOfWork unitOfWork, IMapper mapper, Lazy<IBaseProductService> baseProductService)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
             _baseProductService = baseProductService;
+           
         }
 
         public IBaseProductService baseProductService => _baseProductService.Value;
+
 
     }
 }

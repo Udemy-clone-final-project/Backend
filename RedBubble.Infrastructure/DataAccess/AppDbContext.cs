@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using RedBubble.Domain.Entities.Identity;
 using RedBubble.Domain.Entities.Models;
 using RedBubble.Infrastructure.DataAccess;
 using System;
@@ -16,7 +17,7 @@ namespace RedBubble.Infrastructure.DataAccess
     // DbSet<IdentityUser> (for users)
     // DbSet<IdentityRole> (for roles)
     // and other Identity tables like UserRoles, UserClaims, etc.
-    public class AppDbContext:IdentityDbContext<ApplicationUser , ApplicationRole , Guid>
+    public class AppDbContext : IdentityDbContext<AppUser>
     {
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
