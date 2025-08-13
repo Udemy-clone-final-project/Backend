@@ -23,9 +23,9 @@ namespace RedBubble.Infrastructure.Implementations.Base
         {
             _dbContext.Set<TEntity>().Remove(entity);
         }
-
         public async Task<IEnumerable<TEntity>> GetAllAsync(bool withTracking = false)
-        => withTracking ? await _dbContext.Set<TEntity>().ToListAsync() : await _dbContext.Set<TEntity>().AsNoTracking().ToListAsync();
+       => withTracking ? await _dbContext.Set<TEntity>().ToListAsync() : await _dbContext.Set<TEntity>().AsNoTracking().ToListAsync();
+        public IQueryable<TEntity> GetAll() => _dbContext.Set<TEntity>();
 
         public async Task<TEntity?> GetByIdAsync(TKey id)
         {

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RedBubble.Application.Mappers
+namespace RedBubble.Domain.Entities.Models
 {
-    internal class Class1
+    public class Color
     {
     }
 }

@@ -23,7 +23,8 @@ namespace RedBubble.Application
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IBaseProductService, BaseProductService>();
-
+            services.AddScoped<IProductVariantService, ProductVariantService>();
+            services.AddScoped<IProductVariantImageService, ProductVariantImageService>();
             // Register Lazy services
             services.AddScoped<Lazy<IBaseProductService>>(provider =>
                 new Lazy<IBaseProductService>(() => provider.GetRequiredService<IBaseProductService>()));

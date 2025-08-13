@@ -31,16 +31,7 @@ namespace RedBubble.Application.Services
 
         public async Task<LoginResponseDTO> RegisterAsync(AccountCreateDTO ReqUser)
         {
-            var user = new ApplicationUser
-            {
-                FirstName = ReqUser.FirstName,
-                LastName = ReqUser.LastName,
-                Email = ReqUser.Email,
-                UserName = ReqUser.UserName ?? ReqUser.Email,
-                IsActive = true,
-                CreatedOn = DateTime.UtcNow,
-                LastModifiedOn = DateTime.UtcNow
-            };
+            var user = _mapper.Map<ApplicationUser>(ReqUser);
 
             var result = await _userManager.CreateAsync(user, ReqUser.Password);
             if (!result.Succeeded)
@@ -50,16 +41,11 @@ namespace RedBubble.Application.Services
 
             var token = await _tokenService.GenerateTokenAsync(user);
 
-            return new LoginResponseDTO
-            {
-                Id = user.Id,
-                UserName = user.UserName,
-                Email = user.Email,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                AccessToken = token,
-                Role = ReqUser.Role
-            };
+            var loginResponse = _mapper.Map<LoginResponseDTO>(user);
+            loginResponse.AccessToken = token;
+            loginResponse.Role = ReqUser.Role;
+
+            return loginResponse;
         }
 
         public async Task<LoginResponseDTO> LoginAsync(AccountLoginDTO ReqUser)
@@ -77,16 +63,11 @@ namespace RedBubble.Application.Services
             var token = await _tokenService.GenerateTokenAsync(user);
             var roles = await _userManager.GetRolesAsync(user);
 
-            return new LoginResponseDTO
-            {
-                Id = user.Id,
-                UserName = user.UserName,
-                Email = user.Email,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                AccessToken = token,
-                Role = roles.FirstOrDefault()
-            };
+            var loginResponse = _mapper.Map<LoginResponseDTO>(user);
+            loginResponse.AccessToken = token;
+            loginResponse.Role = roles.FirstOrDefault();
+
+            return loginResponse;
         }
 
         public async Task UpdateUserAsync(AccountUpdateDTO ReqUser)
@@ -95,10 +76,7 @@ namespace RedBubble.Application.Services
             if (user == null)
                 throw new Exception("User not found");
 
-            user.FirstName = ReqUser.FirstName;
-            user.LastName = ReqUser.LastName;
-            user.Email = ReqUser.Email;
-            user.LastModifiedOn = DateTime.UtcNow;
+            _mapper.Map(ReqUser, user);
 
             var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
@@ -122,13 +100,32 @@ namespace RedBubble.Application.Services
             if (user == null)
                 throw new Exception("User not found");
 
-            return _mapper.Map<UserDTO>(user);
+            var userDto = _mapper.Map<UserDTO>(user);
+
+            // Map the role separately since it requires async call
+            var roles = await _userManager.GetRolesAsync(user);
+            userDto.Role = roles.FirstOrDefault();
+
+            return userDto;
         }
 
         public async Task<IEnumerable<UserDTO>> GetAllUsersAsync()
         {
             var users = _userManager.Users.ToList();
-            return _mapper.Map<IEnumerable<UserDTO>>(users);
+            var userDtos = _mapper.Map<IEnumerable<UserDTO>>(users);
+
+            // Map roles for each user
+            foreach (var userDto in userDtos)
+            {
+                var user = users.FirstOrDefault(u => u.Id == userDto.Id);
+                if (user != null)
+                {
+                    var roles = await _userManager.GetRolesAsync(user);
+                    userDto.Role = roles.FirstOrDefault();
+                }
+            }
+
+            return userDtos;
         }
     }
 }
