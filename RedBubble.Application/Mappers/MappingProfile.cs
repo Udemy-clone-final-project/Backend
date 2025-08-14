@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using RedBubble.Application.DTOs.Order;
+using RedBubble.Application.DTOs.OrderItem;
 using RedBubble.Application.DTOs.Products;
 using RedBubble.Application.DTOs.User;
 using RedBubble.Domain.Entities.Models;
@@ -20,6 +22,8 @@ namespace RedBubble.Application.Mappers
             CreateMap<ApplicationUser, UserDTO>();
             CreateMap<AccountCreateDTO, ApplicationUser>();
             CreateMap<AccountUpdateDTO, ApplicationUser>();
+
+           
         }
     }
 }

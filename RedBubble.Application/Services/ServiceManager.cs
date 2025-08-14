@@ -27,3 +27,50 @@ namespace RedBubble.Application.Services
 
     }
 }
+
+#region Why we use Service manager , why is important ?
+// This ServiceManager class is a central point to access services — it acts like a service container/facade.
+
+// controller code before service manager vs after service manager
+// before : You inject every service separately, making the constructor long and messy as the project grows.
+//public class ProductController : ControllerBase
+//{
+//    private readonly IBaseProductService _baseProductService;
+//    private readonly ICategoryService _categoryService;
+//    private readonly IUserService _userService;
+
+//    public ProductController(
+//        IBaseProductService baseProductService,
+//        ICategoryService categoryService,
+//        IUserService userService)
+//    {
+//        _baseProductService = baseProductService;
+//        _categoryService = categoryService;
+//        _userService = userService;
+//    }
+
+//    public async Task<IActionResult> GetAll()
+//    {
+//        var products = await _baseProductService.GetAllAsync();
+//        return Ok(products);
+//    }
+//}
+
+// after : code is clean 
+//public class ProductController : ControllerBase
+//{
+//    private readonly IServiceManager _service;
+
+//    public ProductController(IServiceManager service)
+//    {
+//        _service = service;
+//    }
+
+//    public async Task<IActionResult> GetAll()
+//    {
+//        var products = await _service.baseProductService.GetAllAsync();
+//        return Ok(products);
+//    }
+//}
+
+#endregion

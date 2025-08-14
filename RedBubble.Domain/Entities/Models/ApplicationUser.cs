@@ -15,7 +15,7 @@ namespace RedBubble.Domain.Entities.Models
         public bool IsActive { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime LastModifiedOn { get; set; }
-        public string? CreatedBy { get; set; }
+        public string? CreatedBy { get; set; } 
         public string? LastModifiedBy { get; set; }
         public ApplicationUser()
         {
@@ -23,5 +23,8 @@ namespace RedBubble.Domain.Entities.Models
             CreatedOn = DateTime.UtcNow;
             LastModifiedOn = DateTime.UtcNow;
         }
+
+        // Relationship between ApplicationUser and Order 
+        public List<Order>? Orders { get; set; } // only if the user is customer
     }
 }

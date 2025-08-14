@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RedBubble.Domain.Enums
+namespace RedBubble.Application.DTOs.Design
 {
-    internal class Class1
+    public class AdminDesignDTO
     {
     }
 }

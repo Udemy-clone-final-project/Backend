@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using RedBubble.Domain.Entities.Models;
 using RedBubble.Infrastructure.DataAccess;
+using RedBubble.Infrastructure.DataAccess.Configurations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,8 @@ namespace RedBubble.Infrastructure.DataAccess
     // and other Identity tables like UserRoles, UserClaims, etc.
     public class AppDbContext:IdentityDbContext<ApplicationUser , ApplicationRole , Guid>
     {
+        public DbSet<Design> Designs { get; set; }
+        public DbSet<Order> Orders { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
@@ -27,6 +30,10 @@ namespace RedBubble.Infrastructure.DataAccess
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(AssemblyInformation).Assembly);
+
+            // this line apply configuration from DesignConfiguration()
+            modelBuilder.ApplyConfiguration(new DesignConfiguration());
+
         }
     }
 }
