@@ -1,4 +1,4 @@
-namespace RedBubble.Dashboard.Models
+namespace DashBourd.Models
 {
     public class ErrorViewModel
     {
