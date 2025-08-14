@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedBubble.Application", "Re
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedBubble.WebAPI", "RedBubble.WebAPI\RedBubble.WebAPI.csproj", "{11DD914E-3625-40F4-9A71-6BE1CACAB0C8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DashBourd", "DashBourd\DashBourd.csproj", "{F1087DFD-2166-43F3-B336-2E5CC268A899}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedBubble.Dashboard", "RedBubble.Dashboard\RedBubble.Dashboard.csproj", "{1B31A3B9-697E-4EB7-BF10-4AD35771E337}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,10 +35,10 @@ Global
 		{11DD914E-3625-40F4-9A71-6BE1CACAB0C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{11DD914E-3625-40F4-9A71-6BE1CACAB0C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{11DD914E-3625-40F4-9A71-6BE1CACAB0C8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F1087DFD-2166-43F3-B336-2E5CC268A899}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F1087DFD-2166-43F3-B336-2E5CC268A899}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F1087DFD-2166-43F3-B336-2E5CC268A899}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F1087DFD-2166-43F3-B336-2E5CC268A899}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B31A3B9-697E-4EB7-BF10-4AD35771E337}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B31A3B9-697E-4EB7-BF10-4AD35771E337}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B31A3B9-697E-4EB7-BF10-4AD35771E337}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B31A3B9-697E-4EB7-BF10-4AD35771E337}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
