@@ -65,7 +65,7 @@ namespace RedBubble.WebAPI.Controllers
         public async Task<IActionResult> DeleteRole(string id)
         {
 
-           await _roleService.DeleteAsync(id);
+            _roleService.DeleteAsync(id);
 
             return Ok();
         }
