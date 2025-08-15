@@ -9,9 +9,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 
-namespace RedBubble.Infrastructure.Data
+namespace RedBubble.Infrastructure.DataAccess
 {
-   public class AppDbContext:DbContext
+    public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
+    
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
@@ -20,9 +21,10 @@ namespace RedBubble.Infrastructure.Data
         
         public DbSet<Color> Colors { get; set; }
         public DbSet<Size> Sizes { get; set; }
-        
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(AssemblyInformation).Assembly);
         }
     }

@@ -8,5 +8,6 @@ namespace RedBubble.Domain.Entities.Models
 {
     public class Design
     {
+        public string DesignName { get; set; } = null!;
     }
 }

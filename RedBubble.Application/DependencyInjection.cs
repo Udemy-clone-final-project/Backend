@@ -28,6 +28,16 @@ namespace RedBubble.Application
             // Register Lazy services
             services.AddScoped<Lazy<IBaseProductService>>(provider =>
                 new Lazy<IBaseProductService>(() => provider.GetRequiredService<IBaseProductService>()));
+            services.AddScoped<Lazy<IProductVariantService>>(provider =>
+               new Lazy<IProductVariantService>(() => provider.GetRequiredService<IProductVariantService>()));
+            services.AddScoped<Lazy<IProductVariantImageService>>(provider =>
+               new Lazy<IProductVariantImageService>(() => provider.GetRequiredService<IProductVariantImageService>()));
+            services.AddScoped<Lazy<IUserService>>(provider =>
+               new Lazy<IUserService>(() => provider.GetRequiredService<IUserService>()));
+            services.AddScoped<Lazy<ITokenService>>(provider =>
+              new Lazy<ITokenService>(() => provider.GetRequiredService<ITokenService>()));
+            services.AddScoped<Lazy<IRoleService>>(provider =>
+              new Lazy<IRoleService>(() => provider.GetRequiredService<IRoleService>()));
 
             // Register ServiceManager last
             services.AddScoped<IServiceManager, ServiceManager>();
