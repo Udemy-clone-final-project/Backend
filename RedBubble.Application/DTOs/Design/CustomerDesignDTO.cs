@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RedBubble.Application.Mappers
+namespace RedBubble.Application.DTOs.Design
 {
-    internal class Class1
+    public class CustomerDesignDTO
     {
+
     }
 }

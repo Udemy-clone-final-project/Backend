@@ -9,9 +9,9 @@ namespace RedBubble.Domain.Entities.Base
 {
     public interface IBaseAuditableEntity
     {
-        public string CreatedBy { get; set; }
+        public string CreatedBy { get; set; } // it is not string here , it will be a user prpoperty with id as a foreign key and navigation property ==> a not by shahenda
         public DateTime CreatedOn { get; set; }
-        public string LastModifiedBy { get; set; }
+        public string LastModifiedBy { get; set; } 
         public DateTime LastModifiedOn { get; set; }
     }
 

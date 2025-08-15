@@ -4,9 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RedBubble.Domain.Interfaces
+namespace RedBubble.Domain.Enums
 {
-    internal class Class1
+    public enum DesignStatus
     {
+        Pending , 
+        Approved , 
+        Rejected 
     }
 }
