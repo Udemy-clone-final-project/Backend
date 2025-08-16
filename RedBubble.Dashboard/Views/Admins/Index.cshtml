@@ -1,0 +1,71 @@
+﻿@model IEnumerable<RedBubble.Dashboard.Models.UserViewModel>
+@{
+    ViewData["Title"] = "Admins Management";
+}
+
+<header class="mb-4">
+    <h1>Admins Management</h1>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Dashboard</a></li>
+        <li class="breadcrumb-item active">Admins</li>
+    </ol>
+</header>
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span>
+            <i class="fas fa-user-shield me-1"></i>
+            System Administrators
+        </span>
+        <a asp-action="Create" class="btn btn-primary">Create New Admin</a>
+    </div>
+   
+    <div class="card-body">
+        <table class="table table-bordered table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Display Name</th>
+                    <th>User Name</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var admin in Model)
+                {
+                    <tr>
+                        <td>@admin.DisplayName</td>
+                        <td>@admin.UserName</td>
+                        <td>@admin.Email</td>
+                        <td>
+                            @if (admin.IsActive)
+                            {
+                                <span class="badge bg-success">Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Inactive</span>
+                            }
+                        </td>
+                        <td>
+                            <form asp-action="ToggleActiveStatus" method="post">
+                                <input type="hidden" name="id" value="@admin.Id" />
+                                @Html.AntiForgeryToken()
+
+                                @if (admin.IsActive)
+                                {
+                                    <button type="submit" class="btn btn-sm btn-warning">Deactivate</button>
+                                }
+                                else
+                                {
+                                    <button type="submit" class="btn btn-sm btn-success">Activate</button>
+                                }
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

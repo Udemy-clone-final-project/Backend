@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RedBubble.Application\RedBubble.Application.csproj" />
+    <ProjectReference Include="..\RedBubble.Domain\RedBubble.Domain.csproj" />
     <ProjectReference Include="..\RedBubble.Infrastructure\RedBubble.Infrastructure.csproj" />
   </ItemGroup>
 
