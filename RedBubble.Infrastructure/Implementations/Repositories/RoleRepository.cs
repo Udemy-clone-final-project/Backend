@@ -46,6 +46,9 @@ namespace RedBubble.Infrastructure.Implementations.Repositories
             // the line equals this 
             //_context.Roles.Add(identityRole);
             //await _context.SaveChangesAsync();
+            // You don’t need to (and shouldn’t) call SaveChangesAsync() manually after using RoleManager or UserManager
+            // Unlike your own custom repositories (that work with UnitOfWork), these built-in Identity managers handle DB commits on their own.
+
             await _roleManager.CreateAsync(newRole);
         }
 

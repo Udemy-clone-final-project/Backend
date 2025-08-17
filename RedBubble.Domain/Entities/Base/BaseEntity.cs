@@ -10,6 +10,7 @@ namespace RedBubble.Domain.Entities.Base
     {
         TKey? Id { get; set; }
     }
+
     public abstract class BaseEntity<TKey> : IBaseEntity<TKey>
          where TKey : IEquatable<TKey>
     {

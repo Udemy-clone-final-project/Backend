@@ -47,8 +47,20 @@ namespace RedBubble.Infrastructure
                 .AddDefaultTokenProviders();
 
             services.AddScoped<IRoleRepository, RoleRepository>();
+            
+
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+
             services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
+            services.AddScoped<IDesignRepository, DesignRepository>();
+            #region is generic one alternative of this ??
+            // But most of the time, you want to use specific repositories(like IDesignRepository) so you can:
+            // Add custom methods(e.g., GetByCategoryId, GetTopRatedDesigns)
+            // Keep service code clean
+            // Separate logic for each entity
+            #endregion
+
+            services.AddScoped<IOrderRepository, OrderRepository>();
             return services;
         }
     }

@@ -20,11 +20,11 @@ namespace RedBubble.Application
 
             // Register individual services first
             services.AddScoped<IRoleService, RoleService>();
+            //services.AddScoped<IDesignService, DesignService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IBaseProductService, BaseProductService>();
-            services.AddScoped<IProductVariantService, ProductVariantService>();
-            services.AddScoped<IProductVariantImageService, ProductVariantImageService>();
+
             // Register Lazy services
             services.AddScoped<Lazy<IBaseProductService>>(provider =>
                 new Lazy<IBaseProductService>(() => provider.GetRequiredService<IBaseProductService>()));
@@ -42,7 +42,22 @@ namespace RedBubble.Application
             // Register ServiceManager last
             services.AddScoped<IServiceManager, ServiceManager>();
 
+            
+
+
+
+            // inject design mapper
+            services.AddAutoMapper(m => m.AddProfile<DesignProfile>());
+
+            services.AddScoped<IDesignService, DesignService>();
+
+            // ingect Order Service and Order mapper
+            services.AddScoped<IOrderService, OrderService>();
+            services.AddAutoMapper(m => m.AddProfile<OrderProfile>());
+            services.AddAutoMapper(m => m.AddProfile<OrderItemProfile>());
+
             return services;
+
         }
     }
 }
