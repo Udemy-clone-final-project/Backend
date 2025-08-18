@@ -13,9 +13,9 @@ namespace RedBubble.Application.Interfaces
     {
         Task CreateAsync(CreateOrderDTO createOrderDTO);
 
-        Task ChangeStatus(UpdateOrderDTO updateOrderDTO , Guid orderId);
+        Task ChangeStatus(UpdateOrderDTO updateOrderDTO , int orderId);
 
-        Task Delete(Guid orderId);
+        Task Delete(int orderId);
 
 
     }

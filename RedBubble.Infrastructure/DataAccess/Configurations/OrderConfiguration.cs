@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using RedBubble.Domain.Entities.Models;
-using RedBubble.Infrastructure.Migrations;
 using System;
 using System.Collections.Generic;
 using System.Linq;

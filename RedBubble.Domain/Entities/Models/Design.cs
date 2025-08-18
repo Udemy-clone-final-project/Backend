@@ -1,4 +1,5 @@
 ﻿using RedBubble.Domain.Entities.Base;
+using RedBubble.Domain.Entities.Models.Products;
 using RedBubble.Domain.Enums;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace RedBubble.Domain.Entities.Models
 {
-    public class Design : BaseEntity<Guid>
+    public class Design : BaseAuditableEntity<int>
     {
         // public Guid Id { get; set; } — inherited from BaseEntity<Guid>
         public string Title { get; set; }
@@ -22,6 +23,8 @@ namespace RedBubble.Domain.Entities.Models
         public DateTime ReviewedAt { get; set; }
 
         public string? RejectionReason { get; set; } // only when DesignStatus Status = Status.Rejected
+        public ICollection<DesignImage> DesignImages { get; set; } = new List<DesignImage>();
+        public ICollection<ProductVariant> ProductVariants { get; set; }= new List<ProductVariant>();
 
         #region Relationship 1-1 between Design and User(Artist)
         // Artist Creates

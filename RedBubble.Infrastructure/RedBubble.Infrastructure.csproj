@@ -27,8 +27,4 @@
     <ProjectReference Include="..\RedBubble.Domain\RedBubble.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="DataAccess\Migrations\" />
-  </ItemGroup>
-
 </Project>

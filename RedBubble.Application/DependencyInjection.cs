@@ -4,6 +4,7 @@ using RedBubble.Application.Interfaces.Products;
 using RedBubble.Application.Mappers;
 using RedBubble.Application.Services;
 using RedBubble.Application.Services.Products;
+using RedBubble.Infrastructure.Implementations.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +25,10 @@ namespace RedBubble.Application
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IBaseProductService, BaseProductService>();
-
+            services.AddScoped<IProductVariantService, ProductVariantService>();
+            services.AddScoped<IProductVariantImageService, ProductVariantImageService>();
+            services.AddScoped<IDesignService, DesignService>();
+            services.AddScoped<IColorService, ColorService>();
             // Register Lazy services
             services.AddScoped<Lazy<IBaseProductService>>(provider =>
                 new Lazy<IBaseProductService>(() => provider.GetRequiredService<IBaseProductService>()));
@@ -38,6 +42,10 @@ namespace RedBubble.Application
               new Lazy<ITokenService>(() => provider.GetRequiredService<ITokenService>()));
             services.AddScoped<Lazy<IRoleService>>(provider =>
               new Lazy<IRoleService>(() => provider.GetRequiredService<IRoleService>()));
+            services.AddScoped<Lazy<IDesignService>>(provider =>
+                new Lazy<IDesignService>(() => provider.GetRequiredService<IDesignService>()));
+            services.AddScoped<Lazy<IColorService>>(provider =>
+                new Lazy<IColorService>(() => provider.GetRequiredService<IColorService>()));
 
             // Register ServiceManager last
             services.AddScoped<IServiceManager, ServiceManager>();

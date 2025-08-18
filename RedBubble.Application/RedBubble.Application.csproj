@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="DTOs\Design\DesignImages\hazwvres.cto~" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Mapster" Version="7.4.0" />
 	  <PackageReference Include="AutoMapper" Version="15.0.1" />
 	  <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.1" />

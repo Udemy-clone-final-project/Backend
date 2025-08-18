@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using RedBubble.Application.DTOs.Design.DesignImages;
 
-namespace RedBubble.Application.DTOs.Design
+public class ArtistDesignDTO
 {
-    public class ArtistDesignDTO
-    {
-        public string Title { get; set; }
-        public string Description { get; set; }
-        public decimal Price { get; set; }
-    }
+    public string Title { get; set; }
+    public string Description { get; set; }
+    public decimal Price { get; set; }
+    public ICollection<DesignImageDto> Images { get; set; } 
 }

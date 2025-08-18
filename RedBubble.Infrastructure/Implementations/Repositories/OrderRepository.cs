@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace RedBubble.Infrastructure.Implementations.Repositories
 {
-    public class OrderRepository(AppDbContext context) : GenericRepository<Order, Guid>(context), IOrderRepository
+    public class OrderRepository(AppDbContext context) : GenericRepository<Order, int>(context), IOrderRepository
     {
         //public async Task ChangeStatus(Order order)
         //{

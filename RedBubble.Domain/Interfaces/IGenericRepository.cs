@@ -12,6 +12,7 @@ namespace RedBubble.Domain.Interfaces
     where TKey : IEquatable<TKey> // The key type (e.g., Guid, int) must support equality comparison.
     {
         Task<IEnumerable<TEntity>> GetAllAsync(bool withTracking = false);
+        IQueryable<TEntity> GetAll();
         Task<TEntity?> GetByIdAsync(TKey id);
         Task AddAsync(TEntity entity);
         void Update(TEntity entity);

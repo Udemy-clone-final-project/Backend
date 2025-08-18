@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RedBubble.Domain.Interfaces
 {
-    public interface IDesignRepository : IGenericRepository<Design, Guid>
+    public interface IDesignRepository : IGenericRepository<Design, int>
     {
         public IQueryable<Design> GetAllByArtist(Guid artistId);
          Task<Design> GetByNameAsync(string name);

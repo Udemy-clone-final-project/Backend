@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using RedBubble.Application.Interfaces;
 using RedBubble.Application.DTOs.Products;
-//using RedBubble.Application.DTOs.Products.ProductVariant;
 using System.Threading.Tasks;
 using RedBubble.Application.DTOs.Products.ProductVariant;
 
@@ -21,10 +20,11 @@ namespace RedBubble.WebAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllProductVariants(int page, int pageSize)
+        public async Task<IActionResult> GetAllProductVariants(string? searchItem, string? sortColomn, string? sortOrder
+            , int? Category, int page, int pageSize)
         {
            
-                var products = await _serviceManager.ProductVariantService.GetAllProductVariantsAsync( page,pageSize);
+                var products = await _serviceManager.ProductVariantService.GetAllProductVariantsAsync( searchItem,sortColomn, sortOrder,  Category,  page,  pageSize);
                 return Ok(products);     
         }
 

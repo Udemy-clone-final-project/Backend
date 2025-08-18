@@ -19,7 +19,8 @@ namespace RedBubble.Application.DTOs.Products.ProductVariant
 
         public int? BaseProductId { get; set; }
         public int? DesignId { get; set; }
-        public int? ColorId { get; set; }
-        public int? SizeId { get; set; }
+
+        public List<int>? ColorIds { get; set; }
+        public List<int>? SizeIds { get; set; }
     }
 }

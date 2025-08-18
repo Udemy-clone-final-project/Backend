@@ -51,7 +51,7 @@ namespace RedBubble.WebAPI.Controllers.DesignControllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(ArtistDesignDTO artistDesignDTO , Guid designId)
+        public async Task<IActionResult> Update(ArtistDesignDTO artistDesignDTO , int designId)
         {
            await _designService.Update(artistDesignDTO, designId);
 

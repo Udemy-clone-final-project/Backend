@@ -24,7 +24,7 @@ namespace RedBubble.WebAPI.Controllers
         }
 
         [HttpPost("{orderId}")]
-        public async Task<IActionResult> ChangeStatus(UpdateOrderDTO updateOrderDTO , Guid orderId)
+        public async Task<IActionResult> ChangeStatus(UpdateOrderDTO updateOrderDTO , int orderId)
         {
             await _orderService.ChangeStatus(updateOrderDTO, orderId);
             return Ok();
@@ -33,11 +33,11 @@ namespace RedBubble.WebAPI.Controllers
 
         [HttpDelete("{orderId}")]
 
-        public async Task<IActionResult> Delete(Guid orderId)
+        public async Task<IActionResult> Delete(int orderId)
         {
             await _orderService.Delete(orderId);
             return Ok();
 
         }
     }
-}
+} 

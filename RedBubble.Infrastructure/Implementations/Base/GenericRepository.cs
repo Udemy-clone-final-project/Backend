@@ -35,6 +35,7 @@ namespace RedBubble.Infrastructure.Implementations.Base
             ? await _dbContext.Set<TEntity>().ToListAsync()  // EF Core will track the results.
             : await _dbContext.Set<TEntity>().AsNoTracking().ToListAsync(); // EF Core won’t track the results.
 
+        public IQueryable<TEntity> GetAll() => _dbContext.Set<TEntity>();
         public async Task<TEntity?> GetByIdAsync(TKey id)
         {
             return await _dbContext.Set<TEntity>().FindAsync(id);

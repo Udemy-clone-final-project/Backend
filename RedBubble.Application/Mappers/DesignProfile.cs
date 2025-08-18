@@ -27,7 +27,8 @@ namespace RedBubble.Application.Mappers
             .ForMember(dest => dest.RejectionReason, opt => opt.Ignore());
 
             // convert from Design to ArtistDesignDTO
-            CreateMap<Design, ArtistDesignDTO>();
+            CreateMap<Design, ArtistDesignDTO>()
+               .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.DesignImages));
 
             // convert from Design to ArtistGetDesignDTO
             CreateMap<Design, ArtistGetDesignDTO>();

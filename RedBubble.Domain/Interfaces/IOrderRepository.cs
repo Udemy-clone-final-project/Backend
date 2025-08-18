@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RedBubble.Domain.Interfaces
 {
-    public interface IOrderRepository : IGenericRepository<Order, Guid>
+    public interface IOrderRepository : IGenericRepository<Order, int>
     {
         //Task ChangeStatus(Order order);
         // void or task ??

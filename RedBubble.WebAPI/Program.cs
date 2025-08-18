@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using RedBubble.Application;
 using RedBubble.Infrastructure;
+using RedBubble.Infrastructure.DataAccess;
 using System.Text;
 
 namespace RedBubble.WebAPI
@@ -48,7 +50,21 @@ namespace RedBubble.WebAPI
             builder.Services.AddAuthorization();
 
             var app = builder.Build();
-
+            try
+            {
+                using (var scope = app.Services.CreateScope())
+                {
+                    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                    context.Database.Migrate();
+                    DataSeed.Seed(context);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the error (e.g., using ILogger)
+                Console.WriteLine($"Error seeding database: {ex.Message}");
+                throw;
+            }
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {

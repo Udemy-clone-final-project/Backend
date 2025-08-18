@@ -1,4 +1,5 @@
-﻿using RedBubble.Domain.Enums;
+﻿using RedBubble.Application.DTOs.Design.DesignImages;
+using RedBubble.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,5 +18,6 @@ namespace RedBubble.Application.DTOs.Design
         public string? RejectionReason { get; set; }
         public DateTime UploadedAt { get; set; }
         public DateTime? ReviewedAt { get; set; } // Nullable because might not be reviewed yet
+        public ICollection<DesignImageDto> Images { get; set; }
     }
 }

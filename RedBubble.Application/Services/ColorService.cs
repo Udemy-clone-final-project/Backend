@@ -1,38 +1,77 @@
-﻿using RedBubble.Application.DTOs;
+﻿using AutoMapper;
+using RedBubble.Application.DTOs;
 using RedBubble.Application.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using RedBubble.Domain.Entities.Models;
+using RedBubble.Domain.Interfaces;
 
-namespace RedBubble.Application.Services
+namespace RedBubble.Infrastructure.Implementations.Services
 {
     public class ColorService : IColorService
     {
-        public Task<int> CreateAsync(CreateColorDto dto)
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
+
+        public ColorService(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            throw new NotImplementedException();
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
-        public Task<bool> DeleteAsync(int id)
+        public async Task<List<ColorDto>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            var repo = _unitOfWork.GetRepository<Color, int>();
+            var colors = await repo.GetAllAsync();
+            return _mapper.Map<List<ColorDto>>(colors);
         }
 
-        public Task<List<ColorDto>> GetAllAsync()
+        public async Task<ColorDto> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            var repo = _unitOfWork.GetRepository<Color, int>();
+            var color = await repo.GetByIdAsync(id);
+            if (color == null)
+                throw new KeyNotFoundException($"Color with Id {id} not found.");
+
+            return _mapper.Map<ColorDto>(color);
         }
 
-        public Task<ColorDto> GetByIdAsync(int id)
+        public async Task<int> CreateAsync(CreateColorDto dto)
         {
-            throw new NotImplementedException();
+            var repo = _unitOfWork.GetRepository<Color, int>();
+            var entity = _mapper.Map<Color>(dto);
+
+            await repo.AddAsync(entity);
+            await _unitOfWork.CompleteAsync();
+
+            return entity.Id; 
         }
 
-        public Task<bool> UpdateAsync(UpdateColorDto dto)
+        public async Task<bool> UpdateAsync(UpdateColorDto dto)
         {
-            throw new NotImplementedException();
+            var repo = _unitOfWork.GetRepository<Color, int>();
+            var entity = await repo.GetByIdAsync(dto.Id);
+
+            if (entity == null)
+                return false;
+
+            _mapper.Map(dto, entity);
+            repo.Update(entity);
+
+            await _unitOfWork.CompleteAsync();
+            return true;
+        }
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var repo = _unitOfWork.GetRepository<Color, int>();
+            var entity = await repo.GetByIdAsync(id);
+
+            if (entity == null)
+                return false;
+
+            repo.Delete(entity);
+            await _unitOfWork.CompleteAsync();
+
+            return true;
         }
     }
 }

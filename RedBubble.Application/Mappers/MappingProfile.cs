@@ -42,24 +42,44 @@ namespace RedBubble.Application.Mappers
 
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description));
-            
 
-            // ProductVariant mappings
+
+            // ProductVariant Mappings
             CreateMap<ProductVariant, ProductVariantDto>()
-                .ForMember(dest => dest.BaseProductName, opt => opt.MapFrom(src => src.BaseProduct != null ? src.BaseProduct.Name : null))
-                .ForMember(dest => dest.DesignName, opt => opt.MapFrom(src => src.Design != null ? src.Design.DesignName : null))
-                .ForMember(dest => dest.ColorName, opt => opt.MapFrom(src => src.Color != null ? src.Color.ColorName : null))
-                .ForMember(dest => dest.SizeName, opt => opt.MapFrom(src => src.Size != null ? src.Size.SizeName : null))
+                .ForMember(dest => dest.BaseProductName, opt => opt.MapFrom(src => src.BaseProduct!.Name))
+                .ForMember(dest => dest.DesignTitle, opt => opt.MapFrom(src => src.Design!.Title))
+                .ForMember(dest => dest.Colors, opt => opt.MapFrom(src => src.Colors))
+                .ForMember(dest => dest.Sizes, opt => opt.MapFrom(src => src.Sizes))
                 .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.ProductVariantImages));
 
             CreateMap<CreateProductVariantDto, ProductVariant>();
+           
+            CreateMap<UpdateProductVariantDto, ProductVariant>()
+                .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
 
 
             // ProductVariantImages mappings
             CreateMap<ProductVariantImages, ProductVariantImageDto>();
 
             CreateMap<CreateProductVariantImageDto, ProductVariantImages>();
-    
+            
+
+            CreateMap<CreateCategoryDto, Category>();
+
+            CreateMap<UpdateCategoryDto, Category>();
+            CreateMap<Size, SizeDto>();
+            CreateMap<CreateSizeDto, Size>();
+            CreateMap<UpdateSizeDto, Size>();
+            CreateMap<Size, UpdateSizeDto>();
+
+
+
+
+
+
+
+
+
         }
     }
 }

@@ -13,16 +13,16 @@ namespace RedBubble.Application.Interfaces
         Task CreateAsync(ArtistDesignDTO artistDesignDTO , Guid artistId);
         Task<IEnumerable<ArtistGetDesignDTO>> GetAllAsync(Guid artistId);
 
-        Task Update(ArtistDesignDTO artistDesignDTO, Guid designId);
+        Task Update(ArtistDesignDTO artistDesignDTO, int designId);
 
-        //Task<Design> GetByIdAsync(Guid id);  // design dto 
+        //Task<Design> GetByIdAsync(int id);  // design dto 
         //Task<Design> GetByNameAsync(string name); // design dto 
 
 
 
-        //Task DeleteAsync(Guid id);
+        //Task DeleteAsync(int id);
 
-        //Task UpdateAsync(Guid id, Design design);// design dto 
+        //Task UpdateAsync(int id, Design design);// design dto 
 
 
 

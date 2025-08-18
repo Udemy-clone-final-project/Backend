@@ -1,4 +1,5 @@
 ﻿using RedBubble.Domain.Entities.Base;
+using RedBubble.Domain.Entities.Models.Products;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace RedBubble.Domain.Entities.Models
 {
-    public class OrderItem : BaseEntity<Guid>
+    public class OrderItem : BaseEntity<int>
     {
 
         
@@ -17,11 +18,12 @@ namespace RedBubble.Domain.Entities.Models
         public int Quantity { get; set; }
 
         // relationship
-        public Guid OrderId { get; set; }
+        public int OrderId { get; set; }
         public Order Order { get; set; }
 
-        //skip product for now 
-        // do it later 
+        public int ProductVariantId { get; set; }
+
+        public ProductVariant ProductVariant { get; set; }
 
 
     }

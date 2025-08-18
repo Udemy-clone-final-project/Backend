@@ -8,5 +8,6 @@ namespace RedBubble.Infrastructure.DataAccess
 {
     public static class AssemblyInformation
     {
+
     }
 }

@@ -15,7 +15,7 @@ namespace RedBubble.Infrastructure.Implementations.Repositories
     // Inherits from your generic base class GenericRepository<Design, Guid>
     // Implements the IDesignRepository interface
     // Passes AppDbContext to the base class (GenericRepository) constructor
-    public class DesignRepository(AppDbContext context) : GenericRepository<Design, Guid>(context), IDesignRepository
+    public class DesignRepository(AppDbContext context) : GenericRepository<Design, int>(context), IDesignRepository
     {
         // GetAllAsync()
         // _dbset.Designs.GetAllAsync().Tolist();

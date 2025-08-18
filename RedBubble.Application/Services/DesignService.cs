@@ -57,7 +57,7 @@ namespace RedBubble.Application.Services
             return designsDTO;
         }
 
-        public async Task Update(ArtistDesignDTO artistDesignDTO , Guid designId)
+        public async Task Update(ArtistDesignDTO artistDesignDTO , int designId)
         {
 
             var design = await _designRepository.GetByIdAsync(designId);

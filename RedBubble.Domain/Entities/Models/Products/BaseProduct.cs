@@ -15,6 +15,7 @@ namespace RedBubble.Domain.Entities.Models.Products
         public string Description { get; set; } = null!;
         public decimal BasePrice { get; set; }
 
+
         // Relationship with Category
         public int CategoryId { get; set; }
         public Category? Category { get; set; }

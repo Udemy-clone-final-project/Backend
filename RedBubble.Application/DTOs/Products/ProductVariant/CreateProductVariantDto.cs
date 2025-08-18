@@ -10,11 +10,6 @@ namespace RedBubble.Application.DTOs.Products.ProductVariant
     public class CreateProductVariantDto
     {
         [Required]
-        [Range(1, double.MaxValue, ErrorMessage = "Price must be greater than 0")]
-        public decimal Price { get; set; }
-
-        [Required]
-        [Range(0, int.MaxValue, ErrorMessage = "Stock quantity cannot be negative")]
         public int StockQuantity { get; set; }
 
         public bool IsActive { get; set; } = true;
@@ -26,9 +21,9 @@ namespace RedBubble.Application.DTOs.Products.ProductVariant
         public int DesignId { get; set; }
 
         [Required]
-        public int ColorId { get; set; }
+        public List<int> ColorIds { get; set; } = new List<int>();
 
         [Required]
-        public int SizeId { get; set; }
+        public List<int> SizeIds { get; set; } = new List<int>();
     }
 }

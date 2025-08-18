@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace RedBubble.Domain.Entities.Models
 {
-    public class Order : BaseEntity<Guid> 
+    public class Order : BaseAuditableEntity<int> 
     {
-        // public Guid Id { get; set; } — inherited from BaseEntity<Guid>
+        // public int Id { get; set; } — inherited from BaseEntity<int>
         //public string OrderNumber { get; set; } // UK skip it for now
         public decimal TotalAmount { get; set; }
 
@@ -30,7 +30,7 @@ namespace RedBubble.Domain.Entities.Models
         public ApplicationUser Customer { get; set; }
 
         // relationship 
-        public List<OrderItem> OrderItems { get; set; }
+        public ICollection<OrderItem> OrderItems { get; set; }
 
     }
 }

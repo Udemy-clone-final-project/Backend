@@ -44,7 +44,7 @@ namespace RedBubble.Application.Services
 
         }
 
-        public async Task ChangeStatus(UpdateOrderDTO updateOrderDTO , Guid orderId)
+        public async Task ChangeStatus(UpdateOrderDTO updateOrderDTO , int orderId)
         {
             var order = await _orderRepository.GetByIdAsync(orderId);
 
@@ -56,7 +56,7 @@ namespace RedBubble.Application.Services
 
         }
 
-        public async Task Delete(Guid orderId)
+        public async Task Delete(int orderId)
         {
             var order = await _orderRepository.GetByIdAsync(orderId);
 
