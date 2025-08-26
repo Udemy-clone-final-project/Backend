@@ -9,8 +9,10 @@ using RedBubble.Domain.Entities.Models.Identity;
 using RedBubble.Domain.Interfaces;
 using RedBubble.Infrastructure.DataAccess;
 using RedBubble.Infrastructure.Implementations.Base;
+using RedBubble.Infrastructure.Implementations.CartRepository;
 using RedBubble.Infrastructure.Implementations.Repositories;
 using RedBubble.Infrastructure.Implementations.UnitOfWork;
+using StackExchange.Redis;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -62,6 +64,14 @@ namespace RedBubble.Infrastructure
             #endregion
 
             services.AddScoped<IOrderRepository, OrderRepository>();
+
+            // Redis
+            var redisConnectionString = configuration.GetConnectionString("Redis");
+            if (!string.IsNullOrWhiteSpace(redisConnectionString))
+            {
+                services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(redisConnectionString));
+            }
+            services.AddScoped<ICartRepository, CartRepository>();
             return services;
         }
     }

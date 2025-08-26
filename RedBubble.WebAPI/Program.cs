@@ -20,7 +20,37 @@ namespace RedBubble.WebAPI
             // Add services to the container.
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(options =>
+            {
+                // «·ŒÿÊ… «·√Ê·Ï:  ⁄—Ì› ‰Ÿ«„ «·Õ„«Ì… (Security Scheme)
+                // ‰Œ»— Swagger √‰‰« ‰” Œœ„ ‰Ÿ«„ Õ„«Ì…° Ê‰’›Â ·Â
+                options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                {
+                    Name = "Authorization", // «”„ «·‹ Header «·–Ì ”ÌÕ„· «· Êﬂ‰
+                    Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey, // «·‰Ê⁄ «·„” Œœ„ ··‹ Bearer token
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+                    Description = "√œŒ· 'Bearer' À„ „”«›… À„ «· Êﬂ‰ «·Œ«’ »ﬂ. \r\n\r\n „À«·: 'Bearer eyJhbGciOi...' "
+                });
+
+                // «·ŒÿÊ… «·À«‰Ì…:  ÿ»Ìﬁ Â–« «·‰Ÿ«„ ⁄·Ï ﬂ· «·‹ endpoints
+                // ‰Œ»— Swagger √‰ Ì÷Ì› √ÌﬁÊ‰… «·ﬁ›· ÊÌ” Œœ„ Â–« «· ⁄—Ì›
+                options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+        {
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                {
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Id = "Bearer" // ÌÃ» √‰ Ìÿ«»ﬁ «·«”„ ›Ì AddSecurityDefinition
+                }
+            },
+            new string[] {}
+        }
+    });
+            });
 
             // Register Persistence Services
             builder.Services.AddPersistenceServices(builder.Configuration);

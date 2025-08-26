@@ -13,7 +13,7 @@ namespace RedBubble.Domain.Entities.Models.Products
         public int StockQuantity { get; set; }
 
         public bool IsActive { get; set; }
-               public int BaseProductId { get; set; }
+        public int BaseProductId { get; set; }
         public BaseProduct? BaseProduct { get; set; }
         public int DesignId { get; set; }
         public Design? Design { get; set; }
