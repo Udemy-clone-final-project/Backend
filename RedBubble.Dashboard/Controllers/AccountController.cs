@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace RedBubble.Dashboard.Controllers
 {
+    [AllowAnonymous]
     public class AccountController : Controller
     {
         private readonly SignInManager<ApplicationUser> _signInManager;

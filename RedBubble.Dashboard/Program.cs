@@ -7,6 +7,9 @@ using RedBubble.Domain.Interfaces;
 using RedBubble.Infrastructure;
 using RedBubble.Infrastructure.DataAccess;
 using RedBubble.Infrastructure.Implementations.UnitOfWork;
+using RedBubble.Infrastructure;
+using RedBubble.Application;
+
 
 
 namespace RedBubble.Dashboard
@@ -18,9 +21,16 @@ namespace RedBubble.Dashboard
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+
+            
+          builder.Services.AddDashboardServices(builder.Configuration);
+
+            // Register Persistence Services
             builder.Services.AddPersistenceServices(builder.Configuration);
+
+            //AddApplicationServices() => from App/DependencyInjection
+            // Register Application Services
             builder.Services.AddApplicationServices();
-            builder.Services.AddDashboardServices(builder.Configuration);
 
             
             var app = builder.Build();

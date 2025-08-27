@@ -11,5 +11,10 @@ namespace RedBubble.Domain.Interfaces
     {
         //Task ChangeStatus(Order order);
         // void or task ??
+
+        Task<IQueryable<Order>> GetAllActive();
+
+        Task<IQueryable<Order>> GetByCustomerId(string customerId);
+        
     }
 }

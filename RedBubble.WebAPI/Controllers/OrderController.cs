@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using RedBubble.Application.DTOs.Order;
 using RedBubble.Application.Interfaces;
 using RedBubble.Domain.Entities.Models;
+using RedBubble.Domain.Enums;
 
 namespace RedBubble.WebAPI.Controllers
 {
@@ -25,21 +26,24 @@ namespace RedBubble.WebAPI.Controllers
             return Ok();
         }
 
-        [HttpPost("{orderId}")]
-        public async Task<IActionResult> ChangeStatus(UpdateOrderDTO updateOrderDTO , int orderId)
+        
+
+        [HttpDelete("{orderId}")]
+
+        public async Task<IActionResult> Delete(int orderId) // changestatus
         {
-            await _orderService.ChangeStatus(updateOrderDTO, orderId);
+            
+            await _orderService.Delete(orderId);
             return Ok();
 
         }
 
-        [HttpDelete("{orderId}")]
-
-        public async Task<IActionResult> Delete(int orderId)
+        [HttpGet("{customerId}")]
+        public async Task<IActionResult> GetOrdersByCustomerId(string customerId)
         {
-            await _orderService.Delete(orderId);
-            return Ok();
+            var orders = await _orderService.GetOrdersByCustomerId(customerId);
 
+            return Ok(orders);
         }
     }
 } 
