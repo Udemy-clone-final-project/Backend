@@ -1,0 +1,117 @@
+﻿@using RedBubble.Domain.Entities.Models
+@model List<Order>
+
+@{
+    ViewData["Title"] = "Orders Management";
+}
+
+<header class="mb-4">
+    <div>
+        <h1>Orders Management</h1>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+            <li class="breadcrumb-item active">Orders</li>
+        </ol>
+    </div>
+</header>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle"></i> @TempData["SuccessMessage"]
+        <button type="button" class="close" data-dismiss="alert">
+            <span>&times;</span>
+        </button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-triangle"></i> @TempData["ErrorMessage"]
+        <button type="button" class="close" data-dismiss="alert">
+            <span>&times;</span>
+        </button>
+    </div>
+}
+
+<!-- Orders Table -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Orders List</h6>
+    </div>
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer ID</th>
+                            <th>Order Date</th>
+                            <th>Total Amount</th>
+                            <th>Status</th>
+                            <th>Shipping Address</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in Model)
+                        {
+                            <tr>
+                                <td>#@order.Id</td>
+                                <td>@order.CustomerId</td>
+                                <td>@order.OrderDate.ToString("MMM dd, yyyy")</td>
+                                <td>$@order.TotalAmount.ToString("N2")</td>
+                                <td>
+                                    <form asp-action="ChangeStatus" asp-controller="Order" method="post">
+                                        <input type="hidden" name="orderId" value="@order.Id" />
+                                        <select name="status"
+                                                class="form-control form-control-sm"
+                                                onchange="this.form.submit()"
+                                                @(order.Status == RedBubble.Domain.Enums.OrderStatus.Cancelled ? "disabled" : "")>
+                                            <option value="@((int)RedBubble.Domain.Enums.OrderStatus.Pending)" selected="@(order.Status == RedBubble.Domain.Enums.OrderStatus.Pending)">Pending</option>
+                                            <option value="@((int)RedBubble.Domain.Enums.OrderStatus.Processing)" selected="@(order.Status == RedBubble.Domain.Enums.OrderStatus.Processing)">Processing</option>
+                                            <option value="@((int)RedBubble.Domain.Enums.OrderStatus.Shipped)" selected="@(order.Status == RedBubble.Domain.Enums.OrderStatus.Shipped)">Shipped</option>
+                                            <option value="@((int)RedBubble.Domain.Enums.OrderStatus.Delivered)" selected="@(order.Status == RedBubble.Domain.Enums.OrderStatus.Delivered)">Delivered</option>
+                                           
+                                        </select>
+                                    </form>
+                                </td>
+                                <td>@order.ShippingAddress, @order.ShippingCity</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a asp-action="Details" asp-route-id="@order.Id" class="btn btn-info btn-sm" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        @if (order.Status != RedBubble.Domain.Enums.OrderStatus.Cancelled)
+                                        {
+                                            <form asp-action="ChangeStatus" asp-controller="Order" method="post" class="d-inline"
+                                                  onsubmit="return confirm('Are you sure you want to cancel this order?');">
+                                                <input type="hidden" name="orderId" value="@order.Id" />
+                                                <input type="hidden" name="status" value="@((int)RedBubble.Domain.Enums.OrderStatus.Cancelled)" />
+                                                <button type="submit" class="btn btn-danger btn-sm" title="Cancel Order">
+                                                    <i class="fas fa-ban"></i>
+                                                </button>
+                                            </form>
+                                        }
+
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-shopping-cart fa-3x text-gray-300 mb-3"></i>
+                <h5 class="text-gray-600">No orders found</h5>
+                <p class="text-gray-500">No orders are currently available in the system.</p>
+            </div>
+        }
+    </div>
+</div>

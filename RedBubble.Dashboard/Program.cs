@@ -5,6 +5,9 @@ using RedBubble.Domain.Entities.Models.Identity;
 using RedBubble.Domain.Interfaces;
 using RedBubble.Infrastructure.DataAccess;
 using RedBubble.Infrastructure.Implementations.UnitOfWork;
+using RedBubble.Infrastructure;
+using RedBubble.Application;
+
 
 
 namespace RedBubble.Dashboard
@@ -19,7 +22,13 @@ namespace RedBubble.Dashboard
             
           builder.Services.AddDashboardServices(builder.Configuration);
 
+            // Register Persistence Services
+            builder.Services.AddPersistenceServices(builder.Configuration);
 
+            //AddApplicationServices() => from App/DependencyInjection
+            // Register Application Services
+            builder.Services.AddApplicationServices();
+            
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

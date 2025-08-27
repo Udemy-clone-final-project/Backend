@@ -1,16 +1,17 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using RedBubble.Dashboard.Models;
-
 using RedBubble.Domain.Entities.Models.Identity;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace RedBubble.Dashboard.Controllers
 {
     // [Authorize(Roles = "Admin")]
+    [AllowAnonymous]
     public class AdminsController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;

@@ -34,7 +34,7 @@ namespace RedBubble.Application.Services
             var order = _mapper.Map<Order>(createOrderDTO);
 
             // fake id for no 
-            order.CustomerId = "9E85ED5F-9443-4471-888B-EE5A26E8A45D";  //Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)); // Logged-in user
+            //order.CustomerId = "9E85ED5F-9443-4471-888B-EE5A26E8A45D";  //Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)); // Logged-in user
             order.OrderDate = DateTime.UtcNow;
             order.Status = OrderStatus.Pending; // 0
             // to be continued when finish orderitems
@@ -44,28 +44,50 @@ namespace RedBubble.Application.Services
 
         }
 
-        public async Task ChangeStatus(UpdateOrderDTO updateOrderDTO , int orderId)
+      
+        public async Task ChangeStatus(int orderId , OrderStatus status) // for admin
         {
             var order = await _orderRepository.GetByIdAsync(orderId);
 
-             _mapper.Map(updateOrderDTO, order);
+            order.Status = status;
             order.UpdatedAt = DateTime.UtcNow;
 
             _orderRepository.Update(order);
             await _unitOfWork.CompleteAsync();
+
+        } 
+
+
+
+        public async Task Delete(int orderId) // for customer 
+        {
+            var order = await _orderRepository.GetByIdAsync(orderId);
+
+            if(order.Status == OrderStatus.Pending)
+            {
+                order.Status = OrderStatus.Cancelled;
+                order.UpdatedAt = DateTime.UtcNow;
+
+                _orderRepository.Update(order);
+                await _unitOfWork.CompleteAsync();
+            }
+           
 
         }
 
-        public async Task Delete(int orderId)
+        public async Task <List<Order>> GetAllAsync()
         {
-            var order = await _orderRepository.GetByIdAsync(orderId);
+            //var orders = await _orderRepository.GetAllAsync();
+            var orders = await _orderRepository.GetAllActive();
 
-            order.Status = OrderStatus.Cancelled;
-            order.UpdatedAt = DateTime.UtcNow;
+            return orders .ToList();
+        }
 
-            _orderRepository.Update(order);
-            await _unitOfWork.CompleteAsync();
+        public async Task<List<Order>> GetOrdersByCustomerId(string customerId)
+        {
+            var orders = await _orderRepository.GetByCustomerId(customerId);
 
+            return orders.ToList();
         }
     }
 }
