@@ -68,6 +68,8 @@ namespace RedBubble.Application
                 new Lazy<ISizeService>(() => provider.GetRequiredService<ISizeService>()));
             services.AddScoped<Lazy<ICategoryService>>(provider =>
               new Lazy<ICategoryService>(() => provider.GetRequiredService<ICategoryService>()));
+            services.AddScoped<Lazy<ICartService>>(provider =>
+             new Lazy<ICartService>(() => provider.GetRequiredService<ICartService>()));
 
             // Register ServiceManager last
             services.AddScoped<IServiceManager, ServiceManager>();

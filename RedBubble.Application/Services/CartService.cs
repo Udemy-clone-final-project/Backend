@@ -56,7 +56,7 @@ namespace RedBubble.Infrastructure.Implementations.Services
             }
             else
             {
-                var productVariant = await _productVariantService.GetProductVariantByIdAsync(variantId);
+                var productVariant = await _productVariantService.GetByIdAsync(variantId);
                 if (productVariant == null || productVariant.StockQuantity < quantity)
                 {
                     throw new InvalidOperationException("Product is not available or out of stock.");
@@ -72,8 +72,8 @@ namespace RedBubble.Infrastructure.Implementations.Services
                     UnitPrice = productVariant.Price,
                     Quantity = quantity,
                     PictureUrl = productVariant.Images?.FirstOrDefault()?.ImageUrl ?? "",
-                    ColorName = productVariant.Colors.FirstOrDefault()?.ColorName ?? "",
-                    SizeName = productVariant.Sizes.FirstOrDefault()?.SizeName ?? ""
+                    ColorName = productVariant.ColorName,
+                    SizeName = productVariant.SizeName
                 };
                 cart.Items.Add(newItem);
             }
