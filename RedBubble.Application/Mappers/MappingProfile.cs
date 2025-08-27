@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using RedBubble.Application.DTOs;
+using RedBubble.Application.DTOs.Cart;
 using RedBubble.Application.DTOs.Products;
 using RedBubble.Application.DTOs.Products.ProductVariant;
 using RedBubble.Application.DTOs.Products.ProductVariant.ProductVariantImage;
 using RedBubble.Domain.Entities.Models;
+using RedBubble.Domain.Entities.Models.Cart;
 using RedBubble.Domain.Entities.Models.Products;
 
 namespace RedBubble.Application.Mappers
@@ -98,7 +100,9 @@ namespace RedBubble.Application.Mappers
                 .ForMember(dest => dest.LastModifiedBy, opt => opt.MapFrom(src => "System")); 
             CreateMap<Category, UpdateCategoryDto>();
 
-
+            //////////////Cart Mappings////////////////
+            CreateMap<CartItem, CartItemDto>().ReverseMap();
+            CreateMap<CustomerCart, CustomerCartDto>().ReverseMap();
 
 
 

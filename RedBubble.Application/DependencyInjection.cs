@@ -8,6 +8,7 @@ using RedBubble.Application.Services.Implementations;
 using RedBubble.Application.Services.Interfaces;
 using RedBubble.Application.Services.Products;
 using RedBubble.Domain.Entities.Models.Products;
+using RedBubble.Domain.Interfaces;
 using RedBubble.Infrastructure.Implementations.Services;
 using System;
 using System.Collections.Generic;
@@ -35,6 +36,13 @@ namespace RedBubble.Application
 
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IColorService, ColorService>();
+            services.AddScoped<ICartService, CartService>();
+            services.AddScoped(typeof(Func<ICartService>), (serviceporvider) =>
+            {
+
+                return () => serviceporvider.GetRequiredService<ICartService>();
+
+            });
             services.AddScoped<ISizeService, SizeService>();
             services.AddScoped<ICategoryService, CategoryService>();
             // Register Lazy services
@@ -65,7 +73,7 @@ namespace RedBubble.Application
             services.AddScoped<IServiceManager, ServiceManager>();
 
             
-
+            services.AddScoped<IAccountService,AccountService>();
 
 
             // inject design mapper

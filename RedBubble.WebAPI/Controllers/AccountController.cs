@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using RedBubble.Application.DTOs.Identity;
-using RedBubble.Application.Interfaces;
-using RedBubble.Application.Services;
-using RedBubble.Domain.Entities.Models.Identity;
+using RedBubble.Application.Interfaces; // لا تنس إضافة هذا
+using RedBubble.Domain.Interfaces;
+using System;
+using System.Threading.Tasks;
 
 namespace RedBubble.WebAPI.Controllers
 {
@@ -12,70 +12,46 @@ namespace RedBubble.WebAPI.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly ITokenService _tokenService;
+        private readonly IAccountService _accountService;
 
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ITokenService tokenService)
+       
+        public AccountController(IAccountService accountService)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _tokenService = tokenService;
+            _accountService = accountService;
         }
 
         // POST: api/account/login
         [HttpPost("login")]
         public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {
-            var user = await _userManager.FindByEmailAsync(loginDto.Email);
-            if (user == null) return Unauthorized("Invalid Email or Password");
-
-            var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
-            if (!result.Succeeded) return Unauthorized("Invalid Email or Password");
-
-            return new UserDto
+            try
             {
-                DisplayName = user.DisplayName,
-                Email = user.Email,
-                Token = await _tokenService.GenerateTokenAsync(user)
-            };
+                var userDto = await _accountService.LoginAsync(loginDto);
+                return Ok(userDto);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
         }
 
         // POST: api/account/register
         [HttpPost("register")]
         public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
         {
-            var existingUser = await _userManager.FindByEmailAsync(registerDto.Email);
-            if (existingUser != null)
+            try
             {
-                return BadRequest("Email address is already in use.");
+                var userDto = await _accountService.RegisterAsync(registerDto);
+                return Ok(userDto);
             }
-
-            var user = new ApplicationUser
+            catch (ArgumentException ex) 
             {
-                DisplayName = registerDto.DisplayName,
-                Email = registerDto.Email,
-                UserName = registerDto.Email, // Often set username to email by default
-                EmailConfirmed = true // Or implement email confirmation flow
-            };
-
-            var result = await _userManager.CreateAsync(user, registerDto.Password);
-
-            if (!result.Succeeded)
-            {
-                return BadRequest(result.Errors);
+                return BadRequest(ex.Message);
             }
-
-            
-
-            return new UserDto
+            catch (InvalidOperationException ex) 
             {
-                DisplayName = user.DisplayName,
-                Email = user.Email,
-                Token = "Please log in to generate a token" // No token on registration
-            };
+                return BadRequest(ex.Message);
+            }
         }
-
-
     }
 }
