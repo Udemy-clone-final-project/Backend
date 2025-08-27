@@ -22,8 +22,8 @@ namespace RedBubble.Domain.Entities.Models
         public string ShippingCountry { get; set; }
         public string ShippingPostalCode { get; set; }
 
-        public DateTime OrderDate { get; set; }
-        public DateTime UpdatedAt { get; set; }
+        //public DateTime OrderDate { get; set; }
+        //public DateTime UpdatedAt { get; set; }
 
 
         // relationship

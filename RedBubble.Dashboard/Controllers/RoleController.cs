@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 namespace RedBubble.Dashboard.Controllers
 {
     //[Authorize(Roles = "Admin")]
+    [AllowAnonymous]
     public class RoleController : Controller
     {
         private readonly RoleManager<ApplicationRole> _roleManager;

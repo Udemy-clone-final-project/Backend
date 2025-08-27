@@ -29,7 +29,9 @@ namespace RedBubble.Infrastructure.DataAccess.Configurations.Products
             builder.HasOne(p => p.Category)         
                    .WithMany(c => c.BaseProducts)   
                    .HasForeignKey(p => p.CategoryId)  
-                   .IsRequired();                    
+                   .IsRequired();
+            builder.HasMany(p => p.ProductVariants)
+                .WithOne(pv => pv.BaseProduct);
         }
     }
 }

@@ -11,6 +11,7 @@ namespace RedBubble.Domain.Entities.Models.Products
     {
         public string CategoryName { get; set; } = null!;
         public string? Description { get; set; }
+        public bool IsActive { get; set; } = true;
 
         // Self-referencing foreign key for parent category
         public int? ParentCategoryId { get; set; }
@@ -28,3 +29,5 @@ namespace RedBubble.Domain.Entities.Models.Products
         public bool IsSubCategory => ParentCategoryId != null;
     }
 }
+
+

@@ -13,7 +13,7 @@ namespace RedBubble.Infrastructure.DataAccess.Configurations.Products
     {
         public void Configure(EntityTypeBuilder<Category> builder)
         {
-            builder.ToTable("Categories");
+           
             builder.HasKey(c => c.Id);
 
             builder.Property(c => c.CategoryName)
@@ -33,6 +33,11 @@ namespace RedBubble.Infrastructure.DataAccess.Configurations.Products
                 .OnDelete(DeleteBehavior.Restrict) // Prevent cascade delete to avoid orphaning subcategories
                 .HasConstraintName("FK_Categories_ParentCategory");
 
+
+            builder.HasMany(c =>c.BaseProducts )
+                  .WithOne(b => b.Category)
+                  .HasForeignKey(p => p.CategoryId)
+                  .IsRequired();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RedBubble.Application.DTOs.Order;
 using RedBubble.Application.Interfaces;
@@ -8,6 +9,7 @@ namespace RedBubble.WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    //[Authorize(Roles =customer)]
     public class OrderController : ControllerBase
     {
         private readonly IOrderService _orderService;

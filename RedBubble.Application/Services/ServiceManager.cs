@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Identity;
 using RedBubble.Application.Interfaces;
 using RedBubble.Application.Interfaces.Products;
+using RedBubble.Application.Interfaces.Services;
+using RedBubble.Application.Services.Interfaces;
 using RedBubble.Domain.Entities.Models;
 using RedBubble.Domain.Entities.Models.Identity;
 using RedBubble.Domain.Interfaces;
@@ -23,11 +25,23 @@ namespace RedBubble.Application.Services
         private readonly ITokenService tokenService;
 
         //private readonly Lazy<IUserService> _userService;
-   
+        
+
+      
 
         private readonly Lazy<IBaseProductService> _baseProductService;
         private readonly Lazy<IProductVariantService> _productVariantService;
-        private readonly Lazy<IProductVariantImageService> _productVariantImageService;
+        private readonly Lazy<ICategoryService> _categoryService;
+
+        private readonly Lazy<IColorService> _colorService;
+
+
+        private readonly Lazy<ISizeService> _sizeService;
+        private readonly Lazy<IDesignService> _designService;
+        private readonly Lazy<IOrderService> _orderService;
+
+
+        //private readonly Lazy<IProductVariantImageService> _productVariantImageService;
 
 
         public ServiceManager(
@@ -38,7 +52,13 @@ namespace RedBubble.Application.Services
             ITokenService tokenService,
             Lazy<IBaseProductService> baseProductService,
             Lazy<IProductVariantService> productVariantService,
-            Lazy<IProductVariantImageService> productVariantImageService
+            Lazy<ICategoryService> categoryService,
+            Lazy<IColorService> colorService,
+            Lazy<ISizeService> sizeService,
+            Lazy<IDesignService> designService,
+            Lazy<IOrderService> orderService
+
+            //Lazy<IProductVariantImageService> productVariantImageService
             //Lazy<IUserService> userService
             )
         {
@@ -49,15 +69,30 @@ namespace RedBubble.Application.Services
             this.tokenService = tokenService;
             _baseProductService = baseProductService;
             _productVariantService = productVariantService;
-            _productVariantImageService = productVariantImageService;
+            _categoryService = categoryService;
+            _colorService = colorService;
+            _sizeService = sizeService;
+            _designService = designService;
+            _orderService = orderService;
+            //_productVariantImageService = productVariantImageService;
             //_userService = userService;
-           
+
         }
         //public IUserService UserService => _userService.Value;
-      
+
         public IBaseProductService baseProductService => _baseProductService.Value;
-        public IProductVariantService ProductVariantService => _productVariantService.Value;
-        public IProductVariantImageService ProductVariantImageService => _productVariantImageService.Value;
+        public IProductVariantService productVariantService => _productVariantService.Value;
+
+        public ICategoryService categoryService => _categoryService.Value;
+
+        public IColorService colorService => _colorService.Value;
+
+        public ISizeService sizeService => _sizeService.Value;
+
+        public IDesignService designService => _designService.Value;
+
+        public IOrderService orderService => _orderService.Value;
+        //public IProductVariantImageService ProductVariantImageService => _productVariantImageService.Value;
 
     }
 }

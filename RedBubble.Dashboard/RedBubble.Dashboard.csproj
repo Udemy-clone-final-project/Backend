@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\RedBubble.Infrastructure\RedBubble.Infrastructure.csproj" />
     <ProjectReference Include="..\RedBubble.WebAPI\RedBubble.WebAPI.csproj" />
   </ItemGroup>
 

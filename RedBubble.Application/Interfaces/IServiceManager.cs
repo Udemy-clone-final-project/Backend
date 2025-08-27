@@ -1,5 +1,7 @@
 ﻿using RedBubble.Application.Interfaces.Products;
+using RedBubble.Application.Interfaces.Services;
 using RedBubble.Application.Services;
+using RedBubble.Application.Services.Interfaces;
 using RedBubble.Application.Services.Products;
 using System;
 using System.Collections.Generic;
@@ -12,10 +14,16 @@ namespace RedBubble.Application.Interfaces
     public interface IServiceManager
     {
         public IBaseProductService baseProductService { get; }
+        public IProductVariantService productVariantService { get; }
+        public ICategoryService categoryService { get; }
+        public IColorService colorService { get; }
+        public ISizeService sizeService { get; }
+        public IDesignService designService { get; }
+        public IOrderService orderService { get; }
+
+
+        //public IProductVariantImageService ProductVariantImageService { get; }
+        //public ITokenService TokenService { get; }
         //public IUserService UserService { get; }
-        
-        public IProductVariantService ProductVariantService { get; }
-        public IProductVariantImageService ProductVariantImageService { get; }
-    //public ITokenService TokenService { get; }
-}
+    }
 }

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace RedBubble.Application.DTOs.Products
 {
@@ -18,9 +13,9 @@ namespace RedBubble.Application.DTOs.Products
         public bool IsSubCategory { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+        public int SubCategoriesCount { get; set; }
     }
 
-    
     public class CategoryWithSubCategoriesDto
     {
         public int Id { get; set; }
@@ -32,7 +27,6 @@ namespace RedBubble.Application.DTOs.Products
         public ICollection<CategoryDto> SubCategories { get; set; } = new HashSet<CategoryDto>();
         public int SubCategoriesCount { get; set; }
     }
-
 
     public class CreateCategoryDto
     {
@@ -46,7 +40,6 @@ namespace RedBubble.Application.DTOs.Products
         public int? ParentCategoryId { get; set; }
     }
 
-    
     public class UpdateCategoryDto
     {
         [Required]

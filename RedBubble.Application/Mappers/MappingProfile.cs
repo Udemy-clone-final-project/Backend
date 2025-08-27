@@ -12,9 +12,16 @@ namespace RedBubble.Application.Mappers
     {
         public MappingProfile()
         {
-            CreateMap<BaseProduct, BaseProductDto>().ForMember(dest => dest.CategoryName,
-                opt => opt.MapFrom(src => src.Category != null ? src.Category.CategoryName : null));
-            CreateMap<CreateBaseProductDto, BaseProduct>();
+            // BaseProduct
+            CreateMap<BaseProduct, ProductDto>()
+                .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category != null ? src.Category.CategoryName : null));
+
+            CreateMap<BaseProduct, ProductListDto>()
+                .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category != null ? src.Category.CategoryName : null));
+
+            CreateMap<CreateProductDto, BaseProduct>();
+
+            CreateMap<UpdateProductDto, BaseProduct>();
 
             // User mappings
             //CreateMap<ApplicationUser, UserDTO>();
@@ -38,52 +45,58 @@ namespace RedBubble.Application.Mappers
             //    .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description));
 
 
-            // ProductVariant Mappings
-            CreateMap<ProductVariant, ProductVariantDto>()
-                .ForMember(dest => dest.BaseProductName, opt => opt.MapFrom(src => src.BaseProduct!.Name))
-                .ForMember(dest => dest.DesignTitle, opt => opt.MapFrom(src => src.Design!.Title))
-                .ForMember(dest => dest.Colors, opt => opt.MapFrom(src => src.Colors))
-                .ForMember(dest => dest.Sizes, opt => opt.MapFrom(src => src.Sizes))
-                .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.ProductVariantImages));
-
-            CreateMap<CreateProductVariantDto, ProductVariant>();
-           
-            CreateMap<UpdateProductVariantDto, ProductVariant>()
-                .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
-
-
-            // ProductVariantImages mappings
-            CreateMap<ProductVariantImages, ProductVariantImageDto>();
-
-            CreateMap<CreateProductVariantImageDto, ProductVariantImages>();
-            
-
-            CreateMap<CreateCategoryDto, Category>();
-
-            CreateMap<UpdateCategoryDto, Category>();
+            //size
             CreateMap<Size, SizeDto>();
             CreateMap<CreateSizeDto, Size>();
             CreateMap<UpdateSizeDto, Size>();
-            CreateMap<Size, UpdateSizeDto>();
+         
 
+
+            //color
             CreateMap<Color, ColorDto>();
-            CreateMap<Size, SizeDto>();
-            CreateMap<ProductVariantImages, ProductVariantImageDto>();
-            CreateMap<BaseProduct, BaseProductDto>()
-             .ForMember(dest => dest.CategoryName,
-                        opt => opt.MapFrom(src => src.Category != null ? src.Category.CategoryName : null));
-            CreateMap<ProductVariant, ProductVariantDto>()
-               .ForMember(dest => dest.BaseProductName, opt => opt.MapFrom(src => src.BaseProduct != null ? src.BaseProduct.Name : null))
-               .ForMember(dest => dest.DesignTitle, opt => opt.MapFrom(src => src.Design != null ? src.Design.Title : null))
-               .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.ProductVariantImages))
-               .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedOn)) // Map from BaseAuditableEntity
-               .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.LastModifiedOn)); // Map from BaseAuditableEntity
-            CreateMap<CreateProductVariantDto, ProductVariant>();
-            CreateMap<UpdateProductVariantDto, ProductVariant>()
-                .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
+            CreateMap<CreateColorDto, Color>();
+            CreateMap<UpdateColorDto, Color>();
+            CreateMap<Color, UpdateColorDto>();
 
+
+
+            //ProductVariant
+
+            CreateMap<ProductVariant, ProductVariantDto>()
+                 .ForMember(dest => dest.BaseProductName, opt => opt.MapFrom(src => src.BaseProduct!.Name))
+                 .ForMember(dest => dest.BaseProductPrice, opt => opt.MapFrom(src => src.BaseProduct!.BasePrice))
+                 .ForMember(dest => dest.DesignTitle, opt => opt.MapFrom(src => src.Design!.Title))
+                 .ForMember(dest => dest.DesignPrice, opt => opt.MapFrom(src => src.Design!.Price))
+                 .ForMember(dest => dest.ColorName, opt => opt.MapFrom(src => src.Color!.ColorName))
+                 .ForMember(dest => dest.ColorCode, opt => opt.MapFrom(src => src.Color!.ColorCode))
+                 .ForMember(dest => dest.SizeName, opt => opt.MapFrom(src => src.Size!.SizeName))
+                 .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.ProductVariantImages));
+            CreateMap<CreateProductVariantDto, ProductVariant>();
+            CreateMap<UpdateProductVariantDto, ProductVariant>();
+            CreateMap<ProductVariantImages, ProductVariantImageDto>();
             CreateMap<CreateProductVariantImageDto, ProductVariantImages>();
 
+
+            //Category
+            CreateMap<Category, CategoryDto>()
+             .ForMember(dest => dest.ParentCategoryName, opt => opt.MapFrom(src => src.ParentCategory != null ? src.ParentCategory.CategoryName : null))
+             .ForMember(dest => dest.IsMainCategory, opt => opt.MapFrom(src => src.ParentCategoryId == null))
+             .ForMember(dest => dest.IsSubCategory, opt => opt.MapFrom(src => src.ParentCategoryId != null));
+
+            CreateMap<Category, CategoryWithSubCategoriesDto>()
+                .ForMember(dest => dest.SubCategories, opt => opt.MapFrom(src => src.SubCategories))
+                .ForMember(dest => dest.IsMainCategory, opt => opt.MapFrom(src => src.ParentCategoryId == null));
+
+            CreateMap<CreateCategoryDto, Category>()
+                .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => "System"))
+                .ForMember(dest => dest.SubCategories, opt => opt.Ignore())
+                .ForMember(dest => dest.BaseProducts, opt => opt.Ignore());
+
+            CreateMap<UpdateCategoryDto, Category>()
+                .ForMember(dest => dest.LastModifiedOn, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(dest => dest.LastModifiedBy, opt => opt.MapFrom(src => "System")); 
+            CreateMap<Category, UpdateCategoryDto>();
 
 
 

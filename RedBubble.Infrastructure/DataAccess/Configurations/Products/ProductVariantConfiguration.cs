@@ -12,7 +12,8 @@ namespace RedBubble.Infrastructure.DataAccess.Configurations.Products
           
             builder.Property(pv => pv.Price)
                 .IsRequired()
-                .HasColumnType("decimal(18,2)");
+                .HasColumnType("decimal(18,2)")
+                .HasDefaultValue(0);
 
             builder.Property(pv => pv.StockQuantity)
                 .IsRequired()
@@ -22,32 +23,45 @@ namespace RedBubble.Infrastructure.DataAccess.Configurations.Products
                 .IsRequired()
                 .HasDefaultValue(true);
 
-            builder.HasOne(pv => pv.BaseProduct)
-                .WithMany()
-                .HasForeignKey(pv => pv.BaseProductId)
-                .OnDelete(DeleteBehavior.Restrict);
+     
+            builder.Property(pv => pv.BaseProductId)
+                .IsRequired();
 
-            
+            builder.Property(pv => pv.DesignId)
+                .IsRequired();
+
+            builder.Property(pv => pv.ColorId)
+                .IsRequired();
+
+            builder.Property(pv => pv.SizeId)
+                .IsRequired();
+
+           
+            builder.HasOne(pv => pv.BaseProduct)
+                .WithMany(bp => bp.ProductVariants)
+                .HasForeignKey(pv => pv.BaseProductId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             builder.HasOne(pv => pv.Design)
                 .WithMany(d => d.ProductVariants)
                 .HasForeignKey(pv => pv.DesignId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(pv => pv.Color)
+                .WithMany(c => c.ProductVariants)
+                .HasForeignKey(pv => pv.ColorId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            
-            builder.HasMany(pv => pv.Colors)
-                .WithMany(c => c.ProductVariants);
+            builder.HasOne(pv => pv.Size)
+                .WithMany(s => s.ProductVariants)
+                .HasForeignKey(pv => pv.SizeId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            
-            builder.HasMany(pv => pv.Sizes)
-                .WithMany(s => s.ProductVariants);
-
-            
             builder.HasMany(pv => pv.ProductVariantImages)
                 .WithOne(pvi => pvi.ProductVariant)
                 .HasForeignKey(pvi => pvi.ProductVariantId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-        
             builder.HasMany(pv => pv.OrderItems)
                 .WithOne(oi => oi.ProductVariant)
                 .HasForeignKey(oi => oi.ProductVariantId)

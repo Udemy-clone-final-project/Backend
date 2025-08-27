@@ -38,7 +38,9 @@ namespace RedBubble.Infrastructure.DataAccess.Configurations.Products
                 .IsRequired()
                 .HasDefaultValue(true);
 
-            // Foreign Key Relationship
+            builder.Property(pvi => pvi.ProductVariantId)
+                .IsRequired();
+
             builder.HasOne(pvi => pvi.ProductVariant)
                 .WithMany(pv => pv.ProductVariantImages)
                 .HasForeignKey(pvi => pvi.ProductVariantId)

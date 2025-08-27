@@ -1,0 +1,91 @@
+﻿@model IEnumerable<RedBubble.Application.DTOs.Products.ProductVariant.ProductVariantDto>
+
+@{
+    ViewData["Title"] = "Product Variants for " + ViewBag.BaseProductName;
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">@ViewData["Title"]</h1>
+    <a class="btn btn-secondary btn-sm shadow-sm" asp-action="Index" asp-controller="BaseProduct">
+        <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to Base Products
+    </a>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Product Variants</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="variantsTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Variant ID</th>
+                        <th>Image</th>
+                        <th>Design</th>
+                        <th>Size</th>
+                        <th>Color</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                        <th>Created</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var variant in Model)
+                    {
+                        var primaryImage = variant.Images.FirstOrDefault(img => img.IsPrimary && img.IsActive);
+                        <tr>
+                            <td>@variant.Id</td>
+                            <td>
+                                @if (primaryImage != null && !string.IsNullOrEmpty(primaryImage.ImageUrl))
+                                {
+                                    <img src="@primaryImage.ImageUrl" alt="@(primaryImage.AltText ?? "Variant Image")" style="max-width: 50px; max-height: 50px;" />
+                                }
+                                else
+                                {
+                                    <span class="text-muted">No image</span>
+                                }
+                            </td>
+                            <td>@variant.DesignTitle</td>
+                            <td>@variant.SizeName</td>
+                            <td>
+                                <span class="badge" style="background-color: @variant.ColorCode">@variant.ColorName</span>
+                            </td>
+                            <td>@variant.Price.ToString("C")</td>
+                            <td>@variant.StockQuantity</td>
+                            <td>@variant.CreatedAt.ToString("g")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            @if (!Model.Any())
+            {
+                <div class="text-center py-4">
+                    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">No product variants found for this base product.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#variantsTable').DataTable({
+                "paging": false,
+                "info": false,
+                "ordering": false,
+                "searching": false,
+                "columnDefs": [
+                    { "className": "text-center", "targets": [0, 1, 5, 6, 7] }
+                ],
+                "dom": "t<'row mt-3'<'col-md-7'l><'col-md-5'p>>",
+                "language": {
+                    "lengthMenu": "Display _MENU_ items per page"
+                }
+            });
+        });
+    </script>
+}

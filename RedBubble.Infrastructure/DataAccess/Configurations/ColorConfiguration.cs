@@ -21,9 +21,11 @@ namespace RedBubble.Infrastructure.DataAccess.Configurations
                 .IsRequired()
                 .HasDefaultValue(true);
 
-         
+
             builder.HasMany(c => c.ProductVariants)
-                .WithMany(pv => pv.Colors);
+                 .WithOne(pv => pv.Color)
+                 .HasForeignKey(pv => pv.ColorId)
+                 .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
