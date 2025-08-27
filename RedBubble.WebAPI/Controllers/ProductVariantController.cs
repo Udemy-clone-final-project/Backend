@@ -26,7 +26,7 @@ namespace RedBubble.WebAPI.Controllers
             if (page <= 0) page = 1;
             if (pageSize <= 0) pageSize = 10;
 
-            var products = await _serviceManager.ProductVariantService.GetAllProductVariantsAsync( searchItem,sortColomn, sortOrder,  Category,  page,  pageSize);
+            var products = await _serviceManager.productVariantService.GetAllProductVariantsAsync( searchItem,sortColomn, sortOrder,  Category,  page,  pageSize);
             return Ok(products);     
         }
 
@@ -36,7 +36,7 @@ namespace RedBubble.WebAPI.Controllers
         {
 
            
-                var product = await _serviceManager.ProductVariantService.GetProductVariantByIdAsync(id);
+                var product = await _serviceManager.productVariantService.GetByIdAsync(id);
             if (product == null)
                 return NotFound();
 
@@ -44,65 +44,57 @@ namespace RedBubble.WebAPI.Controllers
             
            
         }
-        [HttpPost]
-        public async Task<IActionResult> CreateProductVariantAsync(CreateProductVariantDto dto)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                    return BadRequest(ModelState);
-                var product = await _serviceManager.ProductVariantService.CreateProductVariantAsync(dto);
-                return StatusCode(201, product);
-                //OR return CreatedAtAction(nameof(GetProductVariant), new { id = product.Id }, product);
+        //[HttpPost]
+        //public async Task<IActionResult> CreateProductVariantAsync(CreateProductVariantDto dto)
+        //{
+        //    try
+        //    {
+        //        if (!ModelState.IsValid)
+        //            return BadRequest(ModelState);
+        //        var product = await _serviceManager.productVariantService.CreateAsync(dto);
+        //        return StatusCode(201, product);
+        //        //OR return CreatedAtAction(nameof(GetProductVariant), new { id = product.Id }, product);
 
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { Message = ex.Message });
-            }
-        }
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProductVariantAsync(int id,[FromBody]UpdateProductVariantDto dto)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(new { Message = ex.Message });
+        //    }
+        //}
+        //[HttpPut("{id}")]
+        //public async Task<IActionResult> UpdateProductVariantAsync(int id,[FromBody]UpdateProductVariantDto dto)
+        //{
+        //    if (!ModelState.IsValid)
+        //        return BadRequest(ModelState);
 
-            var product = await _serviceManager.ProductVariantService.UpdateProductVariantAsync(id,dto);
-            if (product == null)
-                return NotFound();
+        //    var product = await _serviceManager.productVariantService.UpdateAsync(dto);
+        //    if (product == null)
+        //        return NotFound();
 
-            return Ok(product);
+        //    return Ok(product);
             
            
-        }
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteProductVariant(int id)
-        { 
-                var deleted = await _serviceManager.ProductVariantService.DeleteProductVariantAsync(id);
-            if (!deleted)
-                return NotFound();
-            return NoContent();
+        //}
+        //[HttpDelete("{id}")]
+        //public async Task<ActionResult> DeleteProductVariant(int id)
+        //{ 
+        //        var deleted = await _serviceManager.productVariantService.DeleteAsync(id);
+        //    if (!deleted)
+        //        return NotFound();
+        //    return NoContent();
             
            
-        }
-        [HttpPut("{id}/stock")]
-        public async Task<IActionResult> UpdateStock(int id, [FromQuery] int quantity)
-        {
-            var updated = await _serviceManager.ProductVariantService.UpdateStockQuantityAsync(id, quantity);
-            if (!updated)
-                return NotFound();
+        //}
+        //[HttpPut("{id}/stock")]
+        //public async Task<IActionResult> UpdateStock(int id, [FromQuery] int quantity)
+        //{
+        //    var updated = await _serviceManager.productVariantService.UpdateStockQuantityAsync(id, quantity);
+        //    if (!updated)
+        //        return NotFound();
 
-            return NoContent();
-        }
-        [HttpPut("{id}/status")]
-        public async Task<IActionResult> SetActiveStatus(int id, [FromQuery] bool isActive)
-        {
-            var updated = await _serviceManager.ProductVariantService.SetActiveStatusAsync(id, isActive);
-            if (!updated)
-                return NotFound();
-
-            return NoContent();
-        }
+        //    return NoContent();
+        //}
+    
 
     }
 }

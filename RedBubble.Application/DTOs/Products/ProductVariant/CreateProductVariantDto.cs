@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RedBubble.Application.DTOs.Products.ProductVariant.ProductVariantImage;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -21,9 +22,10 @@ namespace RedBubble.Application.DTOs.Products.ProductVariant
         public int DesignId { get; set; }
 
         [Required]
-        public List<int> ColorIds { get; set; } = new List<int>();
+        public int ColorId { get; set; }
 
         [Required]
-        public List<int> SizeIds { get; set; } = new List<int>();
+        public int SizeId { get; set; }
+        public List<CreateProductVariantImageDto>? Images { get; set; }
     }
 }

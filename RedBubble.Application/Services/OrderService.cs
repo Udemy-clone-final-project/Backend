@@ -34,8 +34,10 @@ namespace RedBubble.Application.Services
             var order = _mapper.Map<Order>(createOrderDTO);
 
             // fake id for no 
+
             //order.CustomerId = "9E85ED5F-9443-4471-888B-EE5A26E8A45D";  //Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)); // Logged-in user
             order.OrderDate = DateTime.UtcNow;
+
             order.Status = OrderStatus.Pending; // 0
             // to be continued when finish orderitems
 
@@ -49,8 +51,10 @@ namespace RedBubble.Application.Services
         {
             var order = await _orderRepository.GetByIdAsync(orderId);
 
+
             order.Status = status;
             order.UpdatedAt = DateTime.UtcNow;
+
 
             _orderRepository.Update(order);
             await _unitOfWork.CompleteAsync();
@@ -63,10 +67,12 @@ namespace RedBubble.Application.Services
         {
             var order = await _orderRepository.GetByIdAsync(orderId);
 
+
             if(order.Status == OrderStatus.Pending)
             {
                 order.Status = OrderStatus.Cancelled;
                 order.UpdatedAt = DateTime.UtcNow;
+
 
                 _orderRepository.Update(order);
                 await _unitOfWork.CompleteAsync();

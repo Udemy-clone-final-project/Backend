@@ -9,18 +9,14 @@ namespace RedBubble.Application.DTOs.Products.ProductVariant
 {
     public class UpdateProductVariantDto
     {
-        [Range(1, double.MaxValue, ErrorMessage = "Price must be greater than 0")]
-        public decimal? Price { get; set; }
+        [Required]
+        public int Id { get; set; }
 
-        [Range(0, int.MaxValue, ErrorMessage = "Stock quantity cannot be negative")]
-        public int? StockQuantity { get; set; }
+        [Range(0, int.MaxValue, ErrorMessage = "Stock quantity must be non-negative")]
+        public int StockQuantity { get; set; }
 
-        public bool? IsActive { get; set; }
-
-        public int? BaseProductId { get; set; }
-        public int? DesignId { get; set; }
-
-        public List<int>? ColorIds { get; set; }
-        public List<int>? SizeIds { get; set; }
+        public int ColorId { get; set; }
+        public int SizeId { get; set; }
+        public bool IsActive { get; set; }
     }
 }

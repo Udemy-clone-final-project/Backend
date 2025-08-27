@@ -1,0 +1,64 @@
+﻿@model RedBubble.Application.DTOs.Products.ProductDto
+
+@{
+    ViewData["Title"] = "Delete Base Product";
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">@ViewData["Title"]</h1>
+    <a class="btn btn-secondary btn-sm shadow-sm" asp-action="Index">
+        <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to List
+    </a>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Confirm Deletion</h6>
+    </div>
+    <div class="card-body">
+        <h4>@Model.Name</h4>
+        <p>@ViewBag.DeleteMessage</p>
+
+        <dl class="row">
+            <dt class="col-sm-3">Description</dt>
+            <dd class="col-sm-9">
+                @if (!string.IsNullOrEmpty(Model.Description))
+                {
+                    @Model.Description
+                }
+                else
+                {
+                    <em class="text-muted">No description</em>
+                }
+            </dd>
+
+            <dt class="col-sm-3">Base Price</dt>
+            <dd class="col-sm-9">@Model.BasePrice.ToString("C")</dd>
+
+            <dt class="col-sm-3">Category</dt>
+            <dd class="col-sm-9">@Model.CategoryName</dd>
+        </dl>
+
+        <hr />
+
+        @if (ViewBag.CanDelete)
+        {
+            <form asp-action="Delete" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="Id" />
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-trash"></i> Confirm Delete
+                </button>
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </form>
+        }
+        else
+        {
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="fas fa-times"></i> Back to List
+            </a>
+        }
+    </div>
+</div>

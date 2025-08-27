@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using RedBubble.Application;
 using RedBubble.Dashboard.Extensions;
 using RedBubble.Domain.Entities.Models.Identity;
 using RedBubble.Domain.Interfaces;
+using RedBubble.Infrastructure;
 using RedBubble.Infrastructure.DataAccess;
 using RedBubble.Infrastructure.Implementations.UnitOfWork;
 using RedBubble.Infrastructure;
@@ -19,6 +21,7 @@ namespace RedBubble.Dashboard
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+
             
           builder.Services.AddDashboardServices(builder.Configuration);
 
@@ -28,6 +31,7 @@ namespace RedBubble.Dashboard
             //AddApplicationServices() => from App/DependencyInjection
             // Register Application Services
             builder.Services.AddApplicationServices();
+
             
             var app = builder.Build();
 

@@ -2,6 +2,7 @@
 using RedBubble.Domain.Entities.Models;
 using RedBubble.Infrastructure.DataAccess;
 using RedBubble.Infrastructure.DataAccess.Configurations;
+//using RedBubble.Infrastructure.DataAccess.Seeds;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,12 +16,9 @@ using RedBubble.Domain.Entities.Models.Identity;
 namespace RedBubble.Infrastructure.DataAccess
 {
     public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
-    
     {
-
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
-
         }
 
         public DbSet<BaseProduct> BaseProducts { get; set; }
@@ -33,14 +31,16 @@ namespace RedBubble.Infrastructure.DataAccess
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Color> Colors { get; set; }
         public DbSet<Size> Sizes { get; set; }
-
+        public DbSet<Address> Addresses { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(AssemblyInformation).Assembly);
 
-
+            
+            DataSeed.SeedData(modelBuilder);
         }
     }
 }

@@ -1,0 +1,111 @@
+﻿@model RedBubble.Application.DTOs.CreateColorDto
+
+@{
+    ViewData["Title"] = "Create Color";
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Create New Color</h1>
+    <a asp-action="Index" class="d-none d-sm-inline-block btn btn-sm btn-secondary shadow-sm">
+        <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to Colors
+    </a>
+</div>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="card shadow">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Color Information</h6>
+    </div>
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="row">
+              
+                <div class="col-md-6 mb-3">
+                    <label asp-for="ColorName" class="form-label">Color Name</label>
+                    <input asp-for="ColorName" class="form-control" placeholder="e.g., Forest Green" />
+                    <span asp-validation-for="ColorName" class="text-danger"></span>
+                </div>
+
+                
+                <div class="col-md-6 mb-3">
+                    <label asp-for="ColorCode" class="form-label">Color Code</label>
+                    <div class="input-group">
+                        
+                        <input type="color"
+                               class="form-control form-control-color"
+                               value="#000000"
+                               id="colorPicker"
+                               aria-label="Choose color" />
+
+                        
+                        <input asp-for="ColorCode"
+                               class="form-control"
+                               placeholder="#000000"
+                               id="colorCodeInput"
+                               pattern="^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"
+                               title="Enter a valid hex color code like #FF5733" />
+                    </div>
+                    <small class="form-text text-muted">Select or enter a hex color code (e.g., #FF5733)</small>
+                    <span asp-validation-for="ColorCode" class="text-danger"></span>
+                </div>
+            </div>
+
+            
+            <div class="mb-3">
+                <div class="form-check">
+                    <input asp-for="IsActive" class="form-check-input" type="checkbox" checked />
+                    <label asp-for="IsActive" class="form-check-label">
+                        Active
+                    </label>
+                </div>
+                <small class="form-text text-muted">Active colors will be available for product variants</small>
+            </div>
+
+       
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Create Color
+                </button>
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        const colorPicker = document.getElementById('colorPicker');
+        const colorCodeInput = document.getElementById('colorCodeInput');
+
+       
+        colorPicker.addEventListener('change', function () {
+            colorCodeInput.value = colorPicker.value;
+        });
+
+        
+        colorCodeInput.addEventListener('input', function () {
+            const value = colorCodeInput.value.trim();
+            if (/^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/i.test(value)) {
+                colorPicker.value = value;
+            }
+        });
+
+       
+        colorCodeInput.value = colorPicker.value;
+    </script>
+}

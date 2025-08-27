@@ -1,0 +1,38 @@
+﻿@model IEnumerable<RedBubble.Application.DTOs.Products.CategoryDto>
+
+@{
+    ViewData["Title"] = "Subcategories";
+    var parentId = ViewBag.ParentCategoryId;
+    var parentName = ViewBag.ParentCategoryName;
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Subcategories of @parentName</h1>
+    <a asp-action="Index" class="btn btn-sm btn-secondary shadow-sm">
+        <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to Categories
+    </a>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Subcategories List</h6>
+    </div>
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <ul class="list-group">
+                @foreach (var subcategory in Model)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        @subcategory.CategoryName
+                        <a asp-action="Details" asp-route-id="@subcategory.Id" class="btn btn-info btn-sm">Details</a>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p class="text-muted">No subcategories found.</p>
+        }
+    </div>
+</div>

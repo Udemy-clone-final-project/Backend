@@ -33,6 +33,17 @@ namespace RedBubble.Infrastructure.DataAccess.Configurations
                 .WithMany()
                 .HasForeignKey(d => d.AdminId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+
+            builder.HasMany(d => d.DesignImages)
+                .WithOne(di => di.Design)
+                .HasForeignKey(di => di.DsignId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasMany(d => d.ProductVariants)
+                .WithOne(pv => pv.Design)
+                .HasForeignKey(pv => pv.DesignId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

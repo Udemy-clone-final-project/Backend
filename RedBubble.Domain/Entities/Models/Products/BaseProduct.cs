@@ -16,8 +16,9 @@ namespace RedBubble.Domain.Entities.Models.Products
         public decimal BasePrice { get; set; }
 
 
-        // Relationship with Category
         public int CategoryId { get; set; }
         public Category? Category { get; set; }
+
+        public ICollection<ProductVariant> ProductVariants { get; set; } = new HashSet<ProductVariant>();
     }
 }

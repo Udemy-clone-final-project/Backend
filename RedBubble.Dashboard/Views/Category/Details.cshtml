@@ -1,0 +1,122 @@
+﻿@model RedBubble.Application.DTOs.Products.CategoryWithSubCategoriesDto
+
+@{
+    ViewData["Title"] = "Category Details";
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Category: @Model.CategoryName</h1>
+    <div>
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning btn-sm shadow-sm me-2">
+            <i class="fas fa-edit fa-sm text-white-50"></i> Edit
+        </a>
+        <a asp-action="Index" class="btn btn-secondary btn-sm shadow-sm">
+            <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to List
+        </a>
+    </div>
+</div>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Category Information</h6>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-3">Name</dt>
+                    <dd class="col-sm-9">@Model.CategoryName</dd>
+
+                    <dt class="col-sm-3">Description</dt>
+                    <dd class="col-sm-9">
+                        @if (!string.IsNullOrEmpty(Model.Description))
+                        {
+                            @Model.Description
+                        }
+                        else
+                        {
+                            <em class="text-muted">No description</em>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-3">Type</dt>
+                    <dd class="col-sm-9">
+                        <span class="badge @(Model.IsMainCategory ? "bg-primary" : "bg-info")">
+                            @(Model.IsMainCategory ? "Main Category" : "Subcategory")
+                        </span>
+                    </dd>
+
+                    <dt class="col-sm-3">Subcategories</dt>
+                    <dd class="col-sm-9">
+                        @if (Model.SubCategoriesCount > 0)
+                        {
+                            <span class="badge bg-info">@Model.SubCategoriesCount</span>
+                        }
+                        else
+                        {
+                            <span class="text-muted">None</span>
+                        }
+                    </dd>
+                </dl>
+
+                <hr />
+
+                <div class="form-group">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+                        <i class="fas fa-edit"></i> Edit
+                    </a>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fas fa-list"></i> Back to List
+                    </a>
+                    <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-danger"
+                                onclick="return confirm('Delete this category? Make sure it has no subcategories or products.')">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <!-- Subcategories Card -->
+        @if (Model.SubCategories.Any())
+        {
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Subcategories (@Model.SubCategories.Count())</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        @foreach (var sub in Model.SubCategories)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                @sub.CategoryName
+                                <span class="badge bg-secondary">@sub.SubCategoriesCount</span>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="card shadow text-center">
+                <div class="card-body">
+                    <i class="fas fa-folder-open fa-2x text-muted mb-2"></i>
+                    <p class="text-muted mb-0">No subcategories</p>
+                </div>
+            </div>
+        }
+    </div>
+</div>
