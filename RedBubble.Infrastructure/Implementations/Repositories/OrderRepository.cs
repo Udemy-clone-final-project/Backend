@@ -1,4 +1,4 @@
-﻿using RedBubble.Domain.Entities.Models;
+﻿using RedBubble.Domain.Entities.Models.Orders;
 using RedBubble.Domain.Interfaces;
 using RedBubble.Infrastructure.DataAccess;
 using RedBubble.Infrastructure.Implementations.Base;

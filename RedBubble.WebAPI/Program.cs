@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using RedBubble.Application;
+using RedBubble.Application.Interfaces;
+using RedBubble.Application.Services;
 using RedBubble.Domain.Entities.Models.Identity;
 using RedBubble.Infrastructure;
 using RedBubble.Infrastructure.DataAccess;
@@ -51,6 +53,10 @@ namespace RedBubble.WebAPI
         }
     });
             });
+            builder.Services.AddHttpContextAccessor();
+
+            // Register our new service as a singleton
+            builder.Services.AddSingleton<ICurrentUserService, CurrentUserService>();
 
             // Register Persistence Services
             builder.Services.AddPersistenceServices(builder.Configuration);

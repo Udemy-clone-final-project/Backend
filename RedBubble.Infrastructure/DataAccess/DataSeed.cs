@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using RedBubble.Domain.Entities.Models;
 using RedBubble.Domain.Entities.Models.Identity;
+using RedBubble.Domain.Entities.Models.Orders;
 using RedBubble.Domain.Entities.Models.Products;
 using RedBubble.Domain.Enums;
 using System;
@@ -409,70 +410,70 @@ namespace RedBubble.Infrastructure.DataAccess
 
             var orders = new List<Order>();
 
-            var firstOrder = new Order
-            {
-                Customer = customer,
-                TotalAmount = variants[0].Price * 2,
-                Status = OrderStatus.Shipped,
-                ShippingAddress = "123 Test St",
-                ShippingCity = "Testville",
-                ShippingCountry = "Testland",
-                ShippingPostalCode = "12345",
-                OrderDate = DateTime.UtcNow.AddDays(-5),
-                UpdatedAt = DateTime.UtcNow.AddDays(-3),
-                OrderItems = new List<OrderItem>
-                {
-                    new OrderItem { ProductVariant = variants[0], Quantity = 2, UnitPrice = variants[0].Price, TotalPrice = variants[0].Price * 2 }
-                }
-            };
-            orders.Add(firstOrder);
+            //var firstOrder = new Order
+            //{
+            //    Customer = customer,
+            //    TotalAmount = variants[0].Price * 2,
+            //    Status = OrderStatus.Shipped,
+            //    ShippingAddress = "123 Test St",
+            //    ShippingCity = "Testville",
+            //    ShippingCountry = "Testland",
+            //    ShippingPostalCode = "12345",
+            //    OrderDate = DateTime.UtcNow.AddDays(-5),
+            //    UpdatedAt = DateTime.UtcNow.AddDays(-3),
+            //    OrderItems = new List<OrderItem>
+            //    {
+            //        new OrderItem { ProductVariant = variants[0], Quantity = 2, UnitPrice = variants[0].Price, TotalPrice = variants[0].Price * 2 }
+            //    }
+            //};
+            //orders.Add(firstOrder);
 
-            if (variants.Count >= 2)
-            {
-                var secondOrderItems = new List<OrderItem>
-                {
-                    new OrderItem { ProductVariant = variants[1], Quantity = 1, UnitPrice = variants[1].Price, TotalPrice = variants[1].Price }
-                };
-                if (variants.Count >= 3)
-                {
-                    secondOrderItems.Add(new OrderItem { ProductVariant = variants[2], Quantity = 1, UnitPrice = variants[2].Price, TotalPrice = variants[2].Price });
-                }
+            //if (variants.Count >= 2)
+            //{
+            //    var secondOrderItems = new List<OrderItem>
+            //    {
+            //        new OrderItem { ProductVariant = variants[1], Quantity = 1, UnitPrice = variants[1].Price, TotalPrice = variants[1].Price }
+            //    };
+            //    if (variants.Count >= 3)
+            //    {
+            //        secondOrderItems.Add(new OrderItem { ProductVariant = variants[2], Quantity = 1, UnitPrice = variants[2].Price, TotalPrice = variants[2].Price });
+            //    }
 
-                var secondOrder = new Order
-                {
-                    Customer = jane,
-                    TotalAmount = variants[1].Price + (variants.Count >= 3 ? variants[2].Price : 0),
-                    Status = OrderStatus.Processing,
-                    ShippingAddress = "456 Sample Ave",
-                    ShippingCity = "Sampletown",
-                    ShippingCountry = "Sampleland",
-                    ShippingPostalCode = "67890",
-                    OrderDate = DateTime.UtcNow.AddDays(-2),
-                    UpdatedAt = DateTime.UtcNow.AddDays(-1),
-                    OrderItems = secondOrderItems
-                };
-                orders.Add(secondOrder);
-            }
+            //    var secondOrder = new Order
+            //    {
+            //        Customer = jane,
+            //        TotalAmount = variants[1].Price + (variants.Count >= 3 ? variants[2].Price : 0),
+            //        Status = OrderStatus.Processing,
+            //        ShippingAddress = "456 Sample Ave",
+            //        ShippingCity = "Sampletown",
+            //        ShippingCountry = "Sampleland",
+            //        ShippingPostalCode = "67890",
+            //        OrderDate = DateTime.UtcNow.AddDays(-2),
+            //        UpdatedAt = DateTime.UtcNow.AddDays(-1),
+            //        OrderItems = secondOrderItems
+            //    };
+            //    orders.Add(secondOrder);
+            //}
 
-            var thirdOrder = new Order
-            {
-                Customer = customer,
-                TotalAmount = variants[0].Price * 3,
-                Status = OrderStatus.Pending,
-                ShippingAddress = "789 Demo Rd",
-                ShippingCity = "Democity",
-                ShippingCountry = "Demoland",
-                ShippingPostalCode = "11111",
-                OrderDate = DateTime.UtcNow.AddDays(-1),
-                UpdatedAt = DateTime.UtcNow.AddDays(-1),
-                OrderItems = new List<OrderItem>
-                {
-                    new OrderItem { ProductVariant = variants[0], Quantity = 3, UnitPrice = variants[0].Price, TotalPrice = variants[0].Price * 3 }
-                }
-            };
-            orders.Add(thirdOrder);
+            //var thirdOrder = new Order
+            //{
+            //    Customer = customer,
+            //    TotalAmount = variants[0].Price * 3,
+            //    Status = OrderStatus.Pending,
+            //    ShippingAddress = "789 Demo Rd",
+            //    ShippingCity = "Democity",
+            //    ShippingCountry = "Demoland",
+            //    ShippingPostalCode = "11111",
+            //    OrderDate = DateTime.UtcNow.AddDays(-1),
+            //    UpdatedAt = DateTime.UtcNow.AddDays(-1),
+            //    OrderItems = new List<OrderItem>
+            //    {
+            //        new OrderItem { ProductVariant = variants[0], Quantity = 3, UnitPrice = variants[0].Price, TotalPrice = variants[0].Price * 3 }
+            //    }
+            //};
+            //orders.Add(thirdOrder);
 
-            await context.Orders.AddRangeAsync(orders);
+            //await context.Orders.AddRangeAsync(orders);
             EnsureAuditFields(context);
             await context.SaveChangesAsync();
         }

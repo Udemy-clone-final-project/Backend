@@ -1,6 +1,8 @@
-﻿using RedBubble.Application.DTOs.Order;
+﻿using RedBubble.Application.DTOs;
+using RedBubble.Application.DTOs.Order;
 using RedBubble.Application.DTOs.Products;
 using RedBubble.Domain.Entities.Models;
+using RedBubble.Domain.Entities.Models.Orders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,12 +13,8 @@ namespace RedBubble.Application.Interfaces
 {
     public interface IOrderService
     {
-        Task CreateAsync(CreateOrderDTO createOrderDTO);
-
-        Task ChangeStatus(UpdateOrderDTO updateOrderDTO , int orderId);
-
-        Task Delete(int orderId);
-
+        Task<Order?> CreateOrderAsync(string customerEmail, string customerId, OrderDto orderDto);
+        Task<IReadOnlyList<Order>> GetOrdersForUserAsync(string customerId);
 
     }
 }

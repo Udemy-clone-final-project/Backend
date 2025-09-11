@@ -1,4 +1,4 @@
-﻿using RedBubble.Domain.Entities.Models;
+﻿using RedBubble.Domain.Entities.Models.Orders;
 using System;
 using System.Collections.Generic;
 using System.Linq;

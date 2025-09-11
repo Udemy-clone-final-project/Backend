@@ -48,10 +48,10 @@ namespace RedBubble.Infrastructure.DataAccess.Configurations.Products
                 .OnDelete(DeleteBehavior.Cascade);
 
         
-            builder.HasMany(pv => pv.OrderItems)
-                .WithOne(oi => oi.ProductVariant)
-                .HasForeignKey(oi => oi.ProductVariantId)
-                .OnDelete(DeleteBehavior.Restrict);
+            //builder.HasMany(pv => pv.OrderItems)
+            //    .WithOne(oi => oi.ProductVariant)
+            //    .HasForeignKey(oi => oi.ProductVariantId)
+            //    .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

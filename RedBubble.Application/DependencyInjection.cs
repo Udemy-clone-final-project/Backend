@@ -71,6 +71,15 @@ namespace RedBubble.Application
             services.AddScoped<IOrderService, OrderService>();
             services.AddAutoMapper(m => m.AddProfile<OrderProfile>());
             services.AddAutoMapper(m => m.AddProfile<OrderItemProfile>());
+            services.AddScoped<IPaymentService, PaymentService>();
+
+
+
+
+
+
+
+
 
             return services;
 
