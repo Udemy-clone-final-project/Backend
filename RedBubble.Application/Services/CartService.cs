@@ -62,8 +62,8 @@ namespace RedBubble.Infrastructure.Implementations.Services
                     throw new InvalidOperationException("Product is not available or out of stock.");
                 }
 
-                // äİÊÑÖ åäÇ Ãä ÇáÜ DTO ÇáÎÇÕ ÈÜ ProductVariant íÓãì ProductVariantDto
-                // æíÍÊæí Úáì ÇáÎÕÇÆÕ ÇáãÌãÚÉ áÊÓåíá ÇáÇÓÊÎÏÇã
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ DTO ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ProductVariant ï¿½ï¿½ï¿½ï¿½ ProductVariantDto
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 var newItem = new CartItem
                 {
                     VariantId = productVariant.Id,
@@ -78,7 +78,7 @@ namespace RedBubble.Infrastructure.Implementations.Services
                 cart.Items.Add(newItem);
             }
 
-            // ÇÓÊÎÏÇã ÇáÎÇÕíÉ ÇáÌÏíÏÉ ÈÏáÇğ ãä ÊßÑÇÑ ÇáßæÏ
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
             var updatedCart = await _cartRepository.UpdateCartAsync(cart, CartTimeToLive);
 
             return _mapper.Map<CustomerCartDto>(updatedCart);
@@ -116,7 +116,7 @@ namespace RedBubble.Infrastructure.Implementations.Services
                     var existingItem = customerCart.Items.FirstOrDefault(i => i.VariantId == item.VariantId);
                     if (existingItem != null)
                     {
-                        existingItem.Quantity += item.Quantity; // ÏãÌ ÇáßãíÇÊ
+                        existingItem.Quantity += item.Quantity; // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                     }
                     else
                     {

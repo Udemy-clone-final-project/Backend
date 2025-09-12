@@ -88,10 +88,19 @@ namespace RedBubble.Application
 
             //services.AddScoped<IDesignService, DesignService>();
 
-            //// ingect Order Service and Order mapper
-            //services.AddScoped<IOrderService, OrderService>();
-            //services.AddAutoMapper(m => m.AddProfile<OrderProfile>());
-            //services.AddAutoMapper(m => m.AddProfile<OrderItemProfile>());
+            // ingect Order Service and Order mapper
+            services.AddScoped<IOrderService, OrderService>();
+            services.AddAutoMapper(m => m.AddProfile<OrderProfile>());
+            services.AddAutoMapper(m => m.AddProfile<OrderItemProfile>());
+            services.AddScoped<IPaymentService, PaymentService>();
+
+
+
+
+
+
+
+
 
             return services;
 

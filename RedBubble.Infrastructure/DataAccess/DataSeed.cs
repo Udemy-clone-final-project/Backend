@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using RedBubble.Domain.Entities.Models;
 using RedBubble.Domain.Entities.Models.Identity;
+using RedBubble.Domain.Entities.Models.Orders;
 using RedBubble.Domain.Entities.Models.Products;
 using RedBubble.Domain.Enums;
 using System;
@@ -825,64 +826,72 @@ namespace RedBubble.Infrastructure.DataAccess
             modelBuilder.Entity<Order>().HasData(orders);
         }
 
-        private static void SeedOrderItems(ModelBuilder modelBuilder)
-        {
-            var orderItems = new List<OrderItem>();
-            var orders = new List<Order>(); // To update order totals
-            var random = new Random(1234);
+            //var firstOrder = new Order
+            //{
+            //    Customer = customer,
+            //    TotalAmount = variants[0].Price * 2,
+            //    Status = OrderStatus.Shipped,
+            //    ShippingAddress = "123 Test St",
+            //    ShippingCity = "Testville",
+            //    ShippingCountry = "Testland",
+            //    ShippingPostalCode = "12345",
+            //    OrderDate = DateTime.UtcNow.AddDays(-5),
+            //    UpdatedAt = DateTime.UtcNow.AddDays(-3),
+            //    OrderItems = new List<OrderItem>
+            //    {
+            //        new OrderItem { ProductVariant = variants[0], Quantity = 2, UnitPrice = variants[0].Price, TotalPrice = variants[0].Price * 2 }
+            //    }
+            //};
+            //orders.Add(firstOrder);
 
-            // Generate 2-6 items per order
-            int itemId = 1;
-            for (int orderId = 1; orderId <= 75; orderId++)
-            {
-                int itemCount = random.Next(2, 7);
-                decimal orderTotal = 0;
+            //if (variants.Count >= 2)
+            //{
+            //    var secondOrderItems = new List<OrderItem>
+            //    {
+            //        new OrderItem { ProductVariant = variants[1], Quantity = 1, UnitPrice = variants[1].Price, TotalPrice = variants[1].Price }
+            //    };
+            //    if (variants.Count >= 3)
+            //    {
+            //        secondOrderItems.Add(new OrderItem { ProductVariant = variants[2], Quantity = 1, UnitPrice = variants[2].Price, TotalPrice = variants[2].Price });
+            //    }
 
-                for (int j = 0; j < itemCount; j++)
-                {
-                    var productVariantId = random.Next(1, 201); // Use variants we have images for
-                    var quantity = random.Next(1, 4);
-                    var unitPrice = CalculateVariantPrice(productVariantId, random);
-                    var totalPrice = unitPrice * quantity;
-                    orderTotal += totalPrice;
+            //    var secondOrder = new Order
+            //    {
+            //        Customer = jane,
+            //        TotalAmount = variants[1].Price + (variants.Count >= 3 ? variants[2].Price : 0),
+            //        Status = OrderStatus.Processing,
+            //        ShippingAddress = "456 Sample Ave",
+            //        ShippingCity = "Sampletown",
+            //        ShippingCountry = "Sampleland",
+            //        ShippingPostalCode = "67890",
+            //        OrderDate = DateTime.UtcNow.AddDays(-2),
+            //        UpdatedAt = DateTime.UtcNow.AddDays(-1),
+            //        OrderItems = secondOrderItems
+            //    };
+            //    orders.Add(secondOrder);
+            //}
 
-                    orderItems.Add(new OrderItem
-                    {
-                        Id = itemId++,
-                        UnitPrice = unitPrice,
-                        TotalPrice = totalPrice,
-                        Quantity = quantity,
-                        OrderId = orderId,
-                        ProductVariantId = productVariantId
-                    });
-                }
+            //var thirdOrder = new Order
+            //{
+            //    Customer = customer,
+            //    TotalAmount = variants[0].Price * 3,
+            //    Status = OrderStatus.Pending,
+            //    ShippingAddress = "789 Demo Rd",
+            //    ShippingCity = "Democity",
+            //    ShippingCountry = "Demoland",
+            //    ShippingPostalCode = "11111",
+            //    OrderDate = DateTime.UtcNow.AddDays(-1),
+            //    UpdatedAt = DateTime.UtcNow.AddDays(-1),
+            //    OrderItems = new List<OrderItem>
+            //    {
+            //        new OrderItem { ProductVariant = variants[0], Quantity = 3, UnitPrice = variants[0].Price, TotalPrice = variants[0].Price * 3 }
+            //    }
+            //};
+            //orders.Add(thirdOrder);
 
-                // Update the order total (we'll need to update this in a separate migration or handle in application logic)
-                // For seeding purposes, we'll create the relationship correctly
-            }
-
-            modelBuilder.Entity<OrderItem>().HasData(orderItems);
-        }
-
-        private static decimal CalculateVariantPrice(int variantId, Random random)
-        {
-            // Simulate the base product + design price calculation
-            var basePrice = random.Next(5, 45); // $5-45 range
-            var designPrice = Math.Round((decimal)(random.NextDouble() * 8 + 2), 2);
-            return basePrice + designPrice;
-        }
-
-        private static string GeneratePostalCode(string country, Random random)
-        {
-            return country switch
-            {
-                "United States" => $"{random.Next(10000, 99999)}",
-                "Canada" => $"{(char)random.Next('A', 'Z')}{random.Next(0, 9)}{(char)random.Next('A', 'Z')} {random.Next(0, 9)}{(char)random.Next('A', 'Z')}{random.Next(0, 9)}",
-                "United Kingdom" => $"{(char)random.Next('A', 'Z')}{(char)random.Next('A', 'Z')}{random.Next(0, 9)} {random.Next(0, 9)}{(char)random.Next('A', 'Z')}{(char)random.Next('A', 'Z')}",
-                "Australia" => $"{random.Next(1000, 9999)}",
-                "Germany" => $"{random.Next(10000, 99999)}",
-                _ => $"{random.Next(10000, 99999)}"
-            };
+            //await context.Orders.AddRangeAsync(orders);
+            EnsureAuditFields(context);
+            await context.SaveChangesAsync();
         }
     }
 }

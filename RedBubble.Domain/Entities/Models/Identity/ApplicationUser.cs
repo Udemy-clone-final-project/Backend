@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using RedBubble.Domain.Entities.Models.Orders;
 
 namespace RedBubble.Domain.Entities.Models.Identity
 {

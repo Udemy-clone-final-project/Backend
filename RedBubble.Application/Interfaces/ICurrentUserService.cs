@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RedBubble.Domain.Entities.Models.Cart
+namespace RedBubble.Application.Interfaces
 {
-    public class CustomerCart
+    public interface ICurrentUserService
     {
+        string? UserId { get; }
     }
 }
