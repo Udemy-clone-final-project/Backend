@@ -17,33 +17,39 @@ namespace RedBubble.Domain.Entities.Models
         public string Description { get; set; }
         public decimal Price { get; set; }
         public bool IsActive { get; set; }
-        public DesignStatus Status { get; set; }
+        //public DesignStatus Status { get; set; }
 
-        public DateTime UploadedAt { get; set; }
+        //public DateTime ReviewedAt { get; set; }
 
-        public DateTime ReviewedAt { get; set; }
-
-        public string? RejectionReason { get; set; } // only when DesignStatus Status = Status.Rejected
-        public ICollection<DesignImage> DesignImages { get; set; } = new List<DesignImage>();
+        //public string? RejectionReason { get; set; } // only when DesignStatus Status = Status.Rejected
+        //public ICollection<DesignImage> DesignImages { get; set; } = new List<DesignImage>();
+        // Single image properties - replacing DesignImages collection
+    
+        public string ImageUrl { get; set; }
+        public string? FileName { get; set; }
+        public string? AltText { get; set; }
         public ICollection<ProductVariant> ProductVariants { get; set; }= new List<ProductVariant>();
+
+
+        #region Relationship 1-1 between Design and User(Admin)
+        
+
+        // foreign key from User => Admin
+        public string? AdminId { get; set; }
+        // navigation property
+        public ApplicationUser? Admin { get; set; }
+        #endregion
 
         #region Relationship 1-1 between Design and User(Artist)
         // Artist Creates
 
         // foreign key from User => Artist
-        public string ArtistId { get; set; } // UploadedBy
+        //public string ArtistId { get; set; } 
 
         // navigation property 
-        public ApplicationUser Artist { get; set; }
+        //public ApplicationUser Artist { get; set; }
         #endregion
 
-        #region Relationship 1-1 between Design and User(Admin)
-        // Admin Reviews 
 
-        // foreign key from User => Admin
-        public string? AdminId { get; set; } // ReviewedBy
-        // navigation property
-        public ApplicationUser? Admin { get; set; }
-        #endregion
     }
 }

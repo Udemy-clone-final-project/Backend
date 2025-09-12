@@ -22,4 +22,10 @@
 
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\uploads\designs\" />
+    <Folder Include="wwwroot\uploads\mockups\" />
+    <Folder Include="wwwroot\uploads\templates\" />
+  </ItemGroup>
+
 </Project>

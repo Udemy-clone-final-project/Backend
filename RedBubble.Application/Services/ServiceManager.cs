@@ -34,7 +34,7 @@ namespace RedBubble.Application.Services
         private readonly Lazy<ICategoryService> _categoryService;
 
         private readonly Lazy<IColorService> _colorService;
-
+        private readonly Lazy<IFileService> _fileService;
 
         private readonly Lazy<ISizeService> _sizeService;
         private readonly Lazy<IDesignService> _designService;
@@ -57,6 +57,8 @@ namespace RedBubble.Application.Services
             Lazy<ISizeService> sizeService,
             Lazy<IDesignService> designService,
             Lazy<IOrderService> orderService
+,
+            Lazy<IFileService> fileService
 
             //Lazy<IProductVariantImageService> productVariantImageService
             //Lazy<IUserService> userService
@@ -74,6 +76,7 @@ namespace RedBubble.Application.Services
             _sizeService = sizeService;
             _designService = designService;
             _orderService = orderService;
+            _fileService = fileService;
             //_productVariantImageService = productVariantImageService;
             //_userService = userService;
 
@@ -90,7 +93,7 @@ namespace RedBubble.Application.Services
         public ISizeService sizeService => _sizeService.Value;
 
         public IDesignService designService => _designService.Value;
-
+        public IFileService fileService => _fileService.Value;
         public IOrderService orderService => _orderService.Value;
         //public IProductVariantImageService ProductVariantImageService => _productVariantImageService.Value;
 

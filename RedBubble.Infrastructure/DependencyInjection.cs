@@ -55,7 +55,7 @@ namespace RedBubble.Infrastructure
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
-            services.AddScoped<IDesignRepository, DesignRepository>();
+            //services.AddScoped<IDesignRepository, DesignRepository>();
             #region is generic one alternative of this ??
             // But most of the time, you want to use specific repositories(like IDesignRepository) so you can:
             // Add custom methods(e.g., GetByCategoryId, GetTopRatedDesigns)
@@ -71,7 +71,7 @@ namespace RedBubble.Infrastructure
             {
                 services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(redisConnectionString));
             }
-            services.AddScoped<ICartRepository, CartRepository>();
+            //services.AddScoped<ICartRepository, CartRepository>();
             return services;
         }
     }

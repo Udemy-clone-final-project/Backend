@@ -115,12 +115,14 @@ namespace RedBubble.Application.Services.Products
             {
                 query = query.Where(p => p.BaseProduct!.CategoryId == categoryId.Value);
             }
+            query = query.Where(p => p.IsActive);
+            // Group variants by Design, show one result per design
+            //query =query.GroupBy(p=>p.DesignId).Select(g=>g.FirstOrDefault());
 
             // Sorting
             Expression<Func<ProductVariant, object>> keySelector = sortColumn?.ToLower() switch
             {
                 "price" => p => p.Price,
-                "stockquantity" => p => p.StockQuantity,
                 "isactive" => p => p.IsActive,
                 "baseproductid" => p => p.BaseProductId,
                 "designid" => p => p.DesignId,
@@ -170,7 +172,7 @@ namespace RedBubble.Application.Services.Products
 
         
         public async Task<PagedList<ProductVariantDto>> GetActiveVariantsAsync(string? searchItem, string? sortColumn, string? sortOrder,
-           int? categoryId, int page, int pageSize)
+           int? categoryId, int page=0, int pageSize=0)
         {
             var repo = _unitOfWork.GetRepository<ProductVariant, int>();
 
@@ -202,7 +204,7 @@ namespace RedBubble.Application.Services.Products
             Expression<Func<ProductVariant, object>> keySelector = sortColumn?.ToLower() switch
             {
                 "price" => p => p.Price,
-                "stockquantity" => p => p.StockQuantity,
+                
                 "isactive" => p => p.IsActive,
                 "baseproductid" => p => p.BaseProductId,
                 "designid" => p => p.DesignId,
@@ -222,7 +224,7 @@ namespace RedBubble.Application.Services.Products
             var repo = _unitOfWork.GetRepository<ProductVariant, int>();
 
             var variants = await repo.GetAll()
-                .Where(pv => pv.IsActive && pv.StockQuantity > 0)
+                .Where(pv => pv.IsActive)
                 .Include(pv => pv.BaseProduct)
                 .Include(pv => pv.Design)
                 .Include(pv => pv.Color)

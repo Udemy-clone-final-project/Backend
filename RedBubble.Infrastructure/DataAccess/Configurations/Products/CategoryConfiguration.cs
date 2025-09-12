@@ -13,8 +13,11 @@ namespace RedBubble.Infrastructure.DataAccess.Configurations.Products
     {
         public void Configure(EntityTypeBuilder<Category> builder)
         {
-           
-            builder.HasKey(c => c.Id);
+
+            //base.Configure(builder); // This handles audit properties
+            
+            // ADD: Missing table name
+            builder.ToTable("Categories");
 
             builder.Property(c => c.CategoryName)
                 .IsRequired()
@@ -26,18 +29,32 @@ namespace RedBubble.Infrastructure.DataAccess.Configurations.Products
             builder.Property(c => c.ParentCategoryId)
                 .IsRequired(false); // Nullable for main categories
 
+            builder.Property(c => c.IsActive)
+                .IsRequired()
+                .HasDefaultValue(true);
+
+            // ADD: Missing indexes
+            builder.HasIndex(c => c.CategoryName)
+                .IsUnique()
+                .HasDatabaseName("IX_Categories_CategoryName");
+
+            builder.HasIndex(c => c.ParentCategoryId)
+                .HasDatabaseName("IX_Categories_ParentCategoryId");
+
+            builder.HasIndex(c => c.IsActive)
+                .HasDatabaseName("IX_Categories_IsActive");
+
             // Self-referencing relationship 
             builder.HasOne(c => c.ParentCategory)
                 .WithMany(c => c.SubCategories)
                 .HasForeignKey(c => c.ParentCategoryId)
-                .OnDelete(DeleteBehavior.Restrict) // Prevent cascade delete to avoid orphaning subcategories
+                .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_Categories_ParentCategory");
 
-
-            builder.HasMany(c =>c.BaseProducts )
+            builder.HasMany(c => c.BaseProducts)
                   .WithOne(b => b.Category)
                   .HasForeignKey(p => p.CategoryId)
-                  .IsRequired();
+                  .OnDelete(DeleteBehavior.Restrict); // Changed from IsRequired() to OnDelete
         }
     }
 }

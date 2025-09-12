@@ -1,186 +1,198 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using RedBubble.Application.DTOs.Products;
-using RedBubble.Application.DTOs.Products.ProductVariant;
 using RedBubble.Application.Interfaces;
 using RedBubble.Application.Interfaces.Services;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
+using RedBubble.Domain.Entities.Models.Products;
+using RedBubble.Domain.Interfaces;
 
-namespace RedBubble.Dashboard.Controllers
+namespace RedBubble.Web.Controllers
 {
-    //[Authorize(Roles = "Admin")]
-    [AllowAnonymous]
+    [Authorize(Roles = "Admin")]
     public class BaseProductController : Controller
     {
+        private readonly IBaseProductService _baseProductService;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IFileService _fileService;
         private readonly IServiceManager _serviceManager;
 
-        public BaseProductController(IServiceManager serviceManager)
+        public BaseProductController(
+            IBaseProductService baseProductService,
+            IUnitOfWork unitOfWork,
+            IFileService fileService,
+            IServiceManager serviceManager)
         {
+            _baseProductService = baseProductService;
+            _unitOfWork = unitOfWork;
+            _fileService = fileService;
             _serviceManager = serviceManager;
         }
 
-        // GET: BaseProduct
-        public async Task<IActionResult> Index(string search)
+       
+        public async Task<IActionResult> Index(string? search, bool? hasSize, bool? hasColors)
         {
-            var products = await _serviceManager.baseProductService.GetAllBaseProductsAsync();
-            var filteredProducts = products.AsQueryable();
+            var products = await _baseProductService.GetAllBaseProductsAsync();
 
-            // Apply search
-            if (!string.IsNullOrEmpty(search))
+            if (!string.IsNullOrWhiteSpace(search))
             {
-                filteredProducts = filteredProducts.Where(p => p.Name.Contains(search, StringComparison.OrdinalIgnoreCase) ||
-                                                              p.Description.Contains(search, StringComparison.OrdinalIgnoreCase) ||
-                                                              p.CategoryName.Contains(search, StringComparison.OrdinalIgnoreCase));
+                products = products.Where(p =>
+                    p.Name.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                    p.CategoryName?.Contains(search, StringComparison.OrdinalIgnoreCase) == true);
             }
 
-            var productList = filteredProducts.Select(p => new ProductListDto
+            if (hasSize.HasValue)
             {
-                Id = p.Id,
-                Name = p.Name,
-                BasePrice = p.BasePrice,
-                CategoryName = p.CategoryName
-            }).ToList();
+                products = products.Where(p => p.HasSizes == hasSize.Value);
+            }
+
+            if (hasColors.HasValue)
+            {
+                products = products.Where(p => p.HasColors == hasColors.Value);
+            }
 
             ViewData["CurrentFilter"] = search;
-            return View(productList);
+            ViewData["CurrentHasSize"] = hasSize;
+            ViewData["CurrentHasColors"] = hasColors;
+
+            return View(products);
         }
+
 
         // GET: BaseProduct/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            var product = await _serviceManager.baseProductService.GetBaseProductByIdAsync(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
+            var product = await _baseProductService.GetBaseProductByIdAsync(id);
+            if (product == null) return NotFound();
 
-            // Fetch ProductVariants for this BaseProduct
-            var variants = await _serviceManager.productVariantService.GetAllProductVariantsAsync(
-                searchItem: null, sortColumn: null, sortOrder: null, categoryId: null, page: 1, pageSize: int.MaxValue);
-            ViewBag.ProductVariants = variants.Items.Where(v => v.BaseProductId == id).ToList();
+            var variantRepository = _unitOfWork.GetRepository<ProductVariant, int>();
+            var variants = await variantRepository.GetAllAsync();
+            var productVariants = variants.Where(v => v.BaseProductId == id && v.IsActive);
 
+            ViewBag.ProductVariants = productVariants;
             return View(product);
         }
 
         // GET: BaseProduct/Create
         public async Task<IActionResult> Create()
         {
-            await PopulateCategoriesDropdown();
-            return View(new CreateProductDto());
+            await PopulateDropdownsAsync();
+
+            return View(new CreateBaseProductDto());
         }
 
         // POST: BaseProduct/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreateProductDto createDto)
+        public async Task<IActionResult> Create(CreateBaseProductDto createDto,
+            List<IFormFile>? templateFiles, List<IFormFile>? mockupFiles)
         {
             if (!ModelState.IsValid)
-            {
-                await PopulateCategoriesDropdown(createDto.CategoryId);
+             {
+                await PopulateDropdownsAsync();
                 return View(createDto);
             }
 
-            try
+            if (templateFiles != null && templateFiles.Any())
             {
-                var userId = User.Identity?.Name ?? "System";
-                await _serviceManager.baseProductService.CreateBaseProductAsync(createDto, userId);
-                TempData["SuccessMessage"] = "Base Product created successfully!";
-                return RedirectToAction(nameof(Index));
-            }
-            catch (ArgumentException ex)
-            {
-                TempData["ErrorMessage"] = ex.Message;
-            }
-            catch (Exception)
-            {
-                TempData["ErrorMessage"] = "An error occurred while creating the base product.";
+                await HandleTemplateUploadsAsync(createDto, templateFiles, mockupFiles);
             }
 
-            await PopulateCategoriesDropdown(createDto.CategoryId);
-            return View(createDto);
+            var currentUser = User.Identity?.Name ?? "Admin";
+            var result = await _baseProductService.CreateBaseProductAsync(createDto, currentUser);
+
+            TempData["SuccessMessage"] = $"Base product '{result.Name}' created successfully.";
+            return RedirectToAction(nameof(Details), new { id = result.Id });
         }
 
         // GET: BaseProduct/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
-            var product = await _serviceManager.baseProductService.GetBaseProductByIdAsync(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
+            var product = await _baseProductService.GetBaseProductByIdAsync(id);
+            if (product == null) return NotFound();
 
-            var updateDto = new UpdateProductDto
+            var updateDto = new UpdateBaseProductDto
             {
                 Id = product.Id,
                 Name = product.Name,
                 Description = product.Description,
                 BasePrice = product.BasePrice,
-                CategoryId = product.CategoryId
+                CategoryId = product.CategoryId,
+                HasSizes = product.HasSizes,
+                HasColors = product.HasColors,
+                IsActive = product.IsActive,
+                PrintAreas = product.PrintAreas.Select(pa => new UpdatePrintAreaDto
+                {
+                    Id = pa.Id,
+                    AreaName = pa.AreaName,
+                    Width = pa.Width,
+                    Height = pa.Height,
+                    PositionX = pa.PositionX,
+                    PositionY = pa.PositionY,
+                    MinDPI = pa.MinDPI,
+                    DisplayOrder = pa.DisplayOrder,
+                    IsActive = pa.IsActive
+                }).ToList(),
+                Templates = product.Templates.Select(t => new UpdateTemplateDto
+                {
+                    Id = t.Id,
+                    ViewName = t.ViewName,
+                    TemplateUrl = t.TemplateUrl,
+                    MockupUrl = t.MockupUrl,
+                    FlatMockupUrl = t.FlatMockupUrl,
+                    TemplateWidth = t.TemplateWidth,
+                    TemplateHeight = t.TemplateHeight,
+                    IsPrimary = t.IsPrimary,
+                    DisplayOrder = t.DisplayOrder,
+                    IsActive = t.IsActive
+                }).ToList(),
+                AvailableSizeIds = product.AvailableSizes.Select(s => s.SizeId).ToList(),
+                AvailableColorIds = product.AvailableColors.Select(c => c.ColorId).ToList()
             };
 
-            await PopulateCategoriesDropdown(product.CategoryId);
+            await PopulateDropdownsAsync();
             return View(updateDto);
         }
 
         // POST: BaseProduct/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, UpdateProductDto updateDto)
+        public async Task<IActionResult> Edit(int id, UpdateBaseProductDto updateDto,
+            List<IFormFile>? templateFiles, List<IFormFile>? mockupFiles)
         {
-            if (id != updateDto.Id)
-            {
-                return NotFound();
-            }
-
+            if (id != updateDto.Id) return BadRequest();
             if (!ModelState.IsValid)
             {
-                await PopulateCategoriesDropdown(updateDto.CategoryId);
+                await PopulateDropdownsAsync();
                 return View(updateDto);
             }
 
-            try
+            if (templateFiles != null && templateFiles.Any())
             {
-                var userId = User.Identity?.Name ?? "System";
-                var result = await _serviceManager.baseProductService.UpdateBaseProductAsync(updateDto, userId);
-                if (result == null)
-                {
-                    return NotFound();
-                }
-                TempData["SuccessMessage"] = "Base Product updated successfully!";
-                return RedirectToAction(nameof(Index));
-            }
-            catch (ArgumentException ex)
-            {
-                TempData["ErrorMessage"] = ex.Message;
-            }
-            catch (Exception)
-            {
-                TempData["ErrorMessage"] = "An error occurred while updating the base product.";
+                await HandleTemplateUploadsAsync(updateDto, templateFiles, mockupFiles);
             }
 
-            await PopulateCategoriesDropdown(updateDto.CategoryId);
-            return View(updateDto);
+            var currentUser = User.Identity?.Name ?? "Admin";
+            var result = await _baseProductService.UpdateBaseProductAsync(updateDto, currentUser);
+
+            TempData["SuccessMessage"] = $"Base product '{result.Name}' updated successfully.";
+            return RedirectToAction(nameof(Details), new { id = result.Id });
         }
 
         // GET: BaseProduct/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
-            var product = await _serviceManager.baseProductService.GetBaseProductByIdAsync(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
+            var product = await _baseProductService.GetBaseProductByIdAsync(id);
+            if (product == null) return NotFound();
 
-            // Check if the product has associated variants
-            var variants = await _serviceManager.productVariantService.GetAllProductVariantsAsync(
-                searchItem: null, sortColumn: null, sortOrder: null, categoryId: null, page: 1, pageSize: int.MaxValue);
-            var hasVariants = variants.Items.Any(v => v.BaseProductId == id);
-            ViewBag.CanDelete = !hasVariants;
-            ViewBag.DeleteMessage = hasVariants
-                ? "This base product cannot be deleted because it has associated product variants."
+            var variantRepository = _unitOfWork.GetRepository<ProductVariant, int>();
+            var variants = await variantRepository.GetAllAsync();
+            var hasActiveVariants = variants.Any(v => v.BaseProductId == id && v.IsActive);
+
+            ViewBag.CanDelete = !hasActiveVariants;
+            ViewBag.DeleteMessage = hasActiveVariants
+                ? "This base product cannot be deleted because it has active variants. Please deactivate them first."
                 : "Are you sure you want to delete this base product?";
 
             return View(product);
@@ -191,22 +203,11 @@ namespace RedBubble.Dashboard.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            try
-            {
-                var result = await _serviceManager.baseProductService.DeleteBaseProductAsync(id);
-                if (result)
-                {
-                    TempData["SuccessMessage"] = "Base Product deleted successfully!";
-                }
-                else
-                {
-                    TempData["ErrorMessage"] = "Base Product not found.";
-                }
-            }
-            catch (Exception)
-            {
-                TempData["ErrorMessage"] = "An error occurred while deleting the base product.";
-            }
+            var success = await _baseProductService.DeleteBaseProductAsync(id, "system");
+
+            TempData["SuccessMessage"] = success
+                ? "Base product deleted successfully."
+                : "Base product not found.";
 
             return RedirectToAction(nameof(Index));
         }
@@ -214,39 +215,63 @@ namespace RedBubble.Dashboard.Controllers
         // GET: BaseProduct/Variants/5
         public async Task<IActionResult> Variants(int id)
         {
-            var product = await _serviceManager.baseProductService.GetBaseProductByIdAsync(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
+            var product = await _baseProductService.GetBaseProductByIdAsync(id);
+            if (product == null) return NotFound();
 
-            var variants = await _serviceManager.productVariantService.GetAllProductVariantsAsync(
-                searchItem: null, sortColumn: null, sortOrder: null, categoryId: null, page: 1, pageSize: int.MaxValue);
-            var productVariants = variants.Items.Where(v => v.BaseProductId == id).ToList();
+            var variantRepository = _unitOfWork.GetRepository<ProductVariant, int>();
+            var variants = await variantRepository.GetAllAsync();
+            var productVariants = variants.Where(v => v.BaseProductId == id && v.IsActive).ToList();
 
             ViewBag.BaseProductName = product.Name;
             ViewBag.BaseProductId = id;
+
             return View(productVariants);
         }
 
-        private async Task PopulateCategoriesDropdown(int? selectedCategoryId = null)
+        #region Helpers
+
+        private async Task PopulateDropdownsAsync()
         {
-            var categories = await _serviceManager.categoryService.GetAllCategoriesWithSubCategoriesAsync();
-            var selectList = categories.Select(c => new SelectListItem
-            {
-                Value = c.Id.ToString(),
-                Text = c.CategoryName,
-                Selected = c.Id == selectedCategoryId
-            }).ToList();
+            var categoryRepository = _unitOfWork.GetRepository<Category, int>();
+            var categories = await categoryRepository.GetAllAsync();
+            var subCategories = categories
+                .Where(c => c.IsActive && c.ParentCategoryId != null)
+                .OrderBy(c => c.CategoryName);
 
-            selectList.Insert(0, new SelectListItem
-            {
-                Value = "",
-                Text = "-- Select Category --",
-                Selected = !selectedCategoryId.HasValue
-            });
+            ViewBag.SubCategories = new SelectList(subCategories, "Id", "CategoryName");
 
-            ViewBag.Categories = selectList;
+            ViewBag.AllSizes = await _serviceManager.sizeService.GetAllSizesAsync();
+            ViewBag.AllColors = await _serviceManager.colorService.GetAllAsync();
         }
+
+
+
+        private async Task HandleTemplateUploadsAsync<T>(T dto, List<IFormFile> templateFiles, List<IFormFile>? mockupFiles)
+            where T : class
+        {
+            var templates = GetPropertyValue<List<CreateTemplateDto>>(dto, "Templates") ?? new();
+            var updateTemplates = GetPropertyValue<List<UpdateTemplateDto>>(dto, "Templates");
+
+            for (int i = 0; i < templateFiles.Count && i < templates.Count; i++)
+            {
+                var templateUrl = await _fileService.UploadImageAsync(templateFiles[i], "templates");
+                if (templates.Any()) templates[i].TemplateUrl = templateUrl;
+                else if (updateTemplates != null && updateTemplates.Any()) updateTemplates[i].TemplateUrl = templateUrl;
+
+                if (mockupFiles != null && i < mockupFiles.Count)
+                {
+                    var mockupUrl = await _fileService.UploadImageAsync(mockupFiles[i], "mockups");
+                    if (templates.Any()) templates[i].MockupUrl = mockupUrl;
+                    else if (updateTemplates != null) updateTemplates[i].MockupUrl = mockupUrl;
+                }
+            }
+        }
+
+        private static TValue GetPropertyValue<TValue>(object obj, string propertyName)
+        {
+            var property = obj.GetType().GetProperty(propertyName);
+            return property != null ? (TValue)property.GetValue(obj) : default!;
+        }
+        #endregion
     }
 }

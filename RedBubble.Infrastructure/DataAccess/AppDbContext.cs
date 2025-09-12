@@ -2,7 +2,6 @@
 using RedBubble.Domain.Entities.Models;
 using RedBubble.Infrastructure.DataAccess;
 using RedBubble.Infrastructure.DataAccess.Configurations;
-//using RedBubble.Infrastructure.DataAccess.Seeds;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,11 +21,16 @@ namespace RedBubble.Infrastructure.DataAccess
         }
 
         public DbSet<BaseProduct> BaseProducts { get; set; }
+        public DbSet<BaseProductPrintArea> BaseProductPrintAreas { get; set; }
+        public DbSet<BaseProductTemplate> BaseProductTemplates { get; set; }
+        public DbSet<BaseProductSize> BaseProductSizes { get; set; }
+        public DbSet<BaseProductColor> BaseProductColors { get; set; }
+        
         public DbSet<Category> Categories { get; set; }
         public DbSet<ProductVariant> ProductVariants { get; set; }
         public DbSet<ProductVariantImages> ProductVariantImages { get; set; }
         public DbSet<Design> Designs { get; set; }
-        public DbSet<DesignImage> DesignImages { get; set; }
+      
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Color> Colors { get; set; }

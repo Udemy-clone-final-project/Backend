@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RedBubble.Domain.Entities.Models.Products
 {
-    public class ProductVariantImages:BaseAuditableEntity<int>
+    public class ProductVariantImages:BaseEntity<int>
     {
         public string? ImageUrl { get; set; }
         public string? FileName { get; set; }

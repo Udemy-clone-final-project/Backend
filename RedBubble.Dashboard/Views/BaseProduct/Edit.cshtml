@@ -1,4 +1,4 @@
-﻿@model RedBubble.Application.DTOs.Products.UpdateProductDto
+﻿@model RedBubble.Application.DTOs.Products.UpdateBaseProductDto
 
 @{
     ViewData["Title"] = "Edit Base Product";
@@ -6,9 +6,14 @@
 
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800">@ViewData["Title"]</h1>
-    <a class="btn btn-secondary btn-sm shadow-sm" asp-action="Index">
-        <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to List
-    </a>
+    <div>
+        <a class="btn btn-secondary btn-sm shadow-sm" asp-action="Details" asp-route-id="@Model.Id">
+            <i class="fas fa-eye fa-sm text-white-50"></i> View Details
+        </a>
+        <a class="btn btn-secondary btn-sm shadow-sm" asp-action="Index">
+            <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to List
+        </a>
+    </div>
 </div>
 
 <div class="row">
@@ -18,36 +23,214 @@
                 <h6 class="m-0 font-weight-bold text-primary">Edit Base Product Information</h6>
             </div>
             <div class="card-body">
-                <form asp-action="Edit" method="post">
+                <form asp-action="Edit" method="post" enctype="multipart/form-data">
                     <input asp-for="Id" type="hidden" />
 
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group mb-3">
                                 <label asp-for="Name" class="form-label">Product Name</label>
-                                <input asp-for="Name" class="form-control" placeholder="e.g., T-Shirt, Hoodie" />
+                                <input asp-for="Name" class="form-control" placeholder="e.g., Classic T-Shirt, Premium Hoodie" />
                                 <span asp-validation-for="Name" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group mb-3">
                                 <label asp-for="BasePrice" class="form-label">Base Price</label>
-                                <input asp-for="BasePrice" class="form-control" type="number" step="0.01" placeholder="e.g., 19.99" />
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input asp-for="BasePrice" class="form-control" type="number" step="0.01" placeholder="19.99" />
+                                </div>
                                 <span asp-validation-for="BasePrice" class="text-danger"></span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="form-group mb-3">
-                        <label asp-for="CategoryId" class="form-label">Category</label>
-                        <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.Categories"></select>
-                        <span asp-validation-for="CategoryId" class="text-danger"></span>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label asp-for="CategoryId" class="form-label">Category</label>
+                                <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.Categories">
+                                    <option value="">-- Select Category --</option>
+                                </select>
+                                <span asp-validation-for="CategoryId" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <div class="form-check mt-4">
+                                    <input asp-for="HasSizes" class="form-check-input" type="checkbox" />
+                                    <label asp-for="HasSizes" class="form-check-label">Has Sizes</label>
+                                </div>
+                                <div class="form-check">
+                                    <input asp-for="HasColors" class="form-check-input" type="checkbox" />
+                                    <label asp-for="HasColors" class="form-check-label">Has Colors</label>
+                                </div>
+                                <div class="form-check">
+                                    <input asp-for="IsActive" class="form-check-input" type="checkbox" />
+                                    <label asp-for="IsActive" class="form-check-label">Is Active</label>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="form-group mb-3">
                         <label asp-for="Description" class="form-label">Description</label>
-                        <textarea asp-for="Description" class="form-control" rows="3" placeholder="Enter product description..."></textarea>
+                        <textarea asp-for="Description" class="form-control" rows="3" placeholder="Enter detailed product description..."></textarea>
                         <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+
+                    <hr>
+
+                    <!-- Print Areas Section -->
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h6 class="m-0 font-weight-bold text-secondary">Print Areas</h6>
+                        </div>
+                        <div class="card-body">
+                            <div id="printAreasContainer">
+                                @for (int i = 0; i < Model.PrintAreas.Count; i++)
+                                {
+                                    <div class="print-area-item mb-3 p-3 border rounded" data-index="@i">
+                                        <input asp-for="PrintAreas[@i].Id" type="hidden" />
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <label class="form-label">Area Name</label>
+                                                <input asp-for="PrintAreas[@i].AreaName" class="form-control" />
+                                                <span asp-validation-for="PrintAreas[@i].AreaName" class="text-danger"></span>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label">Width (in)</label>
+                                                <input asp-for="PrintAreas[@i].Width" class="form-control" type="number" step="0.1" />
+                                                <span asp-validation-for="PrintAreas[@i].Width" class="text-danger"></span>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label">Height (in)</label>
+                                                <input asp-for="PrintAreas[@i].Height" class="form-control" type="number" step="0.1" />
+                                                <span asp-validation-for="PrintAreas[@i].Height" class="text-danger"></span>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label">DPI</label>
+                                                <input asp-for="PrintAreas[@i].MinDPI" class="form-control" type="number" />
+                                                <span asp-validation-for="PrintAreas[@i].MinDPI" class="text-danger"></span>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label">Order</label>
+                                                <input asp-for="PrintAreas[@i].DisplayOrder" class="form-control" type="number" />
+                                                <span asp-validation-for="PrintAreas[@i].DisplayOrder" class="text-danger"></span>
+                                            </div>
+                                            <div class="col-md-1">
+                                                <label class="form-label">&nbsp;</label>
+                                                <button type="button" class="btn btn-danger btn-sm d-block remove-print-area">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-2">
+                                            <div class="col-md-6">
+                                                <div class="form-check">
+                                                    <input asp-for="PrintAreas[@i].IsActive" class="form-check-input" type="checkbox" />
+                                                    <label asp-for="PrintAreas[@i].IsActive" class="form-check-label">Is Active</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                            <button type="button" class="btn btn-success btn-sm" id="addPrintArea">
+                                <i class="fas fa-plus"></i> Add Print Area
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Templates Section -->
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h6 class="m-0 font-weight-bold text-secondary">Templates & Mockups</h6>
+                        </div>
+                        <div class="card-body">
+                            <div id="templatesContainer">
+                                @for (int i = 0; i < Model.Templates.Count; i++)
+                                {
+                                    <div class="template-item mb-3 p-3 border rounded" data-index="@i">
+                                        <input asp-for="Templates[@i].Id" type="hidden" />
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <label class="form-label">View Name</label>
+                                                <input asp-for="Templates[@i].ViewName" class="form-control" />
+                                                <span asp-validation-for="Templates[@i].ViewName" class="text-danger"></span>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label">Width (px)</label>
+                                                <input asp-for="Templates[@i].TemplateWidth" class="form-control" type="number" />
+                                                <span asp-validation-for="Templates[@i].TemplateWidth" class="text-danger"></span>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label">Height (px)</label>
+                                                <input asp-for="Templates[@i].TemplateHeight" class="form-control" type="number" />
+                                                <span asp-validation-for="Templates[@i].TemplateHeight" class="text-danger"></span>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-check mt-4">
+                                                    <input asp-for="Templates[@i].IsPrimary" class="form-check-input" type="checkbox" />
+                                                    <label asp-for="Templates[@i].IsPrimary" class="form-check-label">Primary</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label">Order</label>
+                                                <input asp-for="Templates[@i].DisplayOrder" class="form-control" type="number" />
+                                                <span asp-validation-for="Templates[@i].DisplayOrder" class="text-danger"></span>
+                                            </div>
+                                            <div class="col-md-1">
+                                                <label class="form-label">&nbsp;</label>
+                                                <button type="button" class="btn btn-danger btn-sm d-block remove-template">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-2">
+                                            <div class="col-md-4">
+                                                <label class="form-label">Current Template</label>
+                                                @if (!string.IsNullOrEmpty(Model.Templates[i].TemplateUrl))
+                                                {
+                                                    <div class="mb-2">
+                                                        <img src="@Model.Templates[i].TemplateUrl" alt="Template" class="img-thumbnail" style="max-height: 80px;" />
+                                                        <input asp-for="Templates[@i].TemplateUrl" type="hidden" />
+                                                    </div>
+                                                }
+                                                <input type="file" class="form-control" accept="image/*" />
+                                                <small class="text-muted">Upload new template (optional)</small>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">Current Mockup</label>
+                                                @if (!string.IsNullOrEmpty(Model.Templates[i].MockupUrl))
+                                                {
+                                                    <div class="mb-2">
+                                                        <img src="@Model.Templates[i].MockupUrl" alt="Mockup" class="img-thumbnail" style="max-height: 80px;" />
+                                                        <input asp-for="Templates[@i].MockupUrl" type="hidden" />
+                                                    </div>
+                                                }
+                                                <input type="file" class="form-control" accept="image/*" />
+                                                <small class="text-muted">Upload new mockup (optional)</small>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-check mt-4">
+                                                    <input asp-for="Templates[@i].IsActive" class="form-check-input" type="checkbox" />
+                                                    <label asp-for="Templates[@i].IsActive" class="form-check-label">Is Active</label>
+                                                </div>
+                                                @if (!string.IsNullOrEmpty(Model.Templates[i].FlatMockupUrl))
+                                                {
+                                                    <input asp-for="Templates[@i].FlatMockupUrl" type="hidden" />
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                            <button type="button" class="btn btn-success btn-sm" id="addTemplate">
+                                <i class="fas fa-plus"></i> Add Template
+                            </button>
+                        </div>
                     </div>
 
                     <hr>
@@ -56,6 +239,9 @@
                         <button type="submit" class="btn btn-warning">
                             <i class="fas fa-save"></i> Update Base Product
                         </button>
+                        <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-info">
+                            <i class="fas fa-eye"></i> View Details
+                        </a>
                         <a asp-action="Index" class="btn btn-secondary">
                             <i class="fas fa-times"></i> Cancel
                         </a>
@@ -66,25 +252,40 @@
     </div>
 
     <div class="col-md-4">
-        <div class="card border-left-info shadow h-100 py-2">
+        <div class="card border-left-warning shadow h-100 py-2">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                            Product Guidelines
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            Edit Guidelines
                         </div>
                         <div class="text-xs text-gray-900">
                             <ul class="mb-0 pl-3">
                                 <li>Ensure name remains unique</li>
                                 <li>Update base price carefully</li>
-                                <li>Select an appropriate category</li>
-                                <li>Keep description clear and concise</li>
+                                <li>Maintain at least one print area</li>
+                                <li>Keep exactly one primary template</li>
+                                <li>Upload new files only if needed</li>
+                                <li>Check product variants before major changes</li>
                             </ul>
                         </div>
                     </div>
                     <div class="col-auto">
-                        <i class="fas fa-info-circle fa-2x text-gray-300"></i>
+                        <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow mt-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Quick Stats</h6>
+            </div>
+            <div class="card-body">
+                <div class="text-xs text-gray-900">
+                    <p><strong>Current Print Areas:</strong> <span id="printAreaCount">@Model.PrintAreas.Count</span></p>
+                    <p><strong>Current Templates:</strong> <span id="templateCount">@Model.Templates.Count</span></p>
+                    <p><strong>Primary Templates:</strong> <span id="primaryTemplateCount">@Model.Templates.Count(t => t.IsPrimary)</span></p>
                 </div>
             </div>
         </div>
@@ -95,4 +296,143 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        $(document).ready(function () {
+            let printAreaIndex = @Model.PrintAreas.Count;
+            let templateIndex = @Model.Templates.Count;
+
+            function updateCounts() {
+                $('#printAreaCount').text($('.print-area-item').length);
+                $('#templateCount').text($('.template-item').length);
+                $('#primaryTemplateCount').text($('input[name$=".IsPrimary"]:checked').length);
+            }
+
+            // Add Print Area
+            $('#addPrintArea').click(function () {
+                const printAreaHtml = `
+                    <div class="print-area-item mb-3 p-3 border rounded" data-index="${printAreaIndex}">
+                        <input name="PrintAreas[${printAreaIndex}].Id" type="hidden" value="0" />
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label class="form-label">Area Name</label>
+                                <input name="PrintAreas[${printAreaIndex}].AreaName" class="form-control" placeholder="back" />
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Width (in)</label>
+                                <input name="PrintAreas[${printAreaIndex}].Width" class="form-control" type="number" step="0.1" placeholder="8.0" />
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Height (in)</label>
+                                <input name="PrintAreas[${printAreaIndex}].Height" class="form-control" type="number" step="0.1" placeholder="10.0" />
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">DPI</label>
+                                <input name="PrintAreas[${printAreaIndex}].MinDPI" class="form-control" type="number" placeholder="300" value="300" />
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Order</label>
+                                <input name="PrintAreas[${printAreaIndex}].DisplayOrder" class="form-control" type="number" placeholder="${printAreaIndex + 1}" value="${printAreaIndex + 1}" />
+                            </div>
+                            <div class="col-md-1">
+                                <label class="form-label">&nbsp;</label>
+                                <button type="button" class="btn btn-danger btn-sm d-block remove-print-area">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input name="PrintAreas[${printAreaIndex}].IsActive" class="form-check-input" type="checkbox" checked />
+                                    <label class="form-check-label">Is Active</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                $('#printAreasContainer').append(printAreaHtml);
+                printAreaIndex++;
+                updateCounts();
+            });
+
+            // Remove Print Area
+            $(document).on('click', '.remove-print-area', function () {
+                if ($('.print-area-item').length > 1) {
+                    $(this).closest('.print-area-item').remove();
+                    updateCounts();
+                } else {
+                    alert('At least one print area is required.');
+                }
+            });
+
+            // Add Template
+            $('#addTemplate').click(function () {
+                const templateHtml = `
+                    <div class="template-item mb-3 p-3 border rounded" data-index="${templateIndex}">
+                        <input name="Templates[${templateIndex}].Id" type="hidden" value="0" />
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label class="form-label">View Name</label>
+                                <input name="Templates[${templateIndex}].ViewName" class="form-control" placeholder="Front" />
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Width (px)</label>
+                                <input name="Templates[${templateIndex}].TemplateWidth" class="form-control" type="number" placeholder="2000" />
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Height (px)</label>
+                                <input name="Templates[${templateIndex}].TemplateHeight" class="form-control" type="number" placeholder="2000" />
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-check mt-4">
+                                    <input name="Templates[${templateIndex}].IsPrimary" class="form-check-input" type="checkbox" />
+                                    <label class="form-check-label">Primary</label>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Order</label>
+                                <input name="Templates[${templateIndex}].DisplayOrder" class="form-control" type="number" placeholder="${templateIndex + 1}" value="${templateIndex + 1}" />
+                            </div>
+                            <div class="col-md-1">
+                                <label class="form-label">&nbsp;</label>
+                                <button type="button" class="btn btn-danger btn-sm d-block remove-template">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-4">
+                                <label class="form-label">Upload Template</label>
+                                <input name="Templates[${templateIndex}].TemplateFile" type="file" class="form-control" accept="image/*" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Upload Mockup</label>
+                                <input name="Templates[${templateIndex}].MockupFile" type="file" class="form-control" accept="image/*" />
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check mt-4">
+                                    <input name="Templates[${templateIndex}].IsActive" class="form-check-input" type="checkbox" checked />
+                                    <label class="form-check-label">Is Active</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                $('#templatesContainer').append(templateHtml);
+                templateIndex++;
+                updateCounts();
+            });
+
+            // Remove Template
+            $(document).on('click', '.remove-template', function () {
+                if ($('.template-item').length > 0) {
+                    $(this).closest('.template-item').remove();
+                    updateCounts();
+                } else {
+                    alert('At least one template is required.');
+                }
+            });
+
+            updateCounts();
+        });
+    </script>
 }

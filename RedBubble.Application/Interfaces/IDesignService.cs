@@ -1,4 +1,5 @@
 ﻿using RedBubble.Application.DTOs.Design;
+using RedBubble.Application.Services;
 using RedBubble.Domain.Entities.Models;
 using System;
 using System.Collections.Generic;
@@ -10,19 +11,16 @@ namespace RedBubble.Application.Interfaces
 {
     public interface IDesignService
     {
-        Task CreateAsync(ArtistDesignDTO artistDesignDTO , string artistId);
-        Task<IEnumerable<ArtistGetDesignDTO>> GetAllAsync(string artistId);
+        Task<PagedList<DesignDto>> GetAllAsync(string? searchItem, string? sortColumn, string? sortOrder,
+           int page, int pageSize);
 
-        Task Update(ArtistDesignDTO artistDesignDTO, int designId);
+        Task<DesignDto> GetDesignByIdAsync(int id);
 
-        //Task<Design> GetByIdAsync(int id);  // design dto 
-        //Task<Design> GetByNameAsync(string name); // design dto 
+        Task<DesignDto> CreateAsync(CreateDesignDto createDesignDto);
 
-
-
-        //Task DeleteAsync(int id);
-
-        //Task UpdateAsync(int id, Design design);// design dto 
+       Task<DesignDto> Update(UpdateDesignDto updateDesignDto);
+        Task<bool> DeleteDesignAsync(int id);
+        
 
 
 

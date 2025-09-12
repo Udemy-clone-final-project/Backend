@@ -4,6 +4,9 @@ using RedBubble.Domain.Entities.Models;
 using RedBubble.Domain.Entities.Models.Identity;
 using RedBubble.Domain.Entities.Models.Products;
 using RedBubble.Domain.Enums;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace RedBubble.Infrastructure.DataAccess
 {
@@ -20,7 +23,6 @@ namespace RedBubble.Infrastructure.DataAccess
             SeedSizes(modelBuilder);
             SeedBaseProducts(modelBuilder);
             SeedDesigns(modelBuilder);
-            SeedDesignImages(modelBuilder);
             SeedProductVariants(modelBuilder);
             SeedProductVariantImages(modelBuilder);
             SeedOrders(modelBuilder);
@@ -35,25 +37,16 @@ namespace RedBubble.Infrastructure.DataAccess
                     Id = "1",
                     Name = "Admin",
                     NormalizedName = "ADMIN",
-                    Description = "System Administrator with full access",
+                    Description = "System Administrator with full access to manage products and designs",
                     CreatedAt = DateTime.UtcNow,
                     IsActive = true
                 },
                 new ApplicationRole
                 {
                     Id = "2",
-                    Name = "Artist",
-                    NormalizedName = "ARTIST",
-                    Description = "Artist who can upload and manage designs",
-                    CreatedAt = DateTime.UtcNow,
-                    IsActive = true
-                },
-                new ApplicationRole
-                {
-                    Id = "3",
                     Name = "Customer",
                     NormalizedName = "CUSTOMER",
-                    Description = "Customer who can purchase products",
+                    Description = "Customer who can browse and purchase products",
                     CreatedAt = DateTime.UtcNow,
                     IsActive = true
                 }
@@ -65,7 +58,7 @@ namespace RedBubble.Infrastructure.DataAccess
             var hasher = new PasswordHasher<ApplicationUser>();
             var users = new List<ApplicationUser>();
 
-            // Admin
+            // Admin User
             users.Add(new ApplicationUser
             {
                 Id = "admin-001",
@@ -76,40 +69,13 @@ namespace RedBubble.Infrastructure.DataAccess
                 EmailConfirmed = true,
                 PasswordHash = hasher.HashPassword(null, "Admin123!"),
                 SecurityStamp = Guid.NewGuid().ToString(),
-                DisplayName = "System Admin",
+                DisplayName = "System Administrator",
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
                 IsActive = true
             });
 
-            // Artists (20 artists)
-            string[] artistNames = {
-                "Alice Cooper", "Bob Wilson", "Charlie Brown", "Diana Prince", "Emma Stone",
-                "Frank Ocean", "Grace Kelly", "Henry Ford", "Iris West", "Jack Sparrow",
-                "Kate Winslet", "Liam Neeson", "Maya Angelou", "Noah Webster", "Olivia Wilde",
-                "Paul McCartney", "Quinn Fabray", "Rose Tyler", "Sam Smith", "Tina Turner"
-            };
-
-            for (int i = 0; i < 20; i++)
-            {
-                users.Add(new ApplicationUser
-                {
-                    Id = $"artist-{i + 1:D3}",
-                    UserName = $"{artistNames[i].ToLower().Replace(" ", ".")}@email.com",
-                    NormalizedUserName = $"{artistNames[i].ToUpper().Replace(" ", ".")}@EMAIL.COM",
-                    Email = $"{artistNames[i].ToLower().Replace(" ", ".")}@email.com",
-                    NormalizedEmail = $"{artistNames[i].ToUpper().Replace(" ", ".")}@EMAIL.COM",
-                    EmailConfirmed = true,
-                    PasswordHash = hasher.HashPassword(null, "Artist123!"),
-                    SecurityStamp = Guid.NewGuid().ToString(),
-                    DisplayName = artistNames[i],
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow,
-                    IsActive = true
-                });
-            }
-
-            // Customers (30 customers)
+            // Customer Users (30 customers)
             string[] customerNames = {
                 "John Doe", "Jane Smith", "Michael Johnson", "Sarah Williams", "David Brown",
                 "Emily Davis", "James Miller", "Jessica Wilson", "Robert Moore", "Ashley Taylor",
@@ -121,19 +87,20 @@ namespace RedBubble.Infrastructure.DataAccess
 
             for (int i = 0; i < 30; i++)
             {
+                var email = $"{customerNames[i].ToLower().Replace(" ", ".")}@email.com";
                 users.Add(new ApplicationUser
                 {
                     Id = $"customer-{i + 1:D3}",
-                    UserName = $"{customerNames[i].ToLower().Replace(" ", ".")}@email.com",
-                    NormalizedUserName = $"{customerNames[i].ToUpper().Replace(" ", ".")}@EMAIL.COM",
-                    Email = $"{customerNames[i].ToLower().Replace(" ", ".")}@email.com",
-                    NormalizedEmail = $"{customerNames[i].ToUpper().Replace(" ", ".")}@EMAIL.COM",
+                    UserName = email,
+                    NormalizedUserName = email.ToUpper(),
+                    Email = email,
+                    NormalizedEmail = email.ToUpper(),
                     EmailConfirmed = true,
                     PasswordHash = hasher.HashPassword(null, "Customer123!"),
                     SecurityStamp = Guid.NewGuid().ToString(),
                     DisplayName = customerNames[i],
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow,
+                    CreatedAt = DateTime.UtcNow.AddDays(-new Random(i).Next(1, 365)),
+                    UpdatedAt = DateTime.UtcNow.AddDays(-new Random(i).Next(1, 30)),
                     IsActive = true
                 });
             }
@@ -148,16 +115,10 @@ namespace RedBubble.Infrastructure.DataAccess
             // Admin role
             userRoles.Add(new IdentityUserRole<string> { UserId = "admin-001", RoleId = "1" });
 
-            // Artist roles (20 artists)
-            for (int i = 1; i <= 20; i++)
-            {
-                userRoles.Add(new IdentityUserRole<string> { UserId = $"artist-{i:D3}", RoleId = "2" });
-            }
-
-            // Customer roles (30 customers)
+            // Customer roles
             for (int i = 1; i <= 30; i++)
             {
-                userRoles.Add(new IdentityUserRole<string> { UserId = $"customer-{i:D3}", RoleId = "3" });
+                userRoles.Add(new IdentityUserRole<string> { UserId = $"customer-{i:D3}", RoleId = "2" });
             }
 
             modelBuilder.Entity<IdentityUserRole<string>>().HasData(userRoles);
@@ -166,23 +127,50 @@ namespace RedBubble.Infrastructure.DataAccess
         private static void SeedAddresses(ModelBuilder modelBuilder)
         {
             var addresses = new List<Address>();
+            var countries = new[] { "United States", "Canada", "United Kingdom", "Australia", "Germany", "France", "Japan", "Netherlands", "Sweden", "Norway" };
+            var cityCountryMap = new Dictionary<string, string[]>
+            {
+                ["United States"] = new[] { "New York", "Los Angeles", "Chicago", "Houston", "Phoenix" },
+                ["Canada"] = new[] { "Toronto", "Vancouver", "Montreal", "Calgary", "Ottawa" },
+                ["United Kingdom"] = new[] { "London", "Manchester", "Birmingham", "Liverpool", "Bristol" },
+                ["Australia"] = new[] { "Sydney", "Melbourne", "Brisbane", "Perth", "Adelaide" },
+                ["Germany"] = new[] { "Berlin", "Munich", "Hamburg", "Cologne", "Frankfurt" },
+                ["France"] = new[] { "Paris", "Lyon", "Marseille", "Toulouse", "Nice" },
+                ["Japan"] = new[] { "Tokyo", "Osaka", "Kyoto", "Yokohama", "Nagoya" },
+                ["Netherlands"] = new[] { "Amsterdam", "Rotterdam", "The Hague", "Utrecht", "Eindhoven" },
+                ["Sweden"] = new[] { "Stockholm", "Gothenburg", "Malmö", "Uppsala", "Västerås" },
+                ["Norway"] = new[] { "Oslo", "Bergen", "Trondheim", "Stavanger", "Drammen" }
+            };
 
-            // Sample addresses for customers
-            string[] countries = { "United States", "Canada", "United Kingdom", "Australia", "Germany", "France" };
-            string[] cities = { "New York", "Toronto", "London", "Sydney", "Berlin", "Paris" };
-            string[] streets = { "Main Street", "Oak Avenue", "Elm Drive", "Pine Road", "Maple Lane", "Cedar Way" };
+            var streets = new[] { "Main Street", "Oak Avenue", "Pine Road", "Elm Drive", "Maple Lane", "Cedar Way", "Park Boulevard", "First Street", "Second Avenue", "Market Street" };
 
+            // Add admin address
+            addresses.Add(new Address
+            {
+                Id = 1,
+                FirstName = "System",
+                LastName = "Administrator",
+                Country = "United States",
+                City = "San Francisco",
+                Street = "123 Admin Plaza",
+                ApplicationUserId = "admin-001"
+            });
+
+            // Add customer addresses
             for (int i = 1; i <= 30; i++)
             {
-                var random = new Random(i);
+                var random = new Random(i + 100);
+                var country = countries[random.Next(countries.Length)];
+                var cities = cityCountryMap[country];
+
                 addresses.Add(new Address
                 {
-                    Id = i,
-                    FirstName = $"Customer{i}",
-                    LastName = $"LastName{i}",
-                    Country = countries[random.Next(countries.Length)],
+                    Id = i + 1,
+                    FirstName = $"Customer{i}First",
+                    LastName = $"Customer{i}Last",
+                    Country = country,
                     City = cities[random.Next(cities.Length)],
-                    Street = $"{random.Next(100, 999)} {streets[random.Next(streets.Length)]}",
+                    Street = $"{random.Next(100, 9999)} {streets[random.Next(streets.Length)]}",
                     ApplicationUserId = $"customer-{i:D3}"
                 });
             }
@@ -194,17 +182,17 @@ namespace RedBubble.Infrastructure.DataAccess
         {
             var categories = new List<Category>();
 
-            // Main Categories (like RedBubble)
+            // Main Categories
             var mainCategories = new[]
             {
-                new { Id = 1, Name = "Clothing", Desc = "Apparel and wearable items" },
+                new { Id = 1, Name = "Clothing", Desc = "Apparel and wearable items for all ages" },
                 new { Id = 2, Name = "Accessories", Desc = "Fashion and lifestyle accessories" },
                 new { Id = 3, Name = "Home & Living", Desc = "Home decor and lifestyle items" },
-                new { Id = 4, Name = "Stickers", Desc = "Decorative stickers and decals" },
+                new { Id = 4, Name = "Stickers & Decals", Desc = "Decorative stickers and decals" },
                 new { Id = 5, Name = "Wall Art", Desc = "Prints, posters, and wall decorations" },
-                new { Id = 6, Name = "Stationery", Desc = "Notebooks, cards, and office supplies" },
-                new { Id = 7, Name = "Bags", Desc = "Tote bags, backpacks, and purses" },
-                new { Id = 8, Name = "Tech", Desc = "Phone cases and tech accessories" }
+                new { Id = 6, Name = "Stationery & Office", Desc = "Notebooks, cards, and office supplies" },
+                new { Id = 7, Name = "Bags & Purses", Desc = "Tote bags, backpacks, and purses" },
+                new { Id = 8, Name = "Tech Accessories", Desc = "Phone cases and tech accessories" }
             };
 
             foreach (var cat in mainCategories)
@@ -217,22 +205,22 @@ namespace RedBubble.Infrastructure.DataAccess
                     IsActive = true,
                     ParentCategoryId = null,
                     CreatedBy = "admin-001",
-                    CreatedOn = DateTime.UtcNow,
+                    CreatedOn = DateTime.UtcNow.AddDays(-90),
                     LastModifiedBy = "admin-001",
-                    LastModifiedOn = DateTime.UtcNow
+                    LastModifiedOn = DateTime.UtcNow.AddDays(-30)
                 });
             }
 
-            // SubCategories for Clothing
+            // Clothing Subcategories
             var clothingSubcategories = new[]
             {
-                new { Id = 9, Name = "T-Shirts", Desc = "Classic and graphic t-shirts" },
-                new { Id = 10, Name = "Tank Tops", Desc = "Sleeveless tank tops" },
-                new { Id = 11, Name = "Long Sleeve Shirts", Desc = "Long sleeve t-shirts" },
-                new { Id = 12, Name = "Hoodies", Desc = "Comfortable hoodies and sweatshirts" },
-                new { Id = 13, Name = "Zip Hoodies", Desc = "Zip-up hoodies and jackets" },
-                new { Id = 14, Name = "Crewneck Sweatshirts", Desc = "Classic crewneck sweatshirts" },
-                new { Id = 15, Name = "Dresses", Desc = "Casual and formal dresses" },
+                new { Id = 9, Name = "T-Shirts", Desc = "Classic and graphic t-shirts for all occasions" },
+                new { Id = 10, Name = "Tank Tops", Desc = "Comfortable sleeveless tank tops" },
+                new { Id = 11, Name = "Long Sleeve Shirts", Desc = "Cozy long sleeve t-shirts" },
+                new { Id = 12, Name = "Hoodies & Sweatshirts", Desc = "Warm pullover hoodies and sweatshirts" },
+                new { Id = 13, Name = "Zip Hoodies", Desc = "Full-zip hoodies and jackets" },
+                new { Id = 14, Name = "Crewneck Sweatshirts", Desc = "Classic crewneck style sweatshirts" },
+                new { Id = 15, Name = "Dresses", Desc = "Casual and dressy options for all styles" },
                 new { Id = 16, Name = "Skirts", Desc = "Mini, midi, and maxi skirts" }
             };
 
@@ -246,20 +234,20 @@ namespace RedBubble.Infrastructure.DataAccess
                     IsActive = true,
                     ParentCategoryId = 1,
                     CreatedBy = "admin-001",
-                    CreatedOn = DateTime.UtcNow,
+                    CreatedOn = DateTime.UtcNow.AddDays(-85),
                     LastModifiedBy = "admin-001",
-                    LastModifiedOn = DateTime.UtcNow
+                    LastModifiedOn = DateTime.UtcNow.AddDays(-25)
                 });
             }
 
-            // SubCategories for Accessories
+            // Accessories Subcategories
             var accessorySubcategories = new[]
             {
-                new { Id = 17, Name = "Hats", Desc = "Baseball caps, beanies, and hats" },
-                new { Id = 18, Name = "Scarves", Desc = "Fashion scarves and wraps" },
-                new { Id = 19, Name = "Socks", Desc = "Fun and colorful socks" },
-                new { Id = 20, Name = "Masks", Desc = "Face masks and coverings" },
-                new { Id = 21, Name = "Jewelry", Desc = "Pins, badges, and jewelry" }
+                new { Id = 17, Name = "Hats & Caps", Desc = "Baseball caps, beanies, and fashion hats" },
+                new { Id = 18, Name = "Scarves", Desc = "Fashionable scarves and wraps" },
+                new { Id = 19, Name = "Socks", Desc = "Fun and colorful socks with unique designs" },
+                new { Id = 20, Name = "Face Masks", Desc = "Stylish and protective face coverings" },
+                new { Id = 21, Name = "Pins & Badges", Desc = "Enamel pins and collectible badges" }
             };
 
             foreach (var subcat in accessorySubcategories)
@@ -272,23 +260,23 @@ namespace RedBubble.Infrastructure.DataAccess
                     IsActive = true,
                     ParentCategoryId = 2,
                     CreatedBy = "admin-001",
-                    CreatedOn = DateTime.UtcNow,
+                    CreatedOn = DateTime.UtcNow.AddDays(-80),
                     LastModifiedBy = "admin-001",
-                    LastModifiedOn = DateTime.UtcNow
+                    LastModifiedOn = DateTime.UtcNow.AddDays(-20)
                 });
             }
 
-            // SubCategories for Home & Living
+            // Home & Living Subcategories
             var homeSubcategories = new[]
             {
-                new { Id = 22, Name = "Mugs", Desc = "Coffee mugs and drinkware" },
-                new { Id = 23, Name = "Travel Mugs", Desc = "Insulated travel mugs" },
-                new { Id = 24, Name = "Water Bottles", Desc = "Reusable water bottles" },
-                new { Id = 25, Name = "Throw Pillows", Desc = "Decorative throw pillows" },
-                new { Id = 26, Name = "Blankets", Desc = "Cozy blankets and throws" },
-                new { Id = 27, Name = "Tapestries", Desc = "Wall tapestries and fabric art" },
-                new { Id = 28, Name = "Clocks", Desc = "Wall clocks and desk clocks" },
-                new { Id = 29, Name = "Candles", Desc = "Scented candles and holders" }
+                new { Id = 22, Name = "Coffee Mugs", Desc = "Ceramic mugs for your favorite beverages" },
+                new { Id = 23, Name = "Travel Mugs", Desc = "Insulated travel mugs for on-the-go" },
+                new { Id = 24, Name = "Water Bottles", Desc = "Reusable water bottles with custom designs" },
+                new { Id = 25, Name = "Throw Pillows", Desc = "Decorative pillows to enhance your space" },
+                new { Id = 26, Name = "Blankets & Throws", Desc = "Cozy blankets with artistic designs" },
+                new { Id = 27, Name = "Wall Tapestries", Desc = "Large fabric wall art and tapestries" },
+                new { Id = 28, Name = "Wall Clocks", Desc = "Functional art for keeping time" },
+                new { Id = 29, Name = "Candles", Desc = "Scented candles with custom labels" }
             };
 
             foreach (var subcat in homeSubcategories)
@@ -301,19 +289,20 @@ namespace RedBubble.Infrastructure.DataAccess
                     IsActive = true,
                     ParentCategoryId = 3,
                     CreatedBy = "admin-001",
-                    CreatedOn = DateTime.UtcNow,
+                    CreatedOn = DateTime.UtcNow.AddDays(-75),
                     LastModifiedBy = "admin-001",
-                    LastModifiedOn = DateTime.UtcNow
+                    LastModifiedOn = DateTime.UtcNow.AddDays(-15)
                 });
             }
 
-            // SubCategories for Tech
+            // Tech Accessories Subcategories
             var techSubcategories = new[]
             {
-                new { Id = 30, Name = "iPhone Cases", Desc = "iPhone protective cases" },
-                new { Id = 31, Name = "Samsung Cases", Desc = "Samsung phone cases" },
-                new { Id = 32, Name = "Laptop Sleeves", Desc = "Laptop bags and sleeves" },
-                new { Id = 33, Name = "Mouse Pads", Desc = "Computer mouse pads" }
+                new { Id = 30, Name = "iPhone Cases", Desc = "Protective cases for iPhone models" },
+                new { Id = 31, Name = "Samsung Cases", Desc = "Samsung Galaxy phone protection" },
+                new { Id = 32, Name = "Laptop Sleeves", Desc = "Padded laptop bags and sleeves" },
+                new { Id = 33, Name = "Mouse Pads", Desc = "Gaming and office mouse pads" },
+                new { Id = 34, Name = "Tablet Cases", Desc = "iPad and tablet protective cases" }
             };
 
             foreach (var subcat in techSubcategories)
@@ -326,9 +315,9 @@ namespace RedBubble.Infrastructure.DataAccess
                     IsActive = true,
                     ParentCategoryId = 8,
                     CreatedBy = "admin-001",
-                    CreatedOn = DateTime.UtcNow,
+                    CreatedOn = DateTime.UtcNow.AddDays(-70),
                     LastModifiedBy = "admin-001",
-                    LastModifiedOn = DateTime.UtcNow
+                    LastModifiedOn = DateTime.UtcNow.AddDays(-10)
                 });
             }
 
@@ -337,28 +326,32 @@ namespace RedBubble.Infrastructure.DataAccess
 
         private static void SeedColors(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Color>().HasData(
+            var colors = new[]
+            {
                 new Color { Id = 1, ColorName = "Black", ColorCode = "#000000", IsActive = true },
                 new Color { Id = 2, ColorName = "White", ColorCode = "#FFFFFF", IsActive = true },
-                new Color { Id = 3, ColorName = "Navy", ColorCode = "#000080", IsActive = true },
-                new Color { Id = 4, ColorName = "Gray", ColorCode = "#808080", IsActive = true },
-                new Color { Id = 5, ColorName = "Red", ColorCode = "#FF0000", IsActive = true },
-                new Color { Id = 6, ColorName = "Green", ColorCode = "#008000", IsActive = true },
-                new Color { Id = 7, ColorName = "Blue", ColorCode = "#0000FF", IsActive = true },
-                new Color { Id = 8, ColorName = "Yellow", ColorCode = "#FFFF00", IsActive = true },
-                new Color { Id = 9, ColorName = "Purple", ColorCode = "#800080", IsActive = true },
-                new Color { Id = 10, ColorName = "Pink", ColorCode = "#FFC0CB", IsActive = true },
-                new Color { Id = 11, ColorName = "Orange", ColorCode = "#FFA500", IsActive = true },
-                new Color { Id = 12, ColorName = "Brown", ColorCode = "#A52A2A", IsActive = true },
-                new Color { Id = 13, ColorName = "Light Blue", ColorCode = "#ADD8E6", IsActive = true },
-                new Color { Id = 14, ColorName = "Dark Green", ColorCode = "#006400", IsActive = true },
-                new Color { Id = 15, ColorName = "Maroon", ColorCode = "#800000", IsActive = true }
-            );
+                new Color { Id = 3, ColorName = "Navy Blue", ColorCode = "#000080", IsActive = true },
+                new Color { Id = 4, ColorName = "Heather Gray", ColorCode = "#808080", IsActive = true },
+                new Color { Id = 5, ColorName = "Crimson Red", ColorCode = "#DC143C", IsActive = true },
+                new Color { Id = 6, ColorName = "Forest Green", ColorCode = "#228B22", IsActive = true },
+                new Color { Id = 7, ColorName = "Royal Blue", ColorCode = "#4169E1", IsActive = true },
+                new Color { Id = 8, ColorName = "Sunshine Yellow", ColorCode = "#FFD700", IsActive = true },
+                new Color { Id = 9, ColorName = "Deep Purple", ColorCode = "#663399", IsActive = true },
+                new Color { Id = 10, ColorName = "Rose Pink", ColorCode = "#FF69B4", IsActive = true },
+                new Color { Id = 11, ColorName = "Sunset Orange", ColorCode = "#FF4500", IsActive = true },
+                new Color { Id = 12, ColorName = "Chocolate Brown", ColorCode = "#8B4513", IsActive = true },
+                new Color { Id = 13, ColorName = "Sky Blue", ColorCode = "#87CEEB", IsActive = true },
+                new Color { Id = 14, ColorName = "Emerald Green", ColorCode = "#50C878", IsActive = true },
+                new Color { Id = 15, ColorName = "Burgundy", ColorCode = "#800020", IsActive = true }
+            };
+
+            modelBuilder.Entity<Color>().HasData(colors);
         }
 
         private static void SeedSizes(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Size>().HasData(
+            var sizes = new[]
+            {
                 new Size { Id = 1, SizeName = "XS", Description = "Extra Small", IsActive = true },
                 new Size { Id = 2, SizeName = "S", Description = "Small", IsActive = true },
                 new Size { Id = 3, SizeName = "M", Description = "Medium", IsActive = true },
@@ -367,46 +360,219 @@ namespace RedBubble.Infrastructure.DataAccess
                 new Size { Id = 6, SizeName = "XXL", Description = "Double Extra Large", IsActive = true },
                 new Size { Id = 7, SizeName = "3XL", Description = "Triple Extra Large", IsActive = true },
                 new Size { Id = 8, SizeName = "One Size", Description = "Universal Size", IsActive = true }
-            );
+            };
+
+            modelBuilder.Entity<Size>().HasData(sizes);
         }
 
         private static void SeedBaseProducts(ModelBuilder modelBuilder)
         {
             var products = new List<BaseProduct>();
+            var createdDate = DateTime.UtcNow.AddDays(-60);
 
-            // T-Shirts
+            // T-Shirts (Category 9)
             products.AddRange(new[]
             {
-                new BaseProduct { Id = 1, Name = "Classic T-Shirt", Description = "100% cotton classic fit", BasePrice = 19.99m, CategoryId = 9, CreatedBy = "admin-001", CreatedOn = DateTime.UtcNow, LastModifiedBy = "admin-001", LastModifiedOn = DateTime.UtcNow },
-                new BaseProduct { Id = 2, Name = "Premium T-Shirt", Description = "Premium soft cotton blend", BasePrice = 24.99m, CategoryId = 9, CreatedBy = "admin-001", CreatedOn = DateTime.UtcNow, LastModifiedBy = "admin-001", LastModifiedOn = DateTime.UtcNow },
-                new BaseProduct { Id = 3, Name = "Fitted T-Shirt", Description = "Slim fit cotton t-shirt", BasePrice = 22.99m, CategoryId = 9, CreatedBy = "admin-001", CreatedOn = DateTime.UtcNow, LastModifiedBy = "admin-001", LastModifiedOn = DateTime.UtcNow }
+                new BaseProduct
+                {
+                    Id = 1,
+                    Name = "Classic Unisex T-Shirt",
+                    Description = "100% cotton classic fit t-shirt, perfect for everyday wear",
+                    BasePrice = 19.99m,
+                    CategoryId = 9,
+                    CreatedBy = "admin-001",
+                    CreatedOn = createdDate,
+                    LastModifiedBy = "admin-001",
+                    LastModifiedOn = createdDate.AddDays(5)
+                },
+                new BaseProduct
+                {
+                    Id = 2,
+                    Name = "Premium Fitted T-Shirt",
+                    Description = "Premium soft cotton blend with modern fitted cut",
+                    BasePrice = 24.99m,
+                    CategoryId = 9,
+                    CreatedBy = "admin-001",
+                    CreatedOn = createdDate,
+                    LastModifiedBy = "admin-001",
+                    LastModifiedOn = createdDate.AddDays(3)
+                },
+                new BaseProduct
+                {
+                    Id = 3,
+                    Name = "Vintage Style T-Shirt",
+                    Description = "Retro-inspired slim fit cotton t-shirt",
+                    BasePrice = 22.99m,
+                    CategoryId = 9,
+                    CreatedBy = "admin-001",
+                    CreatedOn = createdDate.AddDays(-5),
+                    LastModifiedBy = "admin-001",
+                    LastModifiedOn = createdDate.AddDays(1)
+                }
             });
 
-            // Hoodies
+            // Hoodies (Categories 12 & 13)
             products.AddRange(new[]
             {
-                new BaseProduct { Id = 4, Name = "Pullover Hoodie", Description = "Cotton blend pullover hoodie", BasePrice = 39.99m, CategoryId = 12, CreatedBy = "admin-001", CreatedOn = DateTime.UtcNow, LastModifiedBy = "admin-001", LastModifiedOn = DateTime.UtcNow },
-                new BaseProduct { Id = 5, Name = "Zip Hoodie", Description = "Full zip cotton hoodie", BasePrice = 44.99m, CategoryId = 13, CreatedBy = "admin-001", CreatedOn = DateTime.UtcNow, LastModifiedBy = "admin-001", LastModifiedOn = DateTime.UtcNow }
+                new BaseProduct
+                {
+                    Id = 4,
+                    Name = "Cozy Pullover Hoodie",
+                    Description = "Ultra-soft cotton blend pullover hoodie with kangaroo pocket",
+                    BasePrice = 39.99m,
+                    CategoryId = 12,
+                    CreatedBy = "admin-001",
+                    CreatedOn = createdDate.AddDays(-10),
+                    LastModifiedBy = "admin-001",
+                    LastModifiedOn = createdDate.AddDays(2)
+                },
+                new BaseProduct
+                {
+                    Id = 5,
+                    Name = "Full-Zip Hoodie",
+                    Description = "Versatile full-zip cotton hoodie with front pockets",
+                    BasePrice = 44.99m,
+                    CategoryId = 13,
+                    CreatedBy = "admin-001",
+                    CreatedOn = createdDate.AddDays(-8),
+                    LastModifiedBy = "admin-001",
+                    LastModifiedOn = createdDate.AddDays(4)
+                }
             });
 
-            // Phone Cases
+            // Phone Cases (Categories 30 & 31)
             products.AddRange(new[]
             {
-                new BaseProduct { Id = 6, Name = "iPhone 14 Case", Description = "Protective iPhone 14 case", BasePrice = 14.99m, CategoryId = 30, CreatedBy = "admin-001", CreatedOn = DateTime.UtcNow, LastModifiedBy = "admin-001", LastModifiedOn = DateTime.UtcNow },
-                new BaseProduct { Id = 7, Name = "iPhone 15 Case", Description = "Protective iPhone 15 case", BasePrice = 16.99m, CategoryId = 30, CreatedBy = "admin-001", CreatedOn = DateTime.UtcNow, LastModifiedBy = "admin-001", LastModifiedOn = DateTime.UtcNow },
-                new BaseProduct { Id = 8, Name = "Samsung S24 Case", Description = "Samsung Galaxy S24 case", BasePrice = 15.99m, CategoryId = 31, CreatedBy = "admin-001", CreatedOn = DateTime.UtcNow, LastModifiedBy = "admin-001", LastModifiedOn = DateTime.UtcNow }
+                new BaseProduct
+                {
+                    Id = 6,
+                    Name = "iPhone 14 Protective Case",
+                    Description = "Durable iPhone 14 case with shock absorption",
+                    BasePrice = 14.99m,
+                    CategoryId = 30,
+                    CreatedBy = "admin-001",
+                    CreatedOn = createdDate.AddDays(-15),
+                    LastModifiedBy = "admin-001",
+                    LastModifiedOn = createdDate.AddDays(1)
+                },
+                new BaseProduct
+                {
+                    Id = 7,
+                    Name = "iPhone 15 Pro Case",
+                    Description = "Premium iPhone 15 Pro case with wireless charging support",
+                    BasePrice = 18.99m,
+                    CategoryId = 30,
+                    CreatedBy = "admin-001",
+                    CreatedOn = createdDate.AddDays(-12),
+                    LastModifiedBy = "admin-001",
+                    LastModifiedOn = createdDate
+                },
+                new BaseProduct
+                {
+                    Id = 8,
+                    Name = "Samsung Galaxy S24 Case",
+                    Description = "Protective Samsung Galaxy S24 case with camera protection",
+                    BasePrice = 16.99m,
+                    CategoryId = 31,
+                    CreatedBy = "admin-001",
+                    CreatedOn = createdDate.AddDays(-20),
+                    LastModifiedBy = "admin-001",
+                    LastModifiedOn = createdDate.AddDays(-2)
+                }
             });
 
-            // Home Items
+            // Home & Living Items
             products.AddRange(new[]
             {
-                new BaseProduct { Id = 9, Name = "Ceramic Mug", Description = "11oz ceramic coffee mug", BasePrice = 12.99m, CategoryId = 22, CreatedBy = "admin-001", CreatedOn = DateTime.UtcNow, LastModifiedBy = "admin-001", LastModifiedOn = DateTime.UtcNow },
-                new BaseProduct { Id = 10, Name = "Travel Mug", Description = "15oz insulated travel mug", BasePrice = 18.99m, CategoryId = 23, CreatedBy = "admin-001", CreatedOn = DateTime.UtcNow, LastModifiedBy = "admin-001", LastModifiedOn = DateTime.UtcNow },
-                new BaseProduct { Id = 11, Name = "Art Print", Description = "High quality art print", BasePrice = 16.99m, CategoryId = 5, CreatedBy = "admin-001", CreatedOn = DateTime.UtcNow, LastModifiedBy = "admin-001", LastModifiedOn = DateTime.UtcNow },
-                new BaseProduct { Id = 12, Name = "Canvas Print", Description = "Gallery wrapped canvas", BasePrice = 29.99m, CategoryId = 5, CreatedBy = "admin-001", CreatedOn = DateTime.UtcNow, LastModifiedBy = "admin-001", LastModifiedOn = DateTime.UtcNow },
-                new BaseProduct { Id = 13, Name = "Throw Pillow", Description = "16x16 inch throw pillow", BasePrice = 19.99m, CategoryId = 25, CreatedBy = "admin-001", CreatedOn = DateTime.UtcNow, LastModifiedBy = "admin-001", LastModifiedOn = DateTime.UtcNow },
-                new BaseProduct { Id = 14, Name = "Sticker Pack", Description = "Pack of 3 vinyl stickers", BasePrice = 4.99m, CategoryId = 4, CreatedBy = "admin-001", CreatedOn = DateTime.UtcNow, LastModifiedBy = "admin-001", LastModifiedOn = DateTime.UtcNow },
-                new BaseProduct { Id = 15, Name = "Tote Bag", Description = "Cotton canvas tote bag", BasePrice = 14.99m, CategoryId = 7, CreatedBy = "admin-001", CreatedOn = DateTime.UtcNow, LastModifiedBy = "admin-001", LastModifiedOn = DateTime.UtcNow }
+                new BaseProduct
+                {
+                    Id = 9,
+                    Name = "Ceramic Coffee Mug",
+                    Description = "High-quality 11oz ceramic mug, dishwasher and microwave safe",
+                    BasePrice = 12.99m,
+                    CategoryId = 22,
+                    CreatedBy = "admin-001",
+                    CreatedOn = createdDate.AddDays(-25),
+                    LastModifiedBy = "admin-001",
+                    LastModifiedOn = createdDate.AddDays(-5)
+                },
+                new BaseProduct
+                {
+                    Id = 10,
+                    Name = "Insulated Travel Mug",
+                    Description = "15oz double-wall insulated travel mug with spill-proof lid",
+                    BasePrice = 18.99m,
+                    CategoryId = 23,
+                    CreatedBy = "admin-001",
+                    CreatedOn = createdDate.AddDays(-30),
+                    LastModifiedBy = "admin-001",
+                    LastModifiedOn = createdDate.AddDays(-3)
+                },
+                new BaseProduct
+                {
+                    Id = 11,
+                    Name = "Premium Art Print",
+                    Description = "Museum-quality giclée art print on archival paper",
+                    BasePrice = 16.99m,
+                    CategoryId = 5,
+                    CreatedBy = "admin-001",
+                    CreatedOn = createdDate.AddDays(-22),
+                    LastModifiedBy = "admin-001",
+                    LastModifiedOn = createdDate.AddDays(-1)
+                },
+                new BaseProduct
+                {
+                    Id = 12,
+                    Name = "Gallery Canvas Print",
+                    Description = "Gallery-wrapped canvas print with 1.5 inch depth",
+                    BasePrice = 32.99m,
+                    CategoryId = 5,
+                    CreatedBy = "admin-001",
+                    CreatedOn = createdDate.AddDays(-18),
+                    LastModifiedBy = "admin-001",
+                    LastModifiedOn = createdDate.AddDays(1)
+                },
+                new BaseProduct
+                {
+                    Id = 13,
+                    Name = "Square Throw Pillow",
+                    Description = "16x16 inch throw pillow with hidden zipper and machine washable cover",
+                    BasePrice = 19.99m,
+                    CategoryId = 25,
+                    CreatedBy = "admin-001",
+                    CreatedOn = createdDate.AddDays(-14),
+                    LastModifiedBy = "admin-001",
+                    LastModifiedOn = createdDate.AddDays(2)
+                }
+            });
+
+            // Stickers and Bags
+            products.AddRange(new[]
+            {
+                new BaseProduct
+                {
+                    Id = 14,
+                    Name = "Vinyl Sticker Set",
+                    Description = "Pack of 3 durable vinyl stickers, weather resistant",
+                    BasePrice = 4.99m,
+                    CategoryId = 4,
+                    CreatedBy = "admin-001",
+                    CreatedOn = createdDate.AddDays(-35),
+                    LastModifiedBy = "admin-001",
+                    LastModifiedOn = createdDate.AddDays(-8)
+                },
+                new BaseProduct
+                {
+                    Id = 15,
+                    Name = "Canvas Tote Bag",
+                    Description = "Eco-friendly 100% cotton canvas tote bag with reinforced handles",
+                    BasePrice = 14.99m,
+                    CategoryId = 7,
+                    CreatedBy = "admin-001",
+                    CreatedOn = createdDate.AddDays(-40),
+                    LastModifiedBy = "admin-001",
+                    LastModifiedOn = createdDate.AddDays(-6)
+                }
             });
 
             modelBuilder.Entity<BaseProduct>().HasData(products);
@@ -417,104 +583,70 @@ namespace RedBubble.Infrastructure.DataAccess
             var designs = new List<Design>();
             var random = new Random(42);
 
-            // Design themes like RedBubble
-            string[] designTitles = {
-                "Sunset Mountains", "Abstract Geometry", "Cute Cat Illustration", "Coffee Lover Quote", "Vintage Floral",
-                "Space Galaxy", "Minimalist Lines", "Watercolor Flowers", "Retro Waves", "Mandala Art",
-                "Typography Quote", "Nature Forest", "Ocean Waves", "City Skyline", "Botanical Leaves",
-                "Geometric Patterns", "Animal Portrait", "Music Notes", "Travel Adventure", "Food Illustration",
-                "Inspirational Quote", "Cartoon Character", "Art Deco Design", "Hand Lettering", "Digital Art",
-                "Photo Collage", "Sketch Drawing", "Pop Art Style", "Watercolor Paint", "Vector Graphics",
-                "Street Art", "Fantasy Theme", "Science Fiction", "Horror Gothic", "Romance Love",
-                "Fitness Motivation", "Tech Gaming", "Sports Team", "Holiday Christmas", "Halloween Spooky",
-                "Summer Beach", "Winter Snow", "Spring Garden", "Autumn Leaves", "Zen Meditation",
-                "Business Professional", "Educational Learning", "Kids Children", "Pets Animals", "Food Cooking",
-                "Music Band", "Movie Film", "TV Series", "Book Literature", "Art History",
-                "Photography", "Architecture", "Fashion Style", "Beauty Makeup", "Health Wellness",
-                "Environment Green", "Social Cause", "Political Statement", "Cultural Heritage", "Religious Spiritual",
-                "Hobby Crafts", "Games Puzzle", "Magic Fantasy", "Space Cosmic", "Ocean Marine",
-                "Mountain Adventure", "Desert Landscape", "Forest Wildlife", "Garden Botanical", "Urban City",
-                "Vintage Retro", "Modern Contemporary", "Classic Traditional", "Futuristic Sci-Fi", "Medieval Historical",
-                "Tribal Ethnic", "Japanese Anime", "Korean K-Pop", "European Classic", "American Patriotic",
-                "African Culture", "Asian Zen", "Latin Fiesta", "Nordic Viking", "Celtic Irish",
-                "Steampunk Gear", "Cyberpunk Neon", "Gothic Dark", "Pastel Soft", "Bold Bright",
-                "Monochrome Black", "Rainbow Colorful", "Sunset Orange", "Ocean Blue", "Forest Green",
-                "Royal Purple", "Golden Yellow", "Rose Pink", "Silver Gray", "Copper Bronze",
-                "Crystal Gem", "Fire Flame", "Ice Frost", "Lightning Storm", "Star Constellation"
-            };
-
-            string[] designDescriptions = {
-                "Beautiful landscape artwork", "Modern artistic design", "Cute and adorable illustration", "Inspirational typography",
-                "Classic vintage pattern", "Cosmic space theme", "Clean minimalist style", "Delicate watercolor art",
-                "Retro nostalgic design", "Intricate mandala pattern", "Motivational text design", "Natural scenery art",
-                "Flowing water design", "Urban cityscape", "Botanical nature art", "Mathematical patterns",
-                "Realistic animal art", "Musical themed design", "Adventure travel art", "Delicious food illustration"
-            };
-
-            // Generate 120 designs
-            for (int i = 1; i <= 120; i++)
+            // Curated design themes for a more realistic RedBubble experience
+            var designTemplates = new[]
             {
-                var artistId = $"artist-{random.Next(1, 21):D3}";
-                var isApproved = random.NextDouble() > 0.15; // 85% approval rate
-                var status = isApproved ? DesignStatus.Approved : (random.NextDouble() > 0.5 ? DesignStatus.Pending : DesignStatus.Rejected);
+                // Nature & Landscapes
+                new { Title = "Mountain Sunrise", Description = "Majestic mountain landscape with golden sunrise", Category = "Nature" },
+                new { Title = "Ocean Waves", Description = "Peaceful ocean waves in watercolor style", Category = "Nature" },
+                new { Title = "Forest Silhouette", Description = "Minimalist forest treeline silhouette", Category = "Nature" },
+                new { Title = "Desert Sunset", Description = "Vibrant desert landscape at golden hour", Category = "Nature" },
+                new { Title = "Tropical Paradise", Description = "Exotic tropical beach scene with palm trees", Category = "Nature" },
+                
+                // Abstract & Geometric
+                new { Title = "Geometric Harmony", Description = "Modern geometric patterns in pastel colors", Category = "Abstract" },
+                new { Title = "Marble Texture", Description = "Elegant marble texture with gold veins", Category = "Abstract" },
+                new { Title = "Watercolor Splash", Description = "Vibrant watercolor paint splashes", Category = "Abstract" },
+                new { Title = "Minimalist Lines", Description = "Clean geometric lines and shapes", Category = "Abstract" },
+                new { Title = "Galaxy Swirl", Description = "Cosmic galaxy with swirling nebula", Category = "Space" },
+                
+                // Typography & Quotes
+                new { Title = "Coffee First", Description = "Motivational coffee-themed typography", Category = "Typography" },
+                new { Title = "Adventure Awaits", Description = "Inspirational travel quote design", Category = "Typography" },
+                new { Title = "Good Vibes Only", Description = "Positive mindset typography art", Category = "Typography" },
+                new { Title = "Dream Big", Description = "Motivational quote in elegant script", Category = "Typography" },
+                new { Title = "Stay Wild", Description = "Nature-inspired motivational text", Category = "Typography" },
+                
+                // Animals & Characters
+                new { Title = "Cute Cat Face", Description = "Adorable cartoon cat illustration", Category = "Animals" },
+                new { Title = "Majestic Wolf", Description = "Realistic wolf portrait in natural setting", Category = "Animals" },
+                new { Title = "Lazy Panda", Description = "Sleepy panda bear cartoon character", Category = "Animals" },
+                new { Title = "Colorful Butterfly", Description = "Vibrant butterfly with rainbow wings", Category = "Animals" },
+                new { Title = "Ocean Whale", Description = "Graceful whale swimming in deep blue", Category = "Animals" },
+                
+                // Floral & Botanical
+                new { Title = "Rose Garden", Description = "Elegant vintage rose pattern", Category = "Floral" },
+                new { Title = "Tropical Leaves", Description = "Modern monstera leaf pattern", Category = "Floral" },
+                new { Title = "Wildflower Meadow", Description = "Delicate wildflower illustration", Category = "Floral" },
+                new { Title = "Succulent Collection", Description = "Cute succulent plant arrangement", Category = "Floral" },
+                new { Title = "Cherry Blossoms", Description = "Japanese cherry blossom branch in soft pink", Category = "Floral" }
+            };
+
+            // Generate 100 designs with varied themes
+            for (int i = 1; i <= 100; i++)
+            {
+                var template = designTemplates[random.Next(designTemplates.Length)];
+                var baseDate = DateTime.UtcNow.AddDays(-random.Next(1, 180));
 
                 designs.Add(new Design
                 {
                     Id = i,
-                    Title = $"{designTitles[random.Next(designTitles.Length)]} {i}",
-                    Description = designDescriptions[random.Next(designDescriptions.Length)],
+                    Title = $"{template.Title} #{i}",
+                    Description = $"{template.Description} - {template.Category} themed artwork",
                     Price = Math.Round((decimal)(random.NextDouble() * 8 + 2), 2), // $2-10
                     IsActive = true,
-                    Status = status,
-                    UploadedAt = DateTime.UtcNow.AddDays(-random.Next(1, 90)),
-                    ReviewedAt = status != DesignStatus.Pending ? DateTime.UtcNow.AddDays(-random.Next(1, 85)) : default,
-                    RejectionReason = status == DesignStatus.Rejected ? "Does not meet quality standards" : null,
-                    ArtistId = artistId,
-                    AdminId = status != DesignStatus.Pending ? "admin-001" : null,
-                    CreatedBy = artistId,
-                    CreatedOn = DateTime.UtcNow.AddDays(-random.Next(1, 90)),
-                    LastModifiedBy = status != DesignStatus.Pending ? "admin-001" : artistId,
-                    LastModifiedOn = DateTime.UtcNow.AddDays(-random.Next(1, 85))
+                    ImageUrl = $"https://picsum.photos/seed/design{i}/800/600",
+                    FileName = $"design_{i}.jpg",
+                    AltText = $"{template.Title} design artwork",
+                    AdminId = "admin-001", // Admin creates all designs now
+                    CreatedBy = "admin-001",
+                    CreatedOn = baseDate,
+                    LastModifiedBy = "admin-001",
+                    LastModifiedOn = baseDate.AddDays(random.Next(1, 30))
                 });
             }
 
             modelBuilder.Entity<Design>().HasData(designs);
-        }
-
-        private static void SeedDesignImages(ModelBuilder modelBuilder)
-        {
-            var designImages = new List<DesignImage>();
-            var random = new Random(123);
-
-            // Expanded list with more than 20 images from Picsum, Unsplash, Pexels, Pixabay (using Picsum for variety and reliability)
-            string[] imageUrls = new string[50];
-            for (int k = 0; k < 50; k++)
-            {
-                imageUrls[k] = $"https://picsum.photos/seed/design{k + 1}/800/600";
-            }
-
-            // Generate images for all 120 designs
-            for (int i = 1; i <= 120; i++)
-            {
-                var artistId = $"artist-{random.Next(1, 21):D3}";
-
-                designImages.Add(new DesignImage
-                {
-                    Id = i,
-                    ImageUrl = imageUrls[random.Next(imageUrls.Length)],
-                    FileName = $"design_{i}.jpg",
-                    AltText = $"Design artwork {i}",
-                    IsPrimary = true,
-                    IsActive = true,
-                    DsignId = i,
-                    CreatedBy = artistId,
-                    CreatedOn = DateTime.UtcNow.AddDays(-random.Next(1, 90)),
-                    LastModifiedBy = artistId,
-                    LastModifiedOn = DateTime.UtcNow.AddDays(-random.Next(1, 90))
-                });
-            }
-
-            modelBuilder.Entity<DesignImage>().HasData(designImages);
         }
 
         private static void SeedProductVariants(ModelBuilder modelBuilder)
@@ -523,57 +655,77 @@ namespace RedBubble.Infrastructure.DataAccess
             var random = new Random(456);
             int variantId = 1;
 
-            // Generate 250 product variants (combinations of products, designs, colors, sizes)
-            // Only use approved designs (first 102 designs are approved based on 85% approval rate)
-            var approvedDesigns = Enumerable.Range(1, 102).ToList();
-
-            foreach (var productId in Enumerable.Range(1, 15))
+            // Generate variants for each base product
+            for (int productId = 1; productId <= 15; productId++)
             {
-                foreach (var designId in approvedDesigns.Take(8)) // 8 designs per product
+                var baseProdPrice = GetBaseProductPrice(productId);
+                var isClothing = productId <= 5; // T-shirts and hoodies need sizes
+                var designCount = productId <= 8 ? 12 : 8; // More designs for popular items
+                var colorCount = isClothing ? 8 : 5; // More colors for clothing
+
+                // Select designs (use different ranges for variety)
+                var designStart = ((productId - 1) * 10) % 90 + 1;
+                var selectedDesigns = Enumerable.Range(designStart, designCount).ToArray();
+
+                foreach (var designId in selectedDesigns)
                 {
-                    foreach (var colorId in Enumerable.Range(1, 5)) // 5 colors per design
+                    var selectedColors = Enumerable.Range(1, colorCount).ToArray();
+
+                    foreach (var colorId in selectedColors)
                     {
-                        var sizeIds = productId <= 5 ? new[] { 1, 2, 3, 4, 5, 6 } : new[] { 8 }; // Clothing gets multiple sizes, accessories get one size
+                        var sizeIds = isClothing ? new[] { 1, 2, 3, 4, 5, 6 } : new[] { 8 };
 
                         foreach (var sizeId in sizeIds)
                         {
-                            if (variantId > 250) break; // Limit to 250 variants
+                            if (variantId > 400) break; // Limit to prevent too many variants
 
-                            var basePrice = GetBaseProductPrice(productId);
-                            var designPrice = Math.Round((decimal)(random.NextDouble() * 8 + 2), 2);
+                            var designPrice = Math.Round((decimal)(random.NextDouble() * 6 + 2), 2); // $2-8
+                            var totalPrice = baseProdPrice + designPrice;
 
                             productVariants.Add(new ProductVariant
                             {
                                 Id = variantId++,
-                                Price = basePrice + designPrice,
-                                StockQuantity = random.Next(50, 200),
+                                Price = totalPrice,
+                               
                                 IsActive = true,
                                 BaseProductId = productId,
                                 DesignId = designId,
                                 ColorId = colorId,
                                 SizeId = sizeId,
-                                CreatedBy = "admin-001",
-                                CreatedOn = DateTime.UtcNow.AddDays(-random.Next(1, 30)),
-                                LastModifiedBy = "admin-001",
-                                LastModifiedOn = DateTime.UtcNow.AddDays(-random.Next(1, 30))
+                                //CreatedBy = "admin-001",
+                                //CreatedOn = DateTime.UtcNow.AddDays(-random.Next(1, 45)),
+                                //LastModifiedBy = "admin-001",
+                                //LastModifiedOn = DateTime.UtcNow.AddDays(-random.Next(1, 20))
                             });
                         }
                     }
                 }
             }
 
-            modelBuilder.Entity<ProductVariant>().HasData(productVariants.Take(250));
+            modelBuilder.Entity<ProductVariant>().HasData(productVariants.Take(350));
         }
 
         private static decimal GetBaseProductPrice(int productId)
         {
-            var basePrices = new Dictionary<int, decimal>
+            return productId switch
             {
-                { 1, 19.99m }, { 2, 24.99m }, { 3, 22.99m }, { 4, 39.99m }, { 5, 44.99m },
-                { 6, 14.99m }, { 7, 16.99m }, { 8, 15.99m }, { 9, 12.99m }, { 10, 18.99m },
-                { 11, 16.99m }, { 12, 29.99m }, { 13, 19.99m }, { 14, 4.99m }, { 15, 14.99m }
+                1 => 19.99m,  // Classic T-Shirt
+                2 => 24.99m,  // Premium T-Shirt
+                3 => 22.99m,  // Vintage T-Shirt
+                4 => 39.99m,  // Pullover Hoodie
+                5 => 44.99m,  // Zip Hoodie
+                6 => 14.99m,  // iPhone 14 Case
+                7 => 18.99m,  // iPhone 15 Case
+                8 => 16.99m,  // Samsung Case
+                9 => 12.99m,  // Ceramic Mug
+                10 => 18.99m, // Travel Mug
+                11 => 16.99m, // Art Print
+                12 => 32.99m, // Canvas Print
+                13 => 19.99m, // Throw Pillow
+                14 => 4.99m,  // Sticker Pack
+                15 => 14.99m, // Tote Bag
+                _ => 19.99m
             };
-            return basePrices.GetValueOrDefault(productId, 19.99m);
         }
 
         private static void SeedProductVariantImages(ModelBuilder modelBuilder)
@@ -581,91 +733,45 @@ namespace RedBubble.Infrastructure.DataAccess
             var images = new List<ProductVariantImages>();
             var random = new Random(789);
 
-            // Expanded list with more than 20 mockup images from Unsplash (t-shirt mockups and others)
-            string[] mockupUrls = {
-                "https://images.unsplash.com/photo-VQLdvHWikBI?w=800&h=600&fit=crop",
-                "https://images.unsplash.com/photo-acn5ERAeSb4?w=800&h=600&fit=crop",
-                "https://images.unsplash.com/photo-Q0zoxQF7OUY?w=800&h=600&fit=crop",
-                "https://images.unsplash.com/photo-ItL2yJq4gU4?w=800&h=600&fit=crop",
-                "https://images.unsplash.com/photo-lMcxXplVycA?w=800&h=600&fit=crop",
-                "https://images.unsplash.com/photo-x8Vg7Up6TUc?w=800&h=600&fit=crop",
-                "https://images.unsplash.com/photo-fTDWpCxLA0k?w=800&h=600&fit=crop",
-                "https://images.unsplash.com/photo-9ShY-Tq70Mc?w=800&h=600&fit=crop",
-                "https://images.unsplash.com/photo-6Nub980bI3I?w=800&h=600&fit=crop",
-                "https://images.unsplash.com/photo-7WE1LbSc4zM?w=800&h=600&fit=crop",
-                "https://images.unsplash.com/photo-elbKS4DY21g?w=800&h=600&fit=crop",
-                "https://images.unsplash.com/photo-KeJkQ5mVvvk?w=800&h=600&fit=crop",
-                "https://images.unsplash.com/photo-gEupiRvyxh0?w=800&h=600&fit=crop",
-                "https://images.unsplash.com/photo-WWesmHEgXDs?w=800&h=600&fit=crop",
-                "https://images.unsplash.com/photo-ogmenj2NGho?w=800&h=600&fit=crop",
-                "https://images.unsplash.com/photo-RrOw2yodWpo?w=800&h=600&fit=crop",
-                "https://images.unsplash.com/photo-kkj9iKxsdhY?w=800&h=600&fit=crop",
-                "https://images.unsplash.com/photo-mks2xvUYGnc?w=800&h=600&fit=crop",
-                "https://images.unsplash.com/photo-tT6k5S0fvxs?w=800&h=600&fit=crop",
-                "https://images.unsplash.com/photo-tWOz2_EK5EQ?w=800&h=600&fit=crop",
-                "https://images.unsplash.com/photo-1514228742587-6b1558fcf93a?w=800&h=600&fit=crop", // Mug mockup example
-                "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop", // Art print
-                "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&h=600&fit=crop", // Pillow
-                "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800&h=600&fit=crop", // Sticker
-                "https://images.unsplash.com/photo-1553735105-c4de0ad64d53?w=800&h=600&fit=crop", // Tote bag
-                "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=800&h=600&fit=crop", // Canvas
-                "https://images.unsplash.com/photo-1605902711834-8b11c3e3ef75?w=800&h=600&fit=crop", // Travel mug
-                "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&h=600&fit=crop", // T-shirt
-                "https://images.unsplash.com/photo-1556821840-3a9fbc8e7449?w=800&h=600&fit=crop", // Hoodie
-                "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=800&h=600&fit=crop", // Phone case
-                // Add more Picsum for variety if needed
-                "https://picsum.photos/seed/mockup1/800/600",
-                "https://picsum.photos/seed/mockup2/800/600",
-                "https://picsum.photos/seed/mockup3/800/600",
-                "https://picsum.photos/seed/mockup4/800/600",
-                "https://picsum.photos/seed/mockup5/800/600",
-                "https://picsum.photos/seed/mockup6/800/600",
-                "https://picsum.photos/seed/mockup7/800/600",
-                "https://picsum.photos/seed/mockup8/800/600",
-                "https://picsum.photos/seed/mockup9/800/600",
-                "https://picsum.photos/seed/mockup10/800/600",
-                "https://picsum.photos/seed/mockup11/800/600",
-                "https://picsum.photos/seed/mockup12/800/600",
-                "https://picsum.photos/seed/mockup13/800/600",
-                "https://picsum.photos/seed/mockup14/800/600",
-                "https://picsum.photos/seed/mockup15/800/600",
-                "https://picsum.photos/seed/mockup16/800/600",
-                "https://picsum.photos/seed/mockup17/800/600",
-                "https://picsum.photos/seed/mockup18/800/600",
-                "https://picsum.photos/seed/mockup19/800/600",
-                "https://picsum.photos/seed/mockup20/800/600",
-                "https://picsum.photos/seed/mockup21/800/600",
-                "https://picsum.photos/seed/mockup22/800/600",
-                "https://picsum.photos/seed/mockup23/800/600",
-                "https://picsum.photos/seed/mockup24/800/600",
-                "https://picsum.photos/seed/mockup25/800/600",
-                "https://picsum.photos/seed/mockup26/800/600",
-                "https://picsum.photos/seed/mockup27/800/600",
-                "https://picsum.photos/seed/mockup28/800/600",
-                "https://picsum.photos/seed/mockup29/800/600",
-                "https://picsum.photos/seed/mockup30/800/600"
+            // More realistic mockup URLs for different product types
+            var clothingMockups = new[]
+            {
+                "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&h=600&fit=crop", // T-shirt on person
+                "https://images.unsplash.com/photo-1556821840-3a9fbc8e7449?w=800&h=600&fit=crop", // Hoodie mockup
+                "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=800&h=600&fit=crop", // Clothing flat lay
+                "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=800&h=600&fit=crop"  // Shirt hanging
             };
 
-            // Generate 3-5 images per product variant (first 100 variants)
-            for (int variantId = 1; variantId <= 100; variantId++)
+            var accessoryMockups = new[]
             {
-                int imageCount = random.Next(3, 6); // 3-5 images per variant
+                "https://images.unsplash.com/photo-1605902711834-8b11c3e3ef75?w=800&h=600&fit=crop", // Phone case
+                "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800&h=600&fit=crop", // Mug
+                "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&h=600&fit=crop", // Home items
+                "https://images.unsplash.com/photo-1553735105-c4de0ad64d53?w=800&h=600&fit=crop"  // Stickers
+            };
+
+            // Generate 2-4 images per product variant (first 200 variants for performance)
+            for (int variantId = 1; variantId <= 200; variantId++)
+            {
+                int imageCount = random.Next(2, 5);
+                var isClothingVariant = variantId <= 120; // Approximate clothing variants
+                var mockupPool = isClothingVariant ? clothingMockups : accessoryMockups;
 
                 for (int j = 0; j < imageCount; j++)
                 {
                     images.Add(new ProductVariantImages
                     {
-                        Id = (variantId - 1) * 5 + j + 1,
-                        ImageUrl = mockupUrls[random.Next(mockupUrls.Length)],
-                        FileName = $"variant_{variantId}_image_{j + 1}.jpg",
-                        AltText = $"Product variant {variantId} mockup image {j + 1}",
-                        IsPrimary = j == 0, // First image is primary
+                        Id = (variantId - 1) * 4 + j + 1,
+                        ImageUrl = mockupPool[random.Next(mockupPool.Length)],
+                        FileName = $"variant_{variantId}_mockup_{j + 1}.jpg",
+                        AltText = $"Product variant {variantId} mockup view {j + 1}",
+                        IsPrimary = j == 0,
                         IsActive = true,
                         ProductVariantId = variantId,
-                        CreatedBy = "admin-001",
-                        CreatedOn = DateTime.UtcNow.AddDays(-random.Next(1, 30)),
-                        LastModifiedBy = "admin-001",
-                        LastModifiedOn = DateTime.UtcNow.AddDays(-random.Next(1, 30))
+                        //CreatedBy = "admin-001",
+                        //CreatedOn = DateTime.UtcNow.AddDays(-random.Next(1, 40)),
+                        //LastModifiedBy = "admin-001",
+                        //LastModifiedOn = DateTime.UtcNow.AddDays(-random.Next(1, 20))
                     });
                 }
             }
@@ -678,31 +784,41 @@ namespace RedBubble.Infrastructure.DataAccess
             var orders = new List<Order>();
             var random = new Random(999);
 
-            string[] cities = { "New York", "Los Angeles", "Chicago", "Houston", "Phoenix", "Philadelphia", "San Antonio", "San Diego", "Dallas", "San Jose" };
-            string[] countries = { "United States", "Canada", "United Kingdom", "Australia", "Germany" };
-            string[] streets = { "Main St", "Oak Ave", "Pine Rd", "Elm Dr", "Maple Ln", "Cedar Way", "Park Blvd", "First St", "Second Ave", "Third Dr" };
+            var shippingData = new[]
+            {
+                new { Country = "United States", Cities = new[] { "New York", "Los Angeles", "Chicago", "Houston", "Phoenix" } },
+                new { Country = "Canada", Cities = new[] { "Toronto", "Vancouver", "Montreal", "Calgary", "Ottawa" } },
+                new { Country = "United Kingdom", Cities = new[] { "London", "Manchester", "Birmingham", "Liverpool", "Bristol" } },
+                new { Country = "Australia", Cities = new[] { "Sydney", "Melbourne", "Brisbane", "Perth", "Adelaide" } },
+                new { Country = "Germany", Cities = new[] { "Berlin", "Munich", "Hamburg", "Cologne", "Frankfurt" } }
+            };
 
-            // Generate 50 orders
-            for (int i = 1; i <= 50; i++)
+            var streets = new[] { "Main St", "Oak Ave", "Pine Rd", "Elm Dr", "Maple Ln", "Cedar Way", "Park Blvd", "First St", "Second Ave", "Broadway" };
+
+            // Generate 75 orders across the 30 customers
+            for (int i = 1; i <= 75; i++)
             {
                 var customerId = $"customer-{random.Next(1, 31):D3}";
-                var orderDate = DateTime.UtcNow.AddDays(-random.Next(1, 180));
+                var orderDate = DateTime.UtcNow.AddDays(-random.Next(1, 365));
                 var status = (OrderStatus)random.Next(0, 5);
+
+                var shippingLocation = shippingData[random.Next(shippingData.Length)];
+                var city = shippingLocation.Cities[random.Next(shippingLocation.Cities.Length)];
 
                 orders.Add(new Order
                 {
                     Id = i,
-                    TotalAmount = 0, // Will be calculated from order items
+                    TotalAmount = 0, // Will be calculated when we add order items
                     Status = status,
-                    ShippingAddress = $"{random.Next(100, 999)} {streets[random.Next(streets.Length)]}",
-                    ShippingCity = cities[random.Next(cities.Length)],
-                    ShippingCountry = countries[random.Next(countries.Length)],
-                    ShippingPostalCode = $"{random.Next(10000, 99999)}",
+                    ShippingAddress = $"{random.Next(100, 9999)} {streets[random.Next(streets.Length)]}",
+                    ShippingCity = city,
+                    ShippingCountry = shippingLocation.Country,
+                    ShippingPostalCode = GeneratePostalCode(shippingLocation.Country, random),
                     CustomerId = customerId,
                     CreatedBy = customerId,
                     CreatedOn = orderDate,
                     LastModifiedBy = customerId,
-                    LastModifiedOn = orderDate.AddHours(random.Next(1, 48))
+                    LastModifiedOn = orderDate.AddHours(random.Next(1, 72))
                 });
             }
 
@@ -712,21 +828,21 @@ namespace RedBubble.Infrastructure.DataAccess
         private static void SeedOrderItems(ModelBuilder modelBuilder)
         {
             var orderItems = new List<OrderItem>();
-            var random = new Random(777);
+            var orders = new List<Order>(); // To update order totals
+            var random = new Random(1234);
 
+            // Generate 2-6 items per order
             int itemId = 1;
-
-            // Generate 2-5 items per order
-            for (int orderId = 1; orderId <= 50; orderId++)
+            for (int orderId = 1; orderId <= 75; orderId++)
             {
-                int itemCount = random.Next(2, 6);
+                int itemCount = random.Next(2, 7);
                 decimal orderTotal = 0;
 
                 for (int j = 0; j < itemCount; j++)
                 {
-                    var productVariantId = random.Next(1, 101); // Random variant from first 100
+                    var productVariantId = random.Next(1, 201); // Use variants we have images for
                     var quantity = random.Next(1, 4);
-                    var unitPrice = Math.Round((decimal)(random.NextDouble() * 30 + 15), 2); // $15-45
+                    var unitPrice = CalculateVariantPrice(productVariantId, random);
                     var totalPrice = unitPrice * quantity;
                     orderTotal += totalPrice;
 
@@ -741,12 +857,32 @@ namespace RedBubble.Infrastructure.DataAccess
                     });
                 }
 
-                // Update order total (would be handled by business logic in real app)
-                // Note: This is simplified for seeding - in real app, calculate from items
+                // Update the order total (we'll need to update this in a separate migration or handle in application logic)
+                // For seeding purposes, we'll create the relationship correctly
             }
 
             modelBuilder.Entity<OrderItem>().HasData(orderItems);
+        }
 
+        private static decimal CalculateVariantPrice(int variantId, Random random)
+        {
+            // Simulate the base product + design price calculation
+            var basePrice = random.Next(5, 45); // $5-45 range
+            var designPrice = Math.Round((decimal)(random.NextDouble() * 8 + 2), 2);
+            return basePrice + designPrice;
+        }
+
+        private static string GeneratePostalCode(string country, Random random)
+        {
+            return country switch
+            {
+                "United States" => $"{random.Next(10000, 99999)}",
+                "Canada" => $"{(char)random.Next('A', 'Z')}{random.Next(0, 9)}{(char)random.Next('A', 'Z')} {random.Next(0, 9)}{(char)random.Next('A', 'Z')}{random.Next(0, 9)}",
+                "United Kingdom" => $"{(char)random.Next('A', 'Z')}{(char)random.Next('A', 'Z')}{random.Next(0, 9)} {random.Next(0, 9)}{(char)random.Next('A', 'Z')}{(char)random.Next('A', 'Z')}",
+                "Australia" => $"{random.Next(1000, 9999)}",
+                "Germany" => $"{random.Next(10000, 99999)}",
+                _ => $"{random.Next(10000, 99999)}"
+            };
         }
     }
 }

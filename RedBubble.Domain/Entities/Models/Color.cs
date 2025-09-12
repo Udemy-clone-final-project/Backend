@@ -15,7 +15,8 @@ namespace RedBubble.Domain.Entities.Models
         public string ColorName { get; set; } = null!;
         public string ColorCode { get; set; } = null!; // Hex Color Code
         public bool IsActive { get; set; }
-        public ICollection<ProductVariant> ProductVariants { get; set; }= new HashSet<ProductVariant>();
+        public ICollection<BaseProductColor> BaseProductColors { get; set; } = new HashSet<BaseProductColor>();
+        public ICollection<ProductVariant> ProductVariants { get; set; } = new HashSet<ProductVariant>();
     }
 
 }

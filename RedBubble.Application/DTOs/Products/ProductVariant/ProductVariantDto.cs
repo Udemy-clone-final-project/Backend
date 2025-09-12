@@ -1,6 +1,7 @@
 ﻿using RedBubble.Application.DTOs.Products.ProductVariant.ProductVariantImage;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,7 +12,7 @@ namespace RedBubble.Application.DTOs.Products.ProductVariant
     {
         public int Id { get; set; }
         public decimal Price { get; set; }
-        public int StockQuantity { get; set; }
+       
         public bool IsActive { get; set; }
         public int BaseProductId { get; set; }
         public string BaseProductName { get; set; } = null!;
@@ -25,7 +26,45 @@ namespace RedBubble.Application.DTOs.Products.ProductVariant
         public int SizeId { get; set; }
         public string SizeName { get; set; } = null!;
       public List<ProductVariantImageDto> Images { get; set; } = new();
-        public DateTime CreatedAt { get; set; }
-        public DateTime? UpdatedAt { get; set; }
+      
+    }
+    public class CreateProductVariantDto
+    {
+
+        public bool IsActive { get; set; } = true;
+
+        [Required]
+        public int BaseProductId { get; set; }
+
+        [Required]
+        public int DesignId { get; set; }
+
+        [Required]
+        public int ColorId { get; set; }
+
+        [Required]
+        public int SizeId { get; set; }
+        public List<CreateProductVariantImageDto>? Images { get; set; }
+    }
+    public class UpdateProductVariantDto
+    {
+        [Required]
+        public int Id { get; set; }
+
+        [Required]
+        public int BaseProductId { get; set; }
+
+        [Required]
+        public int DesignId { get; set; }
+
+        [Required]
+        public int ColorId { get; set; }
+
+        [Required]
+        public int SizeId { get; set; }
+
+        public bool IsActive { get; set; } = true;
+
+
     }
 }

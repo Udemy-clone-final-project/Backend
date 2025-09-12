@@ -3,6 +3,7 @@ using RedBubble.Application.Interfaces;
 using RedBubble.Application.Interfaces.Products;
 using RedBubble.Application.Interfaces.Services;
 using RedBubble.Application.Mappers;
+using RedBubble.Application.Profiles;
 using RedBubble.Application.Services;
 using RedBubble.Application.Services.Implementations;
 using RedBubble.Application.Services.Interfaces;
@@ -10,6 +11,7 @@ using RedBubble.Application.Services.Products;
 using RedBubble.Domain.Entities.Models.Products;
 using RedBubble.Domain.Interfaces;
 using RedBubble.Infrastructure.Implementations.Services;
+using RedBubble.Infrastructure.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,20 +25,21 @@ namespace RedBubble.Application
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
             services.AddAutoMapper(t => t.AddProfile<MappingProfile>());
+            services.AddAutoMapper(t => t.AddProfile<DesignProfile>());
 
             // Register individual services first
             //services.AddScoped<IRoleService, RoleService>();
-          
+
             //services.AddScoped<IUserService, UserService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IBaseProductService, BaseProductService>();
             services.AddScoped<IProductVariantService, ProductVariantService>();
             //services.AddScoped<IProductVariantImageService, ProductVariantImageService>();
             services.AddScoped<IDesignService, DesignService>();
-
+            services.AddScoped<IFileService, FileService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IColorService, ColorService>();
-            services.AddScoped<ICartService, CartService>();
+            //services.AddScoped<ICartService, CartService>();
             services.AddScoped(typeof(Func<ICartService>), (serviceporvider) =>
             {
 
@@ -60,6 +63,8 @@ namespace RedBubble.Application
             //  new Lazy<IRoleService>(() => provider.GetRequiredService<IRoleService>()));
             services.AddScoped<Lazy<IDesignService>>(provider =>
                 new Lazy<IDesignService>(() => provider.GetRequiredService<IDesignService>()));
+            services.AddScoped<Lazy<IFileService>>(provider =>
+                new Lazy<IFileService>(() => provider.GetRequiredService<IFileService>()));
             services.AddScoped<Lazy<IOrderService>>(provider =>
                 new Lazy<IOrderService>(() => provider.GetRequiredService<IOrderService>()));
             services.AddScoped<Lazy<IColorService>>(provider =>
@@ -68,8 +73,8 @@ namespace RedBubble.Application
                 new Lazy<ISizeService>(() => provider.GetRequiredService<ISizeService>()));
             services.AddScoped<Lazy<ICategoryService>>(provider =>
               new Lazy<ICategoryService>(() => provider.GetRequiredService<ICategoryService>()));
-            services.AddScoped<Lazy<ICartService>>(provider =>
-             new Lazy<ICartService>(() => provider.GetRequiredService<ICartService>()));
+            //services.AddScoped<Lazy<ICartService>>(provider =>
+            // new Lazy<ICartService>(() => provider.GetRequiredService<ICartService>()));
 
             // Register ServiceManager last
             services.AddScoped<IServiceManager, ServiceManager>();

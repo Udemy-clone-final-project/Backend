@@ -15,7 +15,7 @@ namespace RedBubble.Domain.Entities.Models
         public string? AltText { get; set; }
         public bool IsPrimary { get; set; }
         public bool IsActive { get; set; }
-        public int DsignId { get; set; }
+        public int DesignId { get; set; }
         public Design Design { get; set; }
         
     }

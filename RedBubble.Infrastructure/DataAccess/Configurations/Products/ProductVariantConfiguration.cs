@@ -15,10 +15,6 @@ namespace RedBubble.Infrastructure.DataAccess.Configurations.Products
                 .HasColumnType("decimal(18,2)")
                 .HasDefaultValue(0);
 
-            builder.Property(pv => pv.StockQuantity)
-                .IsRequired()
-                .HasDefaultValue(0);
-
             builder.Property(pv => pv.IsActive)
                 .IsRequired()
                 .HasDefaultValue(true);
@@ -28,13 +24,13 @@ namespace RedBubble.Infrastructure.DataAccess.Configurations.Products
                 .IsRequired();
 
             builder.Property(pv => pv.DesignId)
-                .IsRequired();
+                .IsRequired(false);
 
             builder.Property(pv => pv.ColorId)
-                .IsRequired();
+                .IsRequired(false);
 
             builder.Property(pv => pv.SizeId)
-                .IsRequired();
+                .IsRequired(false);
 
            
             builder.HasOne(pv => pv.BaseProduct)
@@ -45,17 +41,17 @@ namespace RedBubble.Infrastructure.DataAccess.Configurations.Products
             builder.HasOne(pv => pv.Design)
                 .WithMany(d => d.ProductVariants)
                 .HasForeignKey(pv => pv.DesignId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.SetNull);
 
             builder.HasOne(pv => pv.Color)
                 .WithMany(c => c.ProductVariants)
                 .HasForeignKey(pv => pv.ColorId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.SetNull);
 
             builder.HasOne(pv => pv.Size)
                 .WithMany(s => s.ProductVariants)
                 .HasForeignKey(pv => pv.SizeId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.SetNull);
 
             builder.HasMany(pv => pv.ProductVariantImages)
                 .WithOne(pvi => pvi.ProductVariant)

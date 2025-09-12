@@ -15,7 +15,10 @@ namespace RedBubble.Domain.Interfaces
         IQueryable<TEntity> GetAll();
         Task<TEntity?> GetByIdAsync(TKey id);
         Task AddAsync(TEntity entity);
+        Task AddRangeAsync(IEnumerable<TEntity> entities);
+       
         void Update(TEntity entity);
+        void UpdateRange(IEnumerable<TEntity> entities);
         void Delete(TEntity entity);
 
     }

@@ -57,7 +57,7 @@ namespace RedBubble.Infrastructure.Implementations.Services
             else
             {
                 var productVariant = await _productVariantService.GetByIdAsync(variantId);
-                if (productVariant == null || productVariant.StockQuantity < quantity)
+                if (productVariant == null)
                 {
                     throw new InvalidOperationException("Product is not available or out of stock.");
                 }

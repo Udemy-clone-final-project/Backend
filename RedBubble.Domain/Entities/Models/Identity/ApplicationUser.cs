@@ -12,7 +12,7 @@ namespace RedBubble.Domain.Entities.Models.Identity
 
         public ICollection<Order> Orders { get; set; } = new HashSet<Order>();
         public ICollection<Design> CreatedDesigns { get; set; } = new HashSet<Design>();
-        public ICollection<Design> ReviewedDesigns { get; set; } = new HashSet<Design>();
+        //public ICollection<Design> ReviewedDesigns { get; set; } = new HashSet<Design>();
 
 
     }

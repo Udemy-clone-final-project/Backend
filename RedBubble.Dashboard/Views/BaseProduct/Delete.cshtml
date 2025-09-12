@@ -1,4 +1,4 @@
-﻿@model RedBubble.Application.DTOs.Products.ProductDto
+﻿@model RedBubble.Application.DTOs.Products.BaseProductDto
 
 @{
     ViewData["Title"] = "Delete Base Product";
@@ -11,54 +11,195 @@
     </a>
 </div>
 
-<div class="card shadow mb-4">
-    <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">Confirm Deletion</h6>
-    </div>
-    <div class="card-body">
-        <h4>@Model.Name</h4>
-        <p>@ViewBag.DeleteMessage</p>
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 bg-danger text-white">
+                <h6 class="m-0 font-weight-bold">Confirm Deletion</h6>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>@ViewBag.DeleteMessage</strong>
+                </div>
 
-        <dl class="row">
-            <dt class="col-sm-3">Description</dt>
-            <dd class="col-sm-9">
-                @if (!string.IsNullOrEmpty(Model.Description))
+                <h4 class="mb-3">@Model.Name</h4>
+
+                <dl class="row">
+                    <dt class="col-sm-3">category</dt>
+                    <dd class="col-sm-9">
+                        <span class="badge bg-info text-white">@Model.CategoryName</span>
+                    </dd>
+
+                    <dt class="col-sm-3">Description</dt>
+                    <dd class="col-sm-9">
+                        @if (!string.IsNullOrEmpty(Model.Description))
+                        {
+                            @Model.Description
+                        }
+                        else
+                        {
+                            <em class="text-muted">No description provided</em>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-3">Base Price</dt>
+                    <dd class="col-sm-9">
+                        <span class="h5 text-success">@Model.BasePrice.ToString("C")</span>
+                    </dd>
+
+                    <dt class="col-sm-3">Category</dt>
+                    <dd class="col-sm-9">@Model.CategoryName</dd>
+
+                    
+
+                    <dt class="col-sm-3">Features</dt>
+                    <dd class="col-sm-9">
+                        @if (Model.HasSizes)
+                        {
+                            <span class="badge bg-success me-1">Has Sizes</span>
+                        }
+                        @if (Model.HasColors)
+                        {
+                            <span class="badge bg-primary me-1">Has Colors</span>
+                        }
+                        @if (Model.IsActive)
+                        {
+                            <span class="badge bg-success">Active</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Inactive</span>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-3">Print Areas</dt>
+                    <dd class="col-sm-9">
+                        <span class="badge bg-secondary">@Model.PrintAreas.Count areas</span>
+                    </dd>
+
+                    <dt class="col-sm-3">Templates</dt>
+                    <dd class="col-sm-9">
+                        <span class="badge bg-secondary">@Model.Templates.Count templates</span>
+                    </dd>
+
+                    @if (Model.HasSizes && Model.AvailableSizes.Any())
+                    {
+                        <dt class="col-sm-3">Available Sizes</dt>
+                        <dd class="col-sm-9">
+                            <span class="badge bg-secondary">@Model.AvailableSizes.Count sizes</span>
+                        </dd>
+                    }
+
+                    @if (Model.HasColors && Model.AvailableColors.Any())
+                    {
+                        <dt class="col-sm-3">Available Colors</dt>
+                        <dd class="col-sm-9">
+                            <span class="badge bg-secondary">@Model.AvailableColors.Count colors</span>
+                        </dd>
+                    }
+
+                    <dt class="col-sm-3">Created</dt>
+                    <dd class="col-sm-9">@Model.CreatedOn.ToString("g") by @Model.CreatedBy</dd>
+
+                    <dt class="col-sm-3">Last Modified</dt>
+                    <dd class="col-sm-9">@Model.LastModifiedOn.ToString("g") by @Model.LastModifiedBy</dd>
+                </dl>
+
+                <hr />
+
+                @if (ViewBag.CanDelete)
                 {
-                    @Model.Description
+                    <form asp-action="Delete" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="Id" />
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you absolutely sure you want to delete this base product? This action cannot be undone.');">
+                            <i class="fas fa-trash"></i> Confirm Delete
+                        </button>
+                        <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-info">
+                            <i class="fas fa-eye"></i> View Details
+                        </a>
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancel
+                        </a>
+                    </form>
                 }
                 else
                 {
-                    <em class="text-muted">No description</em>
+                    <div class="alert alert-info" role="alert">
+                        <i class="fas fa-info-circle me-2"></i>
+                        This base product cannot be deleted because it has active product variants.
+                        Please deactivate or delete all associated variants first.
+                    </div>
+                    <a asp-action="Variants" asp-route-id="@Model.Id" class="btn btn-primary">
+                        <i class="fas fa-list"></i> View Variants
+                    </a>
+                    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-info">
+                        <i class="fas fa-eye"></i> View Details
+                    </a>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Back to List
+                    </a>
                 }
-            </dd>
+            </div>
+        </div>
+    </div>
 
-            <dt class="col-sm-3">Base Price</dt>
-            <dd class="col-sm-9">@Model.BasePrice.ToString("C")</dd>
+    <div class="col-md-4">
+        <div class="card border-left-danger shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                            Deletion Impact
+                        </div>
+                        <div class="text-xs text-gray-900">
+                            <p><strong>What will be deleted:</strong></p>
+                            <ul class="mb-0 pl-3">
+                                <li>Base product information</li>
+                                <li>All print areas (@Model.PrintAreas.Count)</li>
+                                <li>All templates (@Model.Templates.Count)</li>
+                                @if (Model.HasSizes && Model.AvailableSizes.Any())
+                                {
+                                    <li>Size associations (@Model.AvailableSizes.Count)</li>
+                                }
+                                @if (Model.HasColors && Model.AvailableColors.Any())
+                                {
+                                    <li>Color associations (@Model.AvailableColors.Count)</li>
+                                }
+                            </ul>
+                            <p class="mt-2 mb-0"><strong>Note:</strong> This is a soft delete. The product will be marked as inactive but data will be preserved in the database.</p>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-            <dt class="col-sm-3">Category</dt>
-            <dd class="col-sm-9">@Model.CategoryName</dd>
-        </dl>
-
-        <hr />
-
-        @if (ViewBag.CanDelete)
+        @if (Model.Templates.Any(t => t.IsPrimary))
         {
-            <form asp-action="Delete" method="post">
-                @Html.AntiForgeryToken()
-                <input type="hidden" asp-for="Id" />
-                <button type="submit" class="btn btn-danger">
-                    <i class="fas fa-trash"></i> Confirm Delete
-                </button>
-                <a asp-action="Index" class="btn btn-secondary">
-                    <i class="fas fa-times"></i> Cancel
-                </a>
-            </form>
-        }
-        else
-        {
-            <a asp-action="Index" class="btn btn-secondary">
-                <i class="fas fa-times"></i> Back to List
-            </a>
+            var primaryTemplate = Model.Templates.First(t => t.IsPrimary);
+            <div class="card shadow mt-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Product Preview</h6>
+                </div>
+                <div class="card-body text-center">
+                    @if (!string.IsNullOrEmpty(primaryTemplate.MockupUrl))
+                    {
+                        <img src="@primaryTemplate.MockupUrl" alt="Primary Mockup" class="img-fluid rounded opacity-50" />
+                    }
+                    else
+                    {
+                        <div class="bg-light d-flex align-items-center justify-content-center rounded opacity-50" style="height: 150px;">
+                            <i class="fas fa-image fa-3x text-muted"></i>
+                        </div>
+                    }
+                    <small class="text-muted d-block mt-2">@primaryTemplate.ViewName view</small>
+                    <small class="text-danger d-block">This will be deleted</small>
+                </div>
+            </div>
         }
     </div>
 </div>

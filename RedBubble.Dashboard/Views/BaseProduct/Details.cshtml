@@ -1,17 +1,17 @@
-﻿@model RedBubble.Application.DTOs.Products.ProductDto
+﻿@model RedBubble.Application.DTOs.Products.BaseProductDto
 
 @{
-    ViewData["Title"] = "Base Product Details";
+    ViewData["Title"] = "Product Details";
 }
 
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">@ViewData["Title"]</h1>
+    <h1 class="h3 mb-0 text-gray-800">@Model.Name</h1>
     <div>
-        <a asp-action="Index" class="btn btn-secondary btn-sm shadow-sm">
-            <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to List
+        <a class="btn btn-warning btn-sm shadow-sm" asp-action="Edit" asp-route-id="@Model.Id">
+            <i class="fas fa-edit fa-sm text-white-50"></i> Edit
         </a>
-        <a asp-action="Variants" asp-route-id="@Model.Id" class="btn btn-primary btn-sm shadow-sm">
-            <i class="fas fa-list fa-sm text-white-50"></i> View Variants
+        <a class="btn btn-secondary btn-sm shadow-sm" asp-action="Index">
+            <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to List
         </a>
     </div>
 </div>
@@ -27,43 +27,118 @@
                     <dt class="col-sm-3">Name</dt>
                     <dd class="col-sm-9">@Model.Name</dd>
 
-                    <dt class="col-sm-3">Description</dt>
-                    <dd class="col-sm-9">
-                        @if (!string.IsNullOrEmpty(Model.Description))
-                        {
-                            @Model.Description
-                        }
-                        else
-                        {
-                            <em class="text-muted">No description</em>
-                        }
-                    </dd>
-
                     <dt class="col-sm-3">Base Price</dt>
-                    <dd class="col-sm-9">@Model.BasePrice.ToString("C")</dd>
+                    <dd class="col-sm-9">$@Model.BasePrice.ToString("F2")</dd>
 
                     <dt class="col-sm-3">Category</dt>
                     <dd class="col-sm-9">@Model.CategoryName</dd>
 
-                    <dt class="col-sm-3">Created On</dt>
-                    <dd class="col-sm-9">@Model.CreatedOn.ToString("g")</dd>
+                    <dt class="col-sm-3">Has Sizes</dt>
+                    <dd class="col-sm-9">@Model.HasSizes</dd>
 
-                    <dt class="col-sm-3">Last Modified</dt>
-                    <dd class="col-sm-9">@Model.LastModifiedOn.ToString("g") by @Model.LastModifiedBy</dd>
+                    <dt class="col-sm-3">Has Colors</dt>
+                    <dd class="col-sm-9">@Model.HasColors</dd>
+
+                    <dt class="col-sm-3">Is Active</dt>
+                    <dd class="col-sm-9">@Model.IsActive</dd>
+
+                    <dt class="col-sm-3">Description</dt>
+                    <dd class="col-sm-9">@Model.Description</dd>
                 </dl>
+            </div>
+        </div>
 
-                <hr />
+        <!-- Print Areas -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-secondary">Print Areas</h6>
+            </div>
+            <div class="card-body">
+                @if (Model.PrintAreas != null && Model.PrintAreas.Any())
+                {
+                    <table class="table table-sm table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Area Name</th>
+                                <th>Width (in)</th>
+                                <th>Height (in)</th>
+                                <th>DPI</th>
+                                <th>Order</th>
+                                <th>Active</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var area in Model.PrintAreas.OrderBy(a => a.DisplayOrder))
+                            {
+                                <tr>
+                                    <td>@area.AreaName</td>
+                                    <td>@area.Width</td>
+                                    <td>@area.Height</td>
+                                    <td>@area.MinDPI</td>
+                                    <td>@area.DisplayOrder</td>
+                                    <td>@(area.IsActive ? "Yes" : "No")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p class="text-muted">No print areas defined.</p>
+                }
+            </div>
+        </div>
 
-                <div class="btn-group">
-                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
-                    <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="d-inline">
-                        @Html.AntiForgeryToken()
-                        <button type="submit" class="btn btn-danger"
-                                onclick="return confirm('Are you sure you want to delete this base product?');">
-                            Delete
-                        </button>
-                    </form>
-                </div>
+        <!-- Templates -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-secondary">Templates & Mockups</h6>
+            </div>
+            <div class="card-body">
+                @if (Model.Templates != null && Model.Templates.Any())
+                {
+                    <table class="table table-sm table-bordered align-middle">
+                        <thead>
+                            <tr>
+                                <th>View Name</th>
+                                <th>Size (px)</th>
+                                <th>Primary</th>
+                                <th>Order</th>
+                                <th>Template</th>
+                                <th>Mockup</th>
+                                <th>Active</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var t in Model.Templates.OrderBy(t => t.DisplayOrder))
+                            {
+                                <tr>
+                                    <td>@t.ViewName</td>
+                                    <td>@t.TemplateWidth x @t.TemplateHeight</td>
+                                    <td>@(t.IsPrimary ? "Yes" : "No")</td>
+                                    <td>@t.DisplayOrder</td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(t.TemplateUrl))
+                                        {
+                                            <img src="@t.TemplateUrl" alt="Template" class="img-thumbnail" style="max-height:60px;" />
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(t.MockupUrl))
+                                        {
+                                            <img src="@t.MockupUrl" alt="Mockup" class="img-thumbnail" style="max-height:60px;" />
+                                        }
+                                    </td>
+                                    <td>@(t.IsActive ? "Yes" : "No")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p class="text-muted">No templates defined.</p>
+                }
             </div>
         </div>
     </div>
@@ -74,101 +149,19 @@
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                            Product Guidelines
+                            Quick Stats
                         </div>
                         <div class="text-xs text-gray-900">
-                            <ul class="mb-0 pl-3">
-                                <li>Use unique, descriptive names</li>
-                                <li>Ensure base price reflects base cost</li>
-                                <li>Associate with a relevant category</li>
-                                <li>Description should be clear and concise</li>
-                            </ul>
+                            <p><strong>Print Areas:</strong> @Model.PrintAreas.Count</p>
+                            <p><strong>Templates:</strong> @Model.Templates.Count</p>
+                            <p><strong>Primary Templates:</strong> @Model.Templates.Count(t => t.IsPrimary)</p>
                         </div>
                     </div>
                     <div class="col-auto">
-                        <i class="fas fa-info-circle fa-2x text-gray-300"></i>
+                        <i class="fas fa-chart-bar fa-2x text-gray-300"></i>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-<div class="card shadow mb-4">
-    <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">Product Variants</h6>
-    </div>
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-bordered" id="variantsTable" width="100%" cellspacing="0">
-                <thead>
-                    <tr>
-                        <th>Variant ID</th>
-                        <th>Image</th>
-                        <th>Design</th>
-                        <th>Size</th>
-                        <th>Color</th>
-                        <th>Price</th>
-                        <th>Stock</th>
-                        <th>Created</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var variant in ViewBag.ProductVariants as IEnumerable<RedBubble.Application.DTOs.Products.ProductVariant.ProductVariantDto>)
-                    {
-                        var primaryImage = variant.Images.FirstOrDefault(img => img.IsPrimary && img.IsActive);
-                        <tr>
-                            <td>@variant.Id</td>
-                            <td>
-                                @if (primaryImage != null && !string.IsNullOrEmpty(primaryImage.ImageUrl))
-                                {
-                                    <img src="@primaryImage.ImageUrl" alt="@(primaryImage.AltText ?? "Variant Image")" style="max-width: 50px; max-height: 50px;" />
-                                }
-                                else
-                                {
-                                    <span class="text-muted">No image</span>
-                                }
-                            </td>
-                            <td>@variant.DesignTitle</td>
-                            <td>@variant.SizeName</td>
-                            <td>
-                                <span class="badge" style="background-color: @variant.ColorCode">@variant.ColorName</span>
-                            </td>
-                            <td>@variant.Price.ToString("C")</td>
-                            <td>@variant.StockQuantity</td>
-                            <td>@variant.CreatedAt.ToString("g")</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-
-            @if (!(ViewBag.ProductVariants as IEnumerable<RedBubble.Application.DTOs.Products.ProductVariant.ProductVariantDto>).Any())
-            {
-                <div class="text-center py-4">
-                    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-                    <p class="text-muted">No product variants found for this base product.</p>
-                </div>
-            }
-        </div>
-    </div>
-</div>
-
-@section Scripts {
-    <script>
-        $(document).ready(function () {
-            $('#variantsTable').DataTable({
-                "paging": false,
-                "info": false,
-                "ordering": false,
-                "searching": false,
-                "columnDefs": [
-                    { "className": "text-center", "targets": [0, 1, 5, 6, 7] }
-                ],
-                "dom": "t<'row mt-3'<'col-md-7'l><'col-md-5'p>>",
-                "language": {
-                    "lengthMenu": "Display _MENU_ items per page"
-                }
-            });
-        });
-    </script>
-}

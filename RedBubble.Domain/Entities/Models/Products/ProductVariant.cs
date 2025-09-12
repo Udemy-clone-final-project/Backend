@@ -7,20 +7,19 @@ using System.Threading.Tasks;
 
 namespace RedBubble.Domain.Entities.Models.Products
 {
-    public class ProductVariant:BaseAuditableEntity<int>
+    public class ProductVariant:BaseEntity<int>
     {
         public decimal Price { get; set; }
-        public int StockQuantity { get; set; }
-
         public bool IsActive { get; set; }
         public int BaseProductId { get; set; }
         public BaseProduct? BaseProduct { get; set; }
-        public int DesignId { get; set; }
+        public int? DesignId { get; set; }
         public Design? Design { get; set; }
-        public int ColorId { get; set; }
+       
+        public int? ColorId { get; set; }
         public Color? Color { get; set; }
 
-        public int SizeId { get; set; }
+        public int? SizeId { get; set; }
         public Size? Size { get; set; }
         public ICollection<ProductVariantImages> ProductVariantImages { get; set; } = new HashSet<ProductVariantImages>();
         public ICollection<OrderItem> OrderItems { get; set; } = new HashSet<OrderItem>();

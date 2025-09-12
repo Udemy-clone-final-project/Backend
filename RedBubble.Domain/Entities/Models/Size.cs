@@ -14,6 +14,7 @@ namespace RedBubble.Domain.Entities.Models
         public string SizeName { get; set; } = null!;
         public string Description { get; set; } = null!;
         public bool IsActive { get; set; }
-        public ICollection<ProductVariant> ProductVariants { get; set; }= new HashSet<ProductVariant>();
+        public ICollection<BaseProductSize> BaseProductSize { get; set; } = new HashSet<BaseProductSize>();
+        public ICollection<ProductVariant> ProductVariants { get; set; } = new HashSet<ProductVariant>();
     }
 }

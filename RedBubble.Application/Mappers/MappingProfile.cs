@@ -15,15 +15,44 @@ namespace RedBubble.Application.Mappers
         public MappingProfile()
         {
             // BaseProduct
-            CreateMap<BaseProduct, ProductDto>()
-                .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category != null ? src.Category.CategoryName : null));
 
-            CreateMap<BaseProduct, ProductListDto>()
-                .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category != null ? src.Category.CategoryName : null));
+            // Add these mappings to your existing MappingProfile.cs
 
-            CreateMap<CreateProductDto, BaseProduct>();
+            // BaseProduct mappings
+            CreateMap<BaseProduct, BaseProductDto>()
+                .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category!.CategoryName));
 
-            CreateMap<UpdateProductDto, BaseProduct>();
+            CreateMap<BaseProduct, BaseProductListDto>()
+                .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category!.CategoryName))
+                .ForMember(dest => dest.PrimaryMockupUrl, opt => opt.MapFrom(src =>
+                    src.Templates.Where(t => t.IsActive && t.IsPrimary)
+                                 .Select(t => t.MockupUrl)
+                                 .FirstOrDefault() ?? string.Empty))
+                .ForMember(dest => dest.VariantsCount, opt => opt.MapFrom(src => src.ProductVariants.Count(v => v.IsActive)));
+
+            CreateMap<CreateBaseProductDto, BaseProduct>();
+            CreateMap<UpdateBaseProductDto, BaseProduct>();
+
+            // Print Area mappings
+            CreateMap<BaseProductPrintArea, PrintAreaDto>();
+            CreateMap<CreatePrintAreaDto, BaseProductPrintArea>()
+                .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => true));
+            CreateMap<UpdatePrintAreaDto, BaseProductPrintArea>();
+
+            // Template mappings
+            CreateMap<BaseProductTemplate, TemplateDto>();
+            CreateMap<CreateTemplateDto, BaseProductTemplate>()
+                .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => true));
+            CreateMap<UpdateTemplateDto, BaseProductTemplate>();
+
+            // Junction table mappings
+            CreateMap<BaseProductSize, BaseProductSizeDto>()
+                .ForMember(dest => dest.SizeName, opt => opt.MapFrom(src => src.Size!.SizeName))
+                .ForMember(dest => dest.SizeDescription, opt => opt.MapFrom(src => src.Size!.Description));
+
+            CreateMap<BaseProductColor, BaseProductColorDto>()
+                .ForMember(dest => dest.ColorName, opt => opt.MapFrom(src => src.Color!.ColorName))
+                .ForMember(dest => dest.ColorCode, opt => opt.MapFrom(src => src.Color!.ColorCode));
 
             // User mappings
             //CreateMap<ApplicationUser, UserDTO>();
@@ -91,9 +120,8 @@ namespace RedBubble.Application.Mappers
 
             CreateMap<CreateCategoryDto, Category>()
                 .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(src => DateTime.UtcNow))
-                .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => "System"))
-                .ForMember(dest => dest.SubCategories, opt => opt.Ignore())
-                .ForMember(dest => dest.BaseProducts, opt => opt.Ignore());
+                .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => "System"));
+              
 
             CreateMap<UpdateCategoryDto, Category>()
                 .ForMember(dest => dest.LastModifiedOn, opt => opt.MapFrom(src => DateTime.UtcNow))

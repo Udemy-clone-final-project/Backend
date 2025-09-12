@@ -2,48 +2,33 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using RedBubble.Domain.Entities.Models;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace RedBubble.Infrastructure.DataAccess.Configurations
 {
-    // // What does IEntityTypeConfiguration<Design> do?
-    // It’s an interface provided by Entity Framework Core
-    // to help you configure entity properties in a separate class,
-    // instead of inside OnModelCreating() in DbContext.
     public class DesignConfiguration : IEntityTypeConfiguration<Design>
     {
-        
-
         public void Configure(EntityTypeBuilder<Design> builder)
         {
-            // Relationship between Design and User(Artist)
-            // Design Created by one Artist
-            builder.HasOne(d => d.Artist)
-                .WithMany()
-                .HasForeignKey(d => d.ArtistId)
-                .OnDelete(DeleteBehavior.Restrict);
 
-            // Relationship between Design and User(Admin)
-            // Design Reviewed by one Admin
             builder.HasOne(d => d.Admin)
-                .WithMany()
+                .WithMany(u => u.CreatedDesigns)
                 .HasForeignKey(d => d.AdminId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-
-            builder.HasMany(d => d.DesignImages)
-                .WithOne(di => di.Design)
-                .HasForeignKey(di => di.DsignId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired(false);
 
             builder.HasMany(d => d.ProductVariants)
                 .WithOne(pv => pv.Design)
                 .HasForeignKey(pv => pv.DesignId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.SetNull);
+
+            builder.Property(d => d.ImageUrl)
+                .IsRequired()
+                .HasMaxLength(500);
+
+            builder.Property(d => d.FileName)
+                .HasMaxLength(255);
+
+            builder.Property(d => d.AltText)
+                .HasMaxLength(255);
         }
     }
 }

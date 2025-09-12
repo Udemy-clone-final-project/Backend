@@ -1,39 +1,30 @@
 ﻿using AutoMapper;
 using RedBubble.Application.DTOs.Design;
+using RedBubble.Application.DTOs.Design.DesignImages;
 using RedBubble.Domain.Entities.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace RedBubble.Application.Mappers
+namespace RedBubble.Application.Profiles
 {
     public class DesignProfile : Profile
     {
         public DesignProfile()
         {
-            // convert from ArtistDesignDTO to Design
-            CreateMap<ArtistDesignDTO, Design>()
-            .ForMember(dest => dest.Id, opt => opt.Ignore()) // id is generated
-            .ForMember(dest => dest.ArtistId, opt => opt.Ignore())
-            .ForMember(dest => dest.Artist, opt => opt.Ignore())
-            .ForMember(dest => dest.AdminId, opt => opt.Ignore())
-            .ForMember(dest => dest.Admin, opt => opt.Ignore())
-            .ForMember(dest => dest.UploadedAt, opt => opt.Ignore())
-            .ForMember(dest => dest.Status, opt => opt.Ignore())
-            .ForMember(dest => dest.IsActive, opt => opt.Ignore())
-            .ForMember(dest => dest.ReviewedAt, opt => opt.Ignore())
-            .ForMember(dest => dest.RejectionReason, opt => opt.Ignore());
+            CreateMap<Design, DesignDto>()
+                .ForMember(dest => dest.AdminName, opt => opt.MapFrom(src => src.Admin != null ? src.Admin.DisplayName : string.Empty))
+                .ForMember(dest => dest.ProductVariants, opt => opt.MapFrom(src => src.ProductVariants));
 
-            // convert from Design to ArtistDesignDTO
-            CreateMap<Design, ArtistDesignDTO>()
-               .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.DesignImages));
+            CreateMap<DesignDto, Design>();
 
-            // convert from Design to ArtistGetDesignDTO
-            CreateMap<Design, ArtistGetDesignDTO>();
+            CreateMap<CreateDesignDto, Design>()
+              
+                .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.AdminId ?? "System"))
+                .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(dest => dest.LastModifiedBy, opt => opt.MapFrom(src => src.AdminId ?? "System"))
+                .ForMember(dest => dest.LastModifiedOn, opt => opt.MapFrom(src => DateTime.UtcNow));
 
-
+            CreateMap<UpdateDesignDto, Design>()
+                .ForMember(dest => dest.LastModifiedBy, opt => opt.MapFrom(src => src.AdminId ?? "System"))
+                .ForMember(dest => dest.LastModifiedOn, opt => opt.MapFrom(src => DateTime.UtcNow));
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<RedBubble.Application.DTOs.Products.ProductVariant.ProductVariantDto>
+﻿@model IEnumerable<RedBubble.Domain.Entities.Models.Products.ProductVariant>
 
 @{
     ViewData["Title"] = "Product Variants for " + ViewBag.BaseProductName;
@@ -6,9 +6,93 @@
 
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800">@ViewData["Title"]</h1>
-    <a class="btn btn-secondary btn-sm shadow-sm" asp-action="Index" asp-controller="BaseProduct">
-        <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to Base Products
-    </a>
+    <div>
+        <a class="btn btn-success btn-sm shadow-sm" asp-controller="ProductVariant" asp-action="Create" asp-route-baseProductId="@ViewBag.BaseProductId">
+            <i class="fas fa-plus fa-sm text-white-50"></i> Create New Variant
+        </a>
+        <a class="btn btn-info btn-sm shadow-sm" asp-action="Details" asp-route-id="@ViewBag.BaseProductId">
+            <i class="fas fa-eye fa-sm text-white-50"></i> View Base Product
+        </a>
+        <a class="btn btn-secondary btn-sm shadow-sm" asp-action="Index">
+            <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to Base Products
+        </a>
+    </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Variants</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Count()</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-list fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Active Variants</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Count(v => v.IsActive)</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-check fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Unique Designs</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Where(v => v.DesignId.HasValue).Select(v => v.DesignId).Distinct().Count()</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-palette fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Avg. Price</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            @if (Model.Any())
+                            {
+                                @Model.Average(v => v.Price).ToString("C")
+                            }
+                            else
+                            {
+                                <text>$0.00</text>
+                            }
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="card shadow mb-4">
@@ -20,40 +104,110 @@
             <table class="table table-bordered" id="variantsTable" width="100%" cellspacing="0">
                 <thead>
                     <tr>
-                        <th>Variant ID</th>
+                        <th>ID</th>
                         <th>Image</th>
                         <th>Design</th>
                         <th>Size</th>
                         <th>Color</th>
                         <th>Price</th>
-                        <th>Stock</th>
-                        <th>Created</th>
+                        <th>Status</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var variant in Model)
+                    @foreach (var variant in Model.OrderBy(v => v.Id))
                     {
-                        var primaryImage = variant.Images.FirstOrDefault(img => img.IsPrimary && img.IsActive);
-                        <tr>
+                        <tr class="@(variant.IsActive ? "" : "table-secondary")">
                             <td>@variant.Id</td>
                             <td>
-                                @if (primaryImage != null && !string.IsNullOrEmpty(primaryImage.ImageUrl))
+                                @if (variant.ProductVariantImages.Any(img => img.IsPrimary && img.IsActive))
                                 {
-                                    <img src="@primaryImage.ImageUrl" alt="@(primaryImage.AltText ?? "Variant Image")" style="max-width: 50px; max-height: 50px;" />
+                                    var primaryImage = variant.ProductVariantImages.First(img => img.IsPrimary && img.IsActive);
+                                    <img src="@primaryImage.ImageUrl" alt="@(primaryImage.AltText ?? "Variant Image")"
+                                         style="max-width: 60px; max-height: 60px;" class="rounded border" />
                                 }
                                 else
                                 {
-                                    <span class="text-muted">No image</span>
+                                    <div class="bg-light d-flex align-items-center justify-content-center rounded border"
+                                         style="width: 60px; height: 60px;">
+                                        <i class="fas fa-image text-muted"></i>
+                                    </div>
                                 }
                             </td>
-                            <td>@variant.DesignTitle</td>
-                            <td>@variant.SizeName</td>
                             <td>
-                                <span class="badge" style="background-color: @variant.ColorCode">@variant.ColorName</span>
+                                @if (variant.Design != null)
+                                {
+                                    <div>
+                                        <strong>@variant.Design.Title</strong>
+                                        @if (!string.IsNullOrEmpty(variant.Design.Description))
+                                        {
+                                            <br />
+                                            <small class="text-muted">@variant.Design.Description</small>
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    <em class="text-muted">No design assigned</em>
+                                }
                             </td>
-                            <td>@variant.Price.ToString("C")</td>
-                            <td>@variant.StockQuantity</td>
-                            <td>@variant.CreatedAt.ToString("g")</td>
+                            <td>
+                                @if (variant.Size != null)
+                                {
+                                    <span class="badge bg-secondary">@variant.Size.SizeName</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-light text-dark">One Size</span>
+                                }
+                            </td>
+                            <td>
+                                @if (variant.Color != null)
+                                {
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded-circle me-2 border"
+                                             style="width: 24px; height: 24px; background-color: @variant.Color.ColorCode;"></div>
+                                        <span>@variant.Color.ColorName</span>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-light text-dark">Default</span>
+                                }
+                            </td>
+                            <td>
+                                <span class="h6 text-success">@variant.Price.ToString("C")</span>
+                            </td>
+                            <td>
+                                @if (variant.IsActive)
+                                {
+                                    <span class="badge bg-success">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Inactive</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a asp-controller="ProductVariant" asp-action="Details" asp-route-id="@variant.Id"
+                                       class="btn btn-info btn-sm" title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a asp-controller="ProductVariant" asp-action="Edit" asp-route-id="@variant.Id"
+                                       class="btn btn-warning btn-sm" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form asp-controller="ProductVariant" asp-action="Delete" asp-route-id="@variant.Id"
+                                          method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-danger btn-sm" title="Delete"
+                                                onclick="return confirm('Are you sure you want to delete this variant?');">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
                         </tr>
                     }
                 </tbody>
@@ -61,29 +215,116 @@
 
             @if (!Model.Any())
             {
-                <div class="text-center py-4">
+                <div class="text-center py-5">
                     <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-                    <p class="text-muted">No product variants found for this base product.</p>
+                    <h5 class="text-muted">No Product Variants Found</h5>
+                    <p class="text-muted">This base product doesn't have any variants yet.</p>
+                    <a asp-controller="ProductVariant" asp-action="Create" asp-route-baseProductId="@ViewBag.BaseProductId"
+                       class="btn btn-success">
+                        <i class="fas fa-plus"></i> Create First Variant
+                    </a>
                 </div>
             }
         </div>
     </div>
 </div>
 
+<!-- Variants by Design (if there are multiple designs) -->
+@if (Model.Where(v => v.DesignId.HasValue).Select(v => v.DesignId).Distinct().Count() > 1)
+{
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Variants by Design</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                @foreach (var designGroup in Model.Where(v => v.DesignId.HasValue).GroupBy(v => v.Design))
+                {
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">@designGroup.Key?.Title</h6>
+                                <span class="badge bg-primary">@designGroup.Count() variants</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    @foreach (var variant in designGroup.Take(4))
+                                    {
+                                        <div class="col-6 mb-2">
+                                            <div class="text-center">
+                                                @if (variant.ProductVariantImages.Any(img => img.IsPrimary && img.IsActive))
+                                                {
+                                                    var primaryImage = variant.ProductVariantImages.First(img => img.IsPrimary && img.IsActive);
+                                                    <img src="@primaryImage.ImageUrl" alt="Variant"
+                                                         class="img-fluid rounded border" style="max-height: 60px;" />
+                                                }
+                                                else
+                                                {
+                                                    <div class="bg-light d-flex align-items-center justify-content-center rounded border"
+                                                         style="height: 60px;">
+                                                        <i class="fas fa-image text-muted"></i>
+                                                    </div>
+                                                }
+                                                <small class="d-block mt-1">
+                                                    @if (variant.Size != null)
+                                                    {
+                                                        @variant.Size.SizeName
+                                                    }
+                                                    @if (variant.Color != null)
+                                                    {
+                                                        <br />
+                                                        @variant.Color.ColorName
+                                                    }
+                                                </small>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                @if (designGroup.Count() > 4)
+                                {
+                                    <small class="text-muted">...and @(designGroup.Count() - 4) more</small>
+                                }
+                                <div class="mt-2">
+                                    <small class="text-muted">
+                                        Price range: @designGroup.Min(v => v.Price).ToString("C") - @designGroup.Max(v => v.Price).ToString("C")
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
 @section Scripts {
     <script>
         $(document).ready(function () {
             $('#variantsTable').DataTable({
-                "paging": false,
-                "info": false,
-                "ordering": false,
-                "searching": false,
+                "paging": true,
+                "pageLength": 15,
+                "info": true,
+                "ordering": true,
+                "searching": true,
                 "columnDefs": [
-                    { "className": "text-center", "targets": [0, 1, 5, 6, 7] }
+                    { "className": "text-center", "targets": [0, 1, 6, 7] },
+                    { "orderable": false, "targets": [1, 7] }
                 ],
-                "dom": "t<'row mt-3'<'col-md-7'l><'col-md-5'p>>",
+                "order": [[0, "asc"]],
                 "language": {
-                    "lengthMenu": "Display _MENU_ items per page"
+                    "lengthMenu": "Display _MENU_ variants per page",
+                    "zeroRecords": "No variants found matching your search",
+                    "info": "Showing _START_ to _END_ of _TOTAL_ variants",
+                    "infoEmpty": "Showing 0 to 0 of 0 variants",
+                    "infoFiltered": "(filtered from _MAX_ total variants)",
+                    "search": "Search variants:",
+                    "paginate": {
+                        "first": "First",
+                        "last": "Last",
+                        "next": "Next",
+                        "previous": "Previous"
+                    }
                 }
             });
         });

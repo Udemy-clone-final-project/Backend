@@ -23,6 +23,10 @@ namespace RedBubble.Infrastructure.Implementations.Base
         {
             await _dbContext.Set<TEntity>().AddAsync(entity);
         }
+        public async Task AddRangeAsync(IEnumerable<TEntity> entities)
+        {
+            await _dbContext.Set<TEntity>().AddRangeAsync(entities);
+        }
 
         public void Delete(TEntity entity)
         {
@@ -43,6 +47,10 @@ namespace RedBubble.Infrastructure.Implementations.Base
 
         public void Update(TEntity entity)
         => _dbContext.Set<TEntity>().Update(entity);
+        public void UpdateRange(IEnumerable<TEntity> entities)
+        {
+            _dbContext.Set<TEntity>().UpdateRange(entities);
+        }
 
     }
 }

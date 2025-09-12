@@ -1,4 +1,4 @@
-﻿@model RedBubble.Application.DTOs.Products.CreateProductDto
+﻿@model RedBubble.Application.DTOs.Products.CreateBaseProductDto
 
 @{
     ViewData["Title"] = "Create Base Product";
@@ -18,34 +18,184 @@
                 <h6 class="m-0 font-weight-bold text-primary">Base Product Information</h6>
             </div>
             <div class="card-body">
-                <form asp-action="Create" method="post">
+                <form asp-action="Create" method="post" enctype="multipart/form-data">
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group mb-3">
                                 <label asp-for="Name" class="form-label">Product Name</label>
-                                <input asp-for="Name" class="form-control" placeholder="e.g., T-Shirt, Hoodie" />
+                                <input asp-for="Name" class="form-control" placeholder="e.g., Classic T-Shirt, Premium Hoodie" />
                                 <span asp-validation-for="Name" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group mb-3">
                                 <label asp-for="BasePrice" class="form-label">Base Price</label>
-                                <input asp-for="BasePrice" class="form-control" type="number" step="0.01" placeholder="e.g., 19.99" />
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input asp-for="BasePrice" class="form-control" type="number" step="0.01" placeholder="19.99" />
+                                </div>
                                 <span asp-validation-for="BasePrice" class="text-danger"></span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="form-group mb-3">
-                        <label asp-for="CategoryId" class="form-label">Category</label>
-                        <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.Categories"></select>
-                        <span asp-validation-for="CategoryId" class="text-danger"></span>
+                    <!-- SubCategory dropdown -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label asp-for="CategoryId" class="form-label">SubCategory</label>
+                                <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.SubCategories">
+                                    <option value="">-- Select SubCategory --</option>
+                                </select>
+                                <span asp-validation-for="CategoryId" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <!-- Sizes -->
+                                <div class="form-group">
+                                    <label>Has Sizes?</label>
+                                    <input asp-for="HasSizes" type="checkbox" class="form-check-input" id="hasSizesCheckbox" />
+                                </div>
+                                <div class="form-group" id="sizesContainer" style="display:none;">
+                                    <label>Select Available Sizes</label>
+                                    <select asp-for="AvailableSizeIds"
+                                            asp-items="@(new MultiSelectList(ViewBag.AllSizes, "Id", "SizeName", Model.AvailableSizeIds))"
+                                            multiple
+                                            class="form-control">
+                                    </select>
+                                    <small class="text-muted">Hold CTRL (Windows) or CMD (Mac) to select multiple</small>
+                                </div>
+
+                                <!-- Colors -->
+                                <div class="form-group">
+                                    <label>Has Colors?</label>
+                                    <input asp-for="HasColors" type="checkbox" class="form-check-input" id="hasColorsCheckbox" />
+                                </div>
+                                <div class="form-group" id="colorsContainer" style="display:none;">
+                                    <label>Select Available Colors</label>
+                                    <select asp-for="AvailableColorIds"
+                                            asp-items="@(new MultiSelectList(ViewBag.AllColors, "Id", "ColorName", Model.AvailableColorIds))"
+                                            multiple
+                                            class="form-control">
+                                    </select>
+                                    <small class="text-muted">Hold CTRL (Windows) or CMD (Mac) to select multiple</small>
+                                </div>
+
+
+                            </div>
+                        </div>
                     </div>
 
                     <div class="form-group mb-3">
                         <label asp-for="Description" class="form-label">Description</label>
-                        <textarea asp-for="Description" class="form-control" rows="3" placeholder="Enter product description..."></textarea>
+                        <textarea asp-for="Description" class="form-control" rows="3" placeholder="Enter detailed product description..."></textarea>
                         <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+
+                    <hr>
+
+
+                    <!-- Print Areas Section -->
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h6 class="m-0 font-weight-bold text-secondary">Print Areas</h6>
+                        </div>
+                        <div class="card-body">
+                            <div id="printAreasContainer">
+                                <div class="print-area-item mb-3 p-3 border rounded">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label class="form-label">Area Name</label>
+                                            <input name="PrintAreas[0].AreaName" class="form-control" placeholder="front" value="front" />
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label">Width (in)</label>
+                                            <input name="PrintAreas[0].Width" class="form-control" type="number" step="0.1" placeholder="8.0" value="8.0" />
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label">Height (in)</label>
+                                            <input name="PrintAreas[0].Height" class="form-control" type="number" step="0.1" placeholder="10.0" value="10.0" />
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label">DPI</label>
+                                            <input name="PrintAreas[0].MinDPI" class="form-control" type="number" placeholder="300" value="300" />
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label">Order</label>
+                                            <input name="PrintAreas[0].DisplayOrder" class="form-control" type="number" placeholder="1" value="1" />
+                                        </div>
+                                        <div class="col-md-1">
+                                            <label class="form-label">&nbsp;</label>
+                                            <button type="button" class="btn btn-danger btn-sm d-block remove-print-area">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-success btn-sm" id="addPrintArea">
+                                <i class="fas fa-plus"></i> Add Print Area
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Templates Section -->
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h6 class="m-0 font-weight-bold text-secondary">Templates & Mockups</h6>
+                        </div>
+                        <div class="card-body">
+                            <div id="templatesContainer">
+                                <div class="template-item mb-3 p-3 border rounded">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label class="form-label">View Name</label>
+                                            <input name="Templates[0].ViewName" class="form-control" placeholder="front" value="front" />
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label">Width (px)</label>
+                                            <input name="Templates[0].TemplateWidth" class="form-control" type="number" placeholder="1000" value="1000" />
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label">Height (px)</label>
+                                            <input name="Templates[0].TemplateHeight" class="form-control" type="number" placeholder="1200" value="1200" />
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-check mt-4">
+                                                <input name="Templates[0].IsPrimary" class="form-check-input" type="checkbox" checked />
+                                                <label class="form-check-label">Primary</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label">Order</label>
+                                            <input name="Templates[0].DisplayOrder" class="form-control" type="number" placeholder="1" value="1" />
+                                        </div>
+                                        <div class="col-md-1">
+                                            <label class="form-label">&nbsp;</label>
+                                            <button type="button" class="btn btn-danger btn-sm d-block remove-template">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Template File</label>
+                                            <input name="Templates[0].TemplateFile" type="file" class="form-control" accept="image/*" />
+                                            <small class="text-muted">Upload template image (transparent PNG recommended)</small>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Mockup File</label>
+                                            <input name="Templates[0].MockupFile" type="file" class="form-control" accept="image/*" />
+                                            <small class="text-muted">Upload mockup image (JPG/PNG)</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-success btn-sm" id="addTemplate">
+                                <i class="fas fa-plus"></i> Add Template
+                            </button>
+                        </div>
                     </div>
 
                     <hr>
@@ -74,9 +224,11 @@
                         <div class="text-xs text-gray-900">
                             <ul class="mb-0 pl-3">
                                 <li>Use unique, descriptive names</li>
-                                <li>Ensure base price reflects base cost</li>
-                                <li>Select an appropriate category</li>
-                                <li>Provide a clear and concise description</li>
+                                <li>Set competitive base pricing</li>
+                                <li>Select appropriate subcategory</li>
+                                <li>Define clear print areas with accurate dimensions</li>
+                                <li>Upload high-quality template and mockup files</li>
+                                <li>Ensure at least one primary template</li>
                             </ul>
                         </div>
                     </div>
@@ -93,4 +245,155 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        $(document).ready(function () {
+            let printAreaIndex = 1;
+            let templateIndex = 1;
+
+            // Add Print Area
+            $('#addPrintArea').click(function () {
+                const printAreaHtml = `
+                    <div class="print-area-item mb-3 p-3 border rounded">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label class="form-label">Area Name</label>
+                                <input name="PrintAreas[${printAreaIndex}].AreaName" class="form-control" placeholder="back" />
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Width (in)</label>
+                                <input name="PrintAreas[${printAreaIndex}].Width" class="form-control" type="number" step="0.1" placeholder="8.0" />
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Height (in)</label>
+                                <input name="PrintAreas[${printAreaIndex}].Height" class="form-control" type="number" step="0.1" placeholder="10.0" />
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">DPI</label>
+                                <input name="PrintAreas[${printAreaIndex}].MinDPI" class="form-control" type="number" placeholder="300" value="300" />
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Order</label>
+                                <input name="PrintAreas[${printAreaIndex}].DisplayOrder" class="form-control" type="number" placeholder="${printAreaIndex + 1}" value="${printAreaIndex + 1}" />
+                            </div>
+                            <div class="col-md-1">
+                                <label class="form-label">&nbsp;</label>
+                                <button type="button" class="btn btn-danger btn-sm d-block remove-print-area">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>`;
+                $('#printAreasContainer').append(printAreaHtml);
+                printAreaIndex++;
+            });
+
+            // Remove Print Area
+            $(document).on('click', '.remove-print-area', function () {
+                if ($('.print-area-item').length > 1) {
+                    $(this).closest('.print-area-item').remove();
+                } else {
+                    alert('At least one print area is required.');
+                }
+            });
+
+            // Add Template
+            $('#addTemplate').click(function () {
+                const templateHtml = `
+                    <div class="template-item mb-3 p-3 border rounded">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label class="form-label">View Name</label>
+                                <input name="Templates[${templateIndex}].ViewName" class="form-control" placeholder="back" />
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Width (px)</label>
+                                <input name="Templates[${templateIndex}].TemplateWidth" class="form-control" type="number" placeholder="1000" />
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Height (px)</label>
+                                <input name="Templates[${templateIndex}].TemplateHeight" class="form-control" type="number" placeholder="1200" />
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-check mt-4">
+                                    <input name="Templates[${templateIndex}].IsPrimary" class="form-check-input" type="checkbox" />
+                                    <label class="form-check-label">Primary</label>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Order</label>
+                                <input name="Templates[${templateIndex}].DisplayOrder" class="form-control" type="number" placeholder="${templateIndex + 1}" value="${templateIndex + 1}" />
+                            </div>
+                            <div class="col-md-1">
+                                <label class="form-label">&nbsp;</label>
+                                <button type="button" class="btn btn-danger btn-sm d-block remove-template">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-6">
+                                <label class="form-label">Template File</label>
+                                <input name="Templates[${templateIndex}].TemplateFile" type="file" class="form-control" accept="image/*" />
+                                <small class="text-muted">Upload template image (transparent PNG recommended)</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Mockup File</label>
+                                <input name="Templates[${templateIndex}].MockupFile" type="file" class="form-control" accept="image/*" />
+                                <small class="text-muted">Upload mockup image (JPG/PNG)</small>
+                            </div>
+                        </div>
+                    </div>`;
+                $('#templatesContainer').append(templateHtml);
+                templateIndex++;
+            });
+
+            // Remove Template
+            $(document).on('click', '.remove-template', function () {
+                if ($('.template-item').length > 1) {
+                    $(this).closest('.template-item').remove();
+                } else {
+                    alert('At least one template is required.');
+                }
+            });
+
+            // Ensure only one primary template
+            $(document).on('change', 'input[name$=".IsPrimary"]', function () {
+                if ($(this).is(':checked')) {
+                    $('input[name$=".IsPrimary"]').not(this).prop('checked', false);
+                }
+            });
+        });
+                      $(document).ready(function () {
+            // initial state (based on model values when editing)
+            if ($("#hasSizesCheckbox").is(":checked")) {
+                $("#sizesContainer").show();
+            }
+            if ($("#hasColorsCheckbox").is(":checked")) {
+                $("#colorsContainer").show();
+            }
+
+            // toggle sizes
+            $("#hasSizesCheckbox").change(function () {
+                if ($(this).is(":checked")) {
+                    $("#sizesContainer").slideDown();
+                } else {
+                    $("#sizesContainer").slideUp();
+                    $("#sizesContainer select").val([]); // clear selected
+                }
+            });
+
+            // toggle colors
+            $("#hasColorsCheckbox").change(function () {
+                if ($(this).is(":checked")) {
+                    $("#colorsContainer").slideDown();
+                } else {
+                    $("#colorsContainer").slideUp();
+                    $("#colorsContainer select").val([]); // clear selected
+                }
+            });
+        });
+
+
+    </script>
 }
