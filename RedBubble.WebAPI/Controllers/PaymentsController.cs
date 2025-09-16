@@ -13,10 +13,12 @@ namespace RedBubble.WebAPI.Controllers
     public class PaymentsController : ControllerBase
     {
         private readonly IPaymentService _paymentService;
+        private readonly IConfiguration _configuration;
 
-        public PaymentsController(IPaymentService paymentService)
+        public PaymentsController(IPaymentService paymentService,IConfiguration configuration)
         {
             _paymentService = paymentService;
+            _configuration = configuration;
         }
 
       
@@ -43,8 +45,8 @@ namespace RedBubble.WebAPI.Controllers
             try
             {
                 // Configure Stripe
-                StripeConfiguration.ApiKey = "";
-                
+                StripeConfiguration.ApiKey = _configuration["Stripe:SecretKey"];
+
                 var service = new PaymentIntentService();
                 var options = new PaymentIntentCreateOptions
                 {
