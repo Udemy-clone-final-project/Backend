@@ -1,0 +1,63 @@
+﻿@model IEnumerable<RedBubble.Dashboard.Models.UserViewModel>
+@{
+    ViewData["Title"] = "Customers Management";
+}
+
+<header class="mb-4">
+    <h1>Customers Management</h1>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Dashboard</a></li>
+        <li class="breadcrumb-item active">Customers</li>
+    </ol>
+</header>
+
+<div class="card">
+    <div class="card-header">
+        <i class="fas fa-users me-1"></i>
+        Customer Accounts
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Display Name</th>
+                    <th>Email</th>
+                    <th>Roles</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model)
+                {
+                    <tr>
+                        <td>@user.DisplayName</td>
+                        <td>@user.Email</td>
+                        <td>@string.Join(", ", user.Roles)</td>
+                        <td>
+                            @if (user.IsActive)
+                            {
+                                <span class="badge bg-success">Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Inactive</span>
+                            }
+                        </td>
+                        <td>
+                            
+
+                            <form asp-action="ToggleActiveStatus" method="post" class="d-inline">
+                                <input type="hidden" name="id" value="@user.Id" />
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm @(user.IsActive ? "btn-warning" : "btn-success")">
+                                    @(user.IsActive ? "Deactivate" : "Activate")
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

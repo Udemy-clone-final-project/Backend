@@ -1,0 +1,155 @@
+﻿
+@model RedBubble.Application.Services.PagedList<RedBubble.Application.DTOs.Design.DesignDto>
+
+@{
+    ViewData["Title"] = "Designs";
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Designs Management</h1>
+    <a asp-action="Create" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+        <i class="fas fa-plus fa-sm text-white-50"></i> Add New Design
+    </a>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<!-- Search -->
+<div class="row mb-3">
+    <div class="col-md-6">
+        <form asp-action="Index" method="get">
+            <div class="input-group">
+                <input name="search" value="@ViewBag.CurrentSearch" class="form-control" placeholder="Search designs..." />
+                <button class="btn btn-primary" type="submit">Search</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Designs List</h6>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered" width="100%" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var design in Model.Items)
+                {
+                    <tr>
+                        <td>
+                            @if (!string.IsNullOrEmpty(design.ImageUrl))
+                            {
+                                <img src="@design.ImageUrl" alt="@design.AltText" class="img-thumbnail"
+                                     style="width: 80px; height: 80px; object-fit: cover; cursor: pointer;"
+                                     data-bs-toggle="modal" data-bs-target="#imageModal"
+                                     data-image-url="@design.ImageUrl"
+                                     data-image-title="@design.Title" />
+                            }
+                            else
+                            {
+                                <div class="bg-light d-flex align-items-center justify-content-center"
+                                     style="width: 80px; height: 80px;">
+                                    <i class="fas fa-image text-muted"></i>
+                                </div>
+                            }
+                        </td>
+                        <td>@design.Title</td>
+                        <td>@(design.Description.Length > 50 ? design.Description.Substring(0, 50) + "..." : design.Description)</td>
+                        <td>@design.Price.ToString("C")</td>
+                        <td>
+                            @if (design.IsActive)
+                            {
+                                <span class="badge bg-success">Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Inactive</span>
+                            }
+                        </td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a asp-action="Details" asp-route-id="@design.Id" class="btn btn-info btn-sm">Details</a>
+                                <a asp-action="Edit" asp-route-id="@design.Id" class="btn btn-warning btn-sm">Edit</a>
+                                <form asp-action="Delete" asp-route-id="@design.Id" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-danger btn-sm"
+                                            onclick="return confirm('Are you sure?')">
+                                        Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                <li class="page-item @(Model.HasPrevPage ? "" : "disabled")">
+                    <a class="page-link" href="@Url.Action("Index", new { search = ViewContext.HttpContext.Request.Query["search"], sortColumn = ViewContext.HttpContext.Request.Query["sortColumn"], sortOrder = ViewContext.HttpContext.Request.Query["sortOrder"], page = Model.Page - 1, pageSize = Model.PageSize })">Previous</a>
+                </li>
+                <li class="page-item disabled">
+                    <span class="page-link">Page @Model.Page of @(Math.Ceiling((double)Model.TotalCount / Model.PageSize))</span>
+                </li>
+                <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
+                    <a class="page-link" href="@Url.Action("Index", new { search = ViewContext.HttpContext.Request.Query["search"], sortColumn = ViewContext.HttpContext.Request.Query["sortColumn"], sortOrder = ViewContext.HttpContext.Request.Query["sortOrder"], page = Model.Page + 1, pageSize = Model.PageSize })">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<!-- Image Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">Image Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="modalImage" src="" class="img-fluid" alt="Full-size preview" />
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Open modal with full-size image
+            $('img[data-bs-toggle="modal"]').on('click', function () {
+                var imageUrl = $(this).data('image-url');
+                var imageTitle = $(this).data('image-title') || 'Image Preview';
+                $('#modalImage').attr('src', imageUrl);
+                $('#imageModalLabel').text(imageTitle);
+            });
+        });
+    </script>
+}

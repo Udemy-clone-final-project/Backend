@@ -1,0 +1,296 @@
+﻿@model RedBubble.Application.DTOs.Design.CreateDesignDto
+
+@{
+    ViewData["Title"] = "Create New Design";
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Create New Design</h1>
+    <a asp-action="Index" class="btn btn-sm btn-secondary shadow-sm">
+        <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to List
+    </a>
+</div>
+
+@* Display success/error messages *@
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="card shadow">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Design Information</h6>
+    </div>
+    <div class="card-body">
+        <form asp-action="Create" method="post" enctype="multipart/form-data" id="designForm">
+            <input asp-for="AdminId" class="form-control" type="text"hidden />
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Title" class="form-label">
+                        Title <span class="text-danger">*</span>
+                    </label>
+                    <input asp-for="Title" class="form-control" placeholder="e.g., Mountain Sunset" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Price" class="form-label">
+                        Price <span class="text-danger">*</span>
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text">$</span>
+                        <input asp-for="Price" class="form-control" type="number" step="0.01" min="0.01" placeholder="9.99" />
+                    </div>
+                    <span asp-validation-for="Price" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label">
+                    Description <span class="text-danger">*</span>
+                </label>
+                <textarea asp-for="Description" class="form-control" rows="4" placeholder="Describe your design in detail..."></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+                <div class="form-text">Provide a detailed description to help customers understand your design.</div>
+            </div>
+
+            <div class="mb-4">
+                <div class="form-check">
+                    <input asp-for="IsActive" class="form-check-input" type="checkbox" checked />
+                    <label asp-for="IsActive" class="form-check-label">
+                        Active (make this design available for purchase)
+                    </label>
+                </div>
+            </div>
+
+            <!-- Image Upload Section -->
+            <div class="mb-4">
+                <h6 class="mb-3 text-secondary">
+                    <i class="fas fa-image"></i> Design Image
+                </h6>
+
+                <div class="row">
+                    <div class="col-md-8 mb-3">
+                        <label for="ImageFile" class="form-label">
+                            Upload Design Image <span class="text-danger">*</span>
+                        </label>
+                        <input type="file" name="ImageFile" id="ImageFile" class="form-control" accept="image/*" required />
+                        <div class="form-text">
+                            <strong>Requirements:</strong> JPEG, PNG, GIF, or WebP format. Maximum size: 5MB.
+                        </div>
+                        @* Display server-side validation errors for ImageFile *@
+                        @if (ViewData.ModelState["ImageFile"]?.Errors.Count > 0)
+                        {
+                            <span class="text-danger">@ViewData.ModelState["ImageFile"].Errors.FirstOrDefault()?.ErrorMessage</span>
+                        }
+                        <span id="image-error" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="AltText" class="form-label">Alt Text (Optional)</label>
+                        <input asp-for="AltText" class="form-control" placeholder="Describe the image for accessibility..." maxlength="255" />
+                        <span asp-validation-for="AltText" class="text-danger"></span>
+                        <div class="form-text">Helps with accessibility and SEO.</div>
+                    </div>
+                </div>
+
+                <!-- Image Preview Section -->
+                <div id="image-preview" class="mt-3" style="display: none;">
+                    <label class="form-label">Preview:</label>
+                    <div class="border rounded p-3 bg-light" style="max-width: 400px;">
+                        <img id="preview-img" src="" alt="Preview" class="img-fluid rounded" style="max-height: 250px; max-width: 100%;" />
+                        <div class="mt-2">
+                            <small id="file-info" class="text-muted d-block"></small>
+                            <button type="button" class="btn btn-sm btn-outline-danger mt-2" id="remove-image">
+                                <i class="fas fa-trash"></i> Remove
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upload Progress -->
+                <div id="upload-progress" class="mt-3" style="display: none;">
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                    </div>
+                    <small class="text-muted">Preparing your design...</small>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        <i class="fas fa-save"></i> Create Design
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary ms-2">
+                        <i class="fas fa-times"></i> Cancel
+                    </a>
+                </div>
+                <div class="text-muted">
+                    <small><span class="text-danger">*</span> Required fields</small>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(document).ready(function () {
+            const imageFileInput = $('#ImageFile');
+            const errorElement = $('#image-error');
+            const previewElement = $('#image-preview');
+            const previewImg = $('#preview-img');
+            const fileInfo = $('#file-info');
+            const removeBtn = $('#remove-image');
+            const submitBtn = $('#submitBtn');
+            const uploadProgress = $('#upload-progress');
+            const form = $('#designForm');
+
+            // File validation constants
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+            const maxSize = 5 * 1024 * 1024; // 5MB to match your FileService
+
+            // Image file change handler
+            imageFileInput.on('change', function (e) {
+                const file = e.target.files[0];
+
+                // Clear previous states
+                errorElement.text('');
+                previewElement.hide();
+
+                if (!file) return;
+
+                // Validate file type
+                if (!allowedTypes.includes(file.type)) {
+                    errorElement.text('Please select a valid image file (JPEG, PNG, GIF, or WebP).');
+                    imageFileInput.val('');
+                    return;
+                }
+
+                // Validate file size
+                if (file.size > maxSize) {
+                    errorElement.text('File size must be less than 5MB.');
+                    imageFileInput.val('');
+                    return;
+                }
+
+                // Show preview
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    previewImg.attr('src', e.target.result);
+                    fileInfo.html(`
+                        <strong>File:</strong> ${file.name}<br>
+                        <strong>Size:</strong> ${(file.size / 1024 / 1024).toFixed(2)} MB<br>
+                        <strong>Type:</strong> ${file.type}
+                    `);
+                    previewElement.show();
+                };
+                reader.readAsDataURL(file);
+            });
+
+            // Remove image handler
+            removeBtn.on('click', function () {
+                imageFileInput.val('');
+                previewElement.hide();
+                errorElement.text('');
+            });
+
+            // Form submission handler
+            form.on('submit', function (e) {
+                // Check if image is selected
+                if (!imageFileInput.val()) {
+                    e.preventDefault();
+                    errorElement.text('Please select an image file.');
+                    imageFileInput.focus();
+                    return false;
+                }
+
+                // Show loading state
+                submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Creating Design...');
+                uploadProgress.show();
+
+                // Simulate progress (optional visual feedback)
+                let progress = 0;
+                const progressInterval = setInterval(function () {
+                    progress += Math.random() * 15;
+                    if (progress > 90) progress = 90;
+                    $('.progress-bar').css('width', progress + '%');
+                }, 200);
+
+                // Clear interval after 10 seconds (fallback)
+                setTimeout(function () {
+                    clearInterval(progressInterval);
+                    $('.progress-bar').css('width', '100%');
+                }, 10000);
+            });
+
+            // Auto-generate alt text based on title (optional helper)
+            $('#Title').on('blur', function () {
+                const title = $(this).val();
+                const altText = $('#AltText');
+
+                if (title && !altText.val()) {
+                    altText.val(`Design: ${title}`);
+                }
+            });
+
+            // Character counter for description
+            $('#Description').on('input', function () {
+                const current = $(this).val().length;
+                const max = 1000; // Adjust based on your needs
+
+                if (!$(this).next('.char-counter').length) {
+                    $(this).after(`<div class="char-counter form-text text-end"></div>`);
+                }
+
+                $(this).next('.char-counter').text(`${current}/${max} characters`);
+
+                if (current > max) {
+                    $(this).next('.char-counter').addClass('text-danger');
+                } else {
+                    $(this).next('.char-counter').removeClass('text-danger');
+                }
+            });
+        });
+    </script>
+
+    <style>
+        .progress {
+            height: 8px;
+        }
+
+        .form-label {
+            font-weight: 600;
+        }
+
+        #image-preview img {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .card-header {
+            background-color: #f8f9fc;
+            border-bottom: 1px solid #e3e6f0;
+        }
+
+        .btn:disabled {
+            cursor: not-allowed;
+        }
+    </style>
+}

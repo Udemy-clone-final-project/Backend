@@ -1,0 +1,158 @@
+﻿@model RedBubble.Dashboard.Models.HomeViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<header class="mb-4">
+    <h1>Dashboard</h1>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item active">Home</li>
+    </ol>
+</header>
+
+<div class="row">
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Administrators
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalAdmins</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-user-shield fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            Total Users (All)
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalUsers</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-users fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            System Roles
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalRoles</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-shield-alt fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            Pending Feature
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">Coming Soon</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-cogs fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
+            </div>
+            <div class="card-body">
+                <p>Quickly access the main sections of the dashboard.</p>
+                <a asp-controller="Admins" asp-action="Index" class="btn btn-primary btn-icon-split mb-2">
+                    <span class="icon text-white-50"><i class="fas fa-user-shield"></i></span>
+                    <span class="text">Manage Admins</span>
+                </a>
+                <a asp-controller="Users" asp-action="Index" class="btn btn-info btn-icon-split mb-2">
+                    <span class="icon text-white-50"><i class="fas fa-users"></i></span>
+                    <span class="text">Manage Customers</span>
+                </a>
+                <a asp-controller="Role" asp-action="Index" class="btn btn-secondary btn-icon-split mb-2">
+                    <span class="icon text-white-50"><i class="fas fa-shield-alt"></i></span>
+                    <span class="text">Manage Roles</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<style>
+    .card .border-left-primary {
+        border-left: .25rem solid #4e73df !important;
+    }
+
+    .card .border-left-success {
+        border-left: .25rem solid #1cc88a !important;
+    }
+
+    .card .border-left-info {
+        border-left: .25rem solid #36b9cc !important;
+    }
+
+    .card .border-left-warning {
+        border-left: .25rem solid #f6c23e !important;
+    }
+
+    .text-xs {
+        font-size: .7rem;
+    }
+
+    .text-gray-300 {
+        color: #dddfeb !important;
+    }
+
+    .text-gray-800 {
+        color: #5a5c69 !important;
+    }
+
+    .font-weight-bold {
+        font-weight: 700 !important;
+    }
+
+    .btn-icon-split .icon {
+        background: rgba(0,0,0,.15);
+        display: inline-block;
+        padding: .375rem .75rem;
+        border-radius: .35rem 0 0 .35rem;
+        margin-right: -1px;
+    }
+
+    .btn-icon-split .text {
+        padding: .375rem .75rem;
+    }
+</style>

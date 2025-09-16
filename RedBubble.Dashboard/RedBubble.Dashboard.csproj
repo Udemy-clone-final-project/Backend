@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Properties\launchSettings.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MailKit" Version="4.13.0" />
+    <PackageReference Include="MimeKit" Version="4.13.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+
+    <ProjectReference Include="..\RedBubble.Application\RedBubble.Application.csproj" />
+    <ProjectReference Include="..\RedBubble.Infrastructure\RedBubble.Infrastructure.csproj" />
+
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\uploads\designs\" />
+    <Folder Include="wwwroot\uploads\mockups\" />
+    <Folder Include="wwwroot\uploads\templates\" />
+  </ItemGroup>
+
+</Project>
