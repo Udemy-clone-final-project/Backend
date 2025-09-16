@@ -43,7 +43,7 @@ namespace RedBubble.WebAPI.Controllers
             try
             {
                 // Configure Stripe
-                StripeConfiguration.ApiKey = "sk_test_51Rz5apAo4Br4gXWiMgkad5mKecXy6C29du5NQuVvhSixhv8zNasRhvhDVyTHGmxP9CLcV7Mk2dW0IWZwcEvrAfYS00XuvVoniY";
+                StripeConfiguration.ApiKey = "";
                 
                 var service = new PaymentIntentService();
                 var options = new PaymentIntentCreateOptions
