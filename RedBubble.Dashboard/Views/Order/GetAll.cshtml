@@ -179,15 +179,42 @@
                                 </td>
                                 <td>
                                     <form asp-action="ChangeStatus" asp-controller="Order" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
                                         <input type="hidden" name="orderId" value="@order.Id" />
-                                        <select name="status"
-                                                class="form-select form-select-sm status-select"
-                                                onchange="this.form.submit()"
-                                                @(order.Status == OrderStatus.Cancelled ? "disabled" : "")>
-                                            <option value="@((int)OrderStatus.Pending)" selected="@(order.Status == OrderStatus.Pending)">Pending</option>
-                                            <option value="@((int)OrderStatus.Processing)" selected="@(order.Status == OrderStatus.Processing)">Processing</option>
-                                            <option value="@((int)OrderStatus.Shipped)" selected="@(order.Status == OrderStatus.Shipped)">Shipped</option>
-                                            <option value="@((int)OrderStatus.Delivered)" selected="@(order.Status == OrderStatus.Delivered)">Delivered</option>
+                                        <input type="hidden" name="status" value="@((int)order.Status)" class="status-hidden" />
+                                        <select class="form-select form-select-sm status-select" onchange="this.previousElementSibling.value=this.value; this.form.submit()" @(order.Status == OrderStatus.Cancelled ? "disabled" : "")>
+                                            @if (order.Status == OrderStatus.Pending)
+                                            {
+                                                <option value="@((int)OrderStatus.Pending)" selected>Pending</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@((int)OrderStatus.Pending)">Pending</option>
+                                            }
+                                            @if (order.Status == OrderStatus.Processing)
+                                            {
+                                                <option value="@((int)OrderStatus.Processing)" selected>Processing</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@((int)OrderStatus.Processing)">Processing</option>
+                                            }
+                                            @if (order.Status == OrderStatus.Shipped)
+                                            {
+                                                <option value="@((int)OrderStatus.Shipped)" selected>Shipped</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@((int)OrderStatus.Shipped)">Shipped</option>
+                                            }
+                                            @if (order.Status == OrderStatus.Delivered)
+                                            {
+                                                <option value="@((int)OrderStatus.Delivered)" selected>Delivered</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@((int)OrderStatus.Delivered)">Delivered</option>
+                                            }
                                         </select>
                                     </form>
                                 </td>

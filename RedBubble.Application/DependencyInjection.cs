@@ -49,6 +49,7 @@ namespace RedBubble.Application
             });
             services.AddScoped<ISizeService, SizeService>();
             services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IAiService, AiService>();
             // Register Lazy services
             services.AddScoped<Lazy<IBaseProductService>>(provider =>
                 new Lazy<IBaseProductService>(() => provider.GetRequiredService<IBaseProductService>()));

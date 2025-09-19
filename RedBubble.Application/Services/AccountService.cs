@@ -37,11 +37,13 @@ namespace RedBubble.Application.Services
                 throw new UnauthorizedAccessException("Invalid Email or Password");
             }
 
+            var (accessToken, refreshToken) = await _tokenService.GenerateTokenPairAsync(user);
             return new UserDto
             {
                 DisplayName = user.DisplayName,
                 Email = user.Email,
-                Token = await _tokenService.GenerateTokenAsync(user)
+                Token = accessToken,
+                RefreshToken = refreshToken
             };
         }
 
@@ -71,11 +73,13 @@ namespace RedBubble.Application.Services
                 throw new InvalidOperationException($"Failed to create user: {errors}");
             }
 
+            var (accessToken, refreshToken) = await _tokenService.GenerateTokenPairAsync(user);
             return new UserDto
             {
                 DisplayName = user.DisplayName,
                 Email = user.Email,
-                Token = await _tokenService.GenerateTokenAsync(user)
+                Token = accessToken,
+                RefreshToken = refreshToken
             };
         }
     }

@@ -23,12 +23,14 @@ namespace RedBubble.Application.Services
         private readonly ICartRepository _cartRepository;
         private readonly IMapper _mapper;
         private readonly IPaymentService _paymentService;
-        public OrderService(IUnitOfWork unitOfWork, ICartRepository cartRepository, IMapper mapper, IPaymentService paymentService)
+        private readonly ICurrentUserService _currentUserService;
+        public OrderService(IUnitOfWork unitOfWork, ICartRepository cartRepository, IMapper mapper, IPaymentService paymentService, ICurrentUserService currentUserService)
         {
             _unitOfWork = unitOfWork;
             _cartRepository = cartRepository;
             _mapper = mapper;
             _paymentService = paymentService;
+            _currentUserService = currentUserService;
         }
 
         public async Task<Order?> CreateOrderAsync(string customerEmail, string customerId, OrderDto orderDto)
@@ -143,10 +145,24 @@ namespace RedBubble.Application.Services
             if (order == null) return false;
 
             order.Status = status;
+            // Ensure audit fields are set to satisfy NOT NULL constraints
+            if (string.IsNullOrWhiteSpace(order.CreatedBy))
+            {
+                order.CreatedBy = _currentUserService.UserId ?? "system";
+            }
+            if (order.CreatedOn == default)
+            {
+                order.CreatedOn = DateTime.UtcNow;
+            }
+            order.LastModifiedBy = _currentUserService.UserId ?? "system";
+            order.LastModifiedOn = DateTime.UtcNow;
             orderRepo.Update(order);
 
             var result = await _unitOfWork.CompleteAsync();
-            return result > 0;
+
+            // Verify persisted value from database
+            var refreshed = await orderRepo.GetByIdAsync(orderId);
+            return result > 0 && refreshed != null && refreshed.Status == status;
         }
     }
 }

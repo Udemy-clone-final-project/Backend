@@ -57,6 +57,20 @@ namespace RedBubble.WebAPI.Models
         public string EstimatedDelivery { get; set; } = string.Empty;
     }
 
+    public class RefundRequest
+    {
+        public string PaymentIntentId { get; set; } = string.Empty;
+        public long? Amount { get; set; } // cents; null = full refund
+        public string? Reason { get; set; }
+    }
+
+    public class RefundResponse
+    {
+        public bool Success { get; set; }
+        public string RefundId { get; set; } = string.Empty;
+        public string Message { get; set; } = string.Empty;
+    }
+
     public class Order
     {
         public string Id { get; set; } = string.Empty;

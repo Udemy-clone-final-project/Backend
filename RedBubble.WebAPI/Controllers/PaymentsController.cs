@@ -39,13 +39,20 @@ namespace RedBubble.WebAPI.Controllers
             return Ok(cart);
         }
 
+        // Refund endpoint temporarily disabled. We'll re-enable when ready.
+
         [HttpPost("create-payment-intent")]
         public async Task<ActionResult<PaymentIntentResponse>> CreatePaymentIntent([FromBody] PaymentIntentRequest request)
         {
             try
             {
-                // Configure Stripe
-                StripeConfiguration.ApiKey = _configuration["Stripe:SecretKey"];
+                // Configure Stripe (read from appsettings: StripeSettings:Secretkey)
+                var secret = _configuration["StripeSettings:Secretkey"];
+                if (string.IsNullOrWhiteSpace(secret))
+                {
+                    return BadRequest("Stripe secret key is not configured.");
+                }
+                StripeConfiguration.ApiKey = secret;
 
                 var service = new PaymentIntentService();
                 var options = new PaymentIntentCreateOptions

@@ -61,5 +61,31 @@ namespace RedBubble.Application.Services
             await _cartRepository.UpdateCartAsync(cart, TimeSpan.FromDays(15));
             return cart;
         }
+
+        public async Task<(bool Success, string RefundId, string Message)> RefundAsync(string paymentIntentId, long? amountCents = null, string? reason = null)
+        {
+            StripeConfiguration.ApiKey = _config["StripeSettings:SecretKey"];
+
+            if (string.IsNullOrWhiteSpace(paymentIntentId))
+                return (false, string.Empty, "paymentIntentId is required");
+
+            var service = new RefundService();
+            var options = new RefundCreateOptions
+            {
+                PaymentIntent = paymentIntentId,
+                Amount = amountCents,
+                Reason = reason
+            };
+
+            try
+            {
+                var refund = await service.CreateAsync(options);
+                return (true, refund.Id, refund.Status);
+            }
+            catch (StripeException ex)
+            {
+                return (false, string.Empty, ex.Message);
+            }
+        }
     }
 }

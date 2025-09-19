@@ -47,21 +47,21 @@ namespace RedBubble.Infrastructure.DataAccess
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
            
+            var currentUserId = _currentUserService.UserId ?? "system";
             foreach (var entry in ChangeTracker.Entries<IBaseAuditableEntity>())
             {
                 switch (entry.State)
                 {
                     case EntityState.Added:
-                        entry.Entity.CreatedBy = _currentUserService.UserId;
+                        entry.Entity.CreatedBy = string.IsNullOrWhiteSpace(entry.Entity.CreatedBy) ? currentUserId : entry.Entity.CreatedBy;
                         entry.Entity.CreatedOn = DateTime.UtcNow;
 
-                        
-                        entry.Entity.LastModifiedBy = _currentUserService.UserId;
+                        entry.Entity.LastModifiedBy = currentUserId;
                         entry.Entity.LastModifiedOn = DateTime.UtcNow;
                         break;
 
                     case EntityState.Modified:
-                        entry.Entity.LastModifiedBy = _currentUserService.UserId;
+                        entry.Entity.LastModifiedBy = currentUserId;
                         entry.Entity.LastModifiedOn = DateTime.UtcNow;
                         break;
                 }
