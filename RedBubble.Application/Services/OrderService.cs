@@ -20,31 +20,31 @@ namespace RedBubble.Application.Services
     public class OrderService : IOrderService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ICartRepository _cartRepository;
+        //private readonly ICartRepository _cartRepository;
         private readonly IMapper _mapper;
-        private readonly IPaymentService _paymentService;
-        public OrderService(IUnitOfWork unitOfWork, ICartRepository cartRepository, IMapper mapper, IPaymentService paymentService)
+        //private readonly IPaymentService _paymentService;
+        public OrderService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
-            _cartRepository = cartRepository;
+            //_cartRepository = cartRepository;
             _mapper = mapper;
-            _paymentService = paymentService;
+            //_paymentService = paymentService;
         }
 
         public async Task<Order?> CreateOrderAsync(string customerEmail, string customerId, OrderDto orderDto)
         {
             // الخطوة 1: جلب السلة من Redis (كما هي)
-            var cart = await _cartRepository.GetCartAsync(orderDto.CartId);
-            if (cart == null || !cart.Items.Any()) return null;
+            //var cart = await _cartRepository.GetCartAsync(orderDto.CartId);
+            //if (cart == null || !cart.Items.Any()) return null;
 
             // الخطوة 2: إنشاء قائمة بـ OrderItems (كما هي، طريقتك هنا فعالة)
             var orderItems = new List<OrderItem>();
-            foreach (var item in cart.Items)
-            {
-                var variantOrdered = new VariantItemOrdered(item.VariantId, item.DesignTitle, item.ProductName, item.PictureUrl);
-                var orderItem = new OrderItem(variantOrdered, item.UnitPrice, item.Quantity);
-                orderItems.Add(orderItem);
-            }
+            //foreach (var item in cart.Items)
+            //{
+            //    var variantOrdered = new VariantItemOrdered(item.VariantId, item.DesignTitle, item.ProductName, item.PictureUrl);
+            //    var orderItem = new OrderItem(variantOrdered, item.UnitPrice, item.Quantity);
+            //    orderItems.Add(orderItem);
+            //}
 
             // الخطوة 3: جلب طريقة التوصيل (كما هي)
             var deliveryMethod = await _unitOfWork.GetRepository<DeliveryMethod, int>().GetByIdAsync(orderDto.DeliveryMethodId);
@@ -54,27 +54,27 @@ namespace RedBubble.Application.Services
             var subtotal = orderItems.Sum(oi => oi.Price * oi.Quantity);
 
             // ✨ الخطوة 5: التحقق من وجود طلب قديم بنفس عملية الدفع (المنطق الجديد)
-            var orderRepo = _unitOfWork.GetRepository<Order, int>();
-            if (!string.IsNullOrEmpty(cart.PaymentIntentId))
-            {
-                var existingOrder = await orderRepo.GetAll()
-                                                   .FirstOrDefaultAsync(o => o.PaymentIntentId == cart.PaymentIntentId);
+            //var orderRepo = _unitOfWork.GetRepository<Order, int>();
+            //if (!string.IsNullOrEmpty(cart.PaymentIntentId))
+            //{
+            //    var existingOrder = await orderRepo.GetAll()
+            //                                       .FirstOrDefaultAsync(o => o.PaymentIntentId == cart.PaymentIntentId);
 
-                if (existingOrder != null)
-                {
-                    // إذا وجدنا طلبًا قديمًا، نحذفه
-                    orderRepo.Delete(existingOrder);
-                    // ونقوم بتحديث المبلغ في Stripe ليعكس أي تغييرات في السلة
-                    await _paymentService.CreateOrUpdatePaymentIntentAsync(orderDto.CartId);
-                }
-            }
+            //    if (existingOrder != null)
+            //    {
+            //        // إذا وجدنا طلبًا قديمًا، نحذفه
+            //        orderRepo.Delete(existingOrder);
+            //        // ونقوم بتحديث المبلغ في Stripe ليعكس أي تغييرات في السلة
+            //        await _paymentService.CreateOrUpdatePaymentIntentAsync(orderDto.CartId);
+            //    }
+            //}
 
             // الخطوة 6: إنشاء الطلب الجديد (كما هي)
             var shippingAddress = _mapper.Map<Address>(orderDto.ShippingAddress);
-            var order = new Order(customerId, shippingAddress, deliveryMethod, orderItems, subtotal, cart.PaymentIntentId);
+            Order order = null;
 
             // الخطوة 7: حفظ الطلب الجديد في قاعدة البيانات
-            await orderRepo.AddAsync(order);
+            //await orderRepo.AddAsync(order);
             var result = await _unitOfWork.CompleteAsync();
 
             if (result <= 0) return null; // فشل الحفظ

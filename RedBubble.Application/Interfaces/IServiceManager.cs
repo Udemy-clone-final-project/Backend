@@ -19,7 +19,7 @@ namespace RedBubble.Application.Interfaces
         public IColorService colorService { get; }
         public ISizeService sizeService { get; }
         public IDesignService designService { get; }
-        public IOrderService orderService { get; }
+        //public IOrderService orderService { get; }
 
 
         //public IProductVariantImageService ProductVariantImageService { get; }

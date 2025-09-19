@@ -4,14 +4,16 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RedBubble.Application.Interfaces;
+using RedBubble.Application.Interfaces.Products;
 using RedBubble.Domain.Entities.Models;
 using RedBubble.Domain.Entities.Models.Identity;
 using RedBubble.Domain.Interfaces;
 using RedBubble.Infrastructure.DataAccess;
 using RedBubble.Infrastructure.Implementations.Base;
-using RedBubble.Infrastructure.Implementations.CartRepository;
+using RedBubble.Infrastructure.Implementations.images;
 using RedBubble.Infrastructure.Implementations.Repositories;
 using RedBubble.Infrastructure.Implementations.UnitOfWork;
+using RedBubble.Infrastructure.Services;
 using StackExchange.Redis;
 using System;
 using System.Collections;
@@ -20,58 +22,36 @@ using System.Linq;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using static System.Net.Mime.MediaTypeNames;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+
 namespace RedBubble.Infrastructure
 {
-    // This class is a central place to register Infrastructure layer services — such as:
-    // The database context
-    // The Identity system
-    // Any repositories, if needed
-    // It’s used to separate infrastructure configuration from the main Program.cs / Startup.cs,
-    // so your application setup stays clean and layered.
-
-
     public static class DependencyInjection
     {
         public static IServiceCollection AddPersistenceServices(this IServiceCollection services, IConfiguration configuration)
         {
-
-
+          
             services.AddDbContext<AppDbContext>(options =>
             {
                 options.UseSqlServer(configuration.GetConnectionString("StoreContext"));
             });
 
-            ////  Add Identity using custom ApplicationUser and ApplicationRole
-            //services.AddIdentity<ApplicationUser, ApplicationRole>()
-            //    .AddEntityFrameworkStores<AppDbContext>()
-            //    .AddDefaultTokenProviders();
-
-      
-            
-
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-
             services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
-            //services.AddScoped<IDesignRepository, DesignRepository>();
-            #region is generic one alternative of this ??
-            // But most of the time, you want to use specific repositories(like IDesignRepository) so you can:
-            // Add custom methods(e.g., GetByCategoryId, GetTopRatedDesigns)
-            // Keep service code clean
-            // Separate logic for each entity
-            #endregion
 
-            services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddScoped<IImageService, ImageService>();
+            services.AddScoped<IMockupGeneratorService, MockupGeneratorService>();
 
-            // Redis
+          
+            services.AddScoped<IFileService, FileService>();
+
+          
             var redisConnectionString = configuration.GetConnectionString("Redis");
             if (!string.IsNullOrWhiteSpace(redisConnectionString))
             {
-                services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(redisConnectionString));
+                services.AddSingleton<IConnectionMultiplexer>(_ =>
+                    ConnectionMultiplexer.Connect(redisConnectionString));
             }
-            //services.AddScoped<ICartRepository, CartRepository>();
+
             return services;
         }
     }

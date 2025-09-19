@@ -7,7 +7,7 @@ namespace RedBubble.Application.Interfaces
     public interface ICartService
     {
         Task<CustomerCartDto> GetCartAsync(string cartId);
-        Task<CustomerCartDto> AddOrUpdateItemInCartAsync(string cartId, int variantId, int quantity);
+        //Task<CustomerCartDto> AddOrUpdateItemInCartAsync(string cartId, int variantId, int quantity);
         Task RemoveItemFromCartAsync(string cartId, int variantId);
         Task<bool> DeleteCartAsync(string cartId);
         Task MergeCartsAsync(string anonymousCartId, string customerId);

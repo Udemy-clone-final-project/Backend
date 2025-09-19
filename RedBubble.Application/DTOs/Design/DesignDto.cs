@@ -54,6 +54,7 @@ namespace RedBubble.Application.DTOs.Design
 
         // ⚡ Server fills this too
         public string AdminId { get; set; }
+        public List<int> BaseProductIds { get; set; } = new();
     }
 
     public class UpdateDesignDto

@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using RedBubble.Application.DTOs.Design;
 using RedBubble.Application.Interfaces;
+using RedBubble.Application.Interfaces.Products;
 using RedBubble.Domain.Entities.Models;
 using RedBubble.Domain.Interfaces;
 using System;
@@ -16,11 +17,13 @@ namespace RedBubble.Application.Services
     {
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IVariantGeneratorService _variantGeneratorService;
 
-        public DesignService(IMapper mapper, IUnitOfWork unitOfWork)
+        public DesignService(IMapper mapper, IUnitOfWork unitOfWork, IVariantGeneratorService variantGeneratorService)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
+            _variantGeneratorService = variantGeneratorService;
         }
 
         public async Task<PagedList<DesignDto>> GetAllAsync(string? searchItem, string? sortColumn, string? sortOrder,
@@ -165,6 +168,7 @@ namespace RedBubble.Application.Services
                 // Save changes
                 Console.WriteLine("🔄 Calling CompleteAsync...");
                 var saveResult = await _unitOfWork.CompleteAsync();
+
                 Console.WriteLine($"✅ CompleteAsync completed. Result: {saveResult}");
                 Console.WriteLine($"Entity ID after save: {design.Id}");
 
@@ -175,12 +179,21 @@ namespace RedBubble.Application.Services
                 }
 
                 Console.WriteLine("✅ Design saved successfully!");
+              
+                if (createDesignDto.BaseProductIds != null && createDesignDto.BaseProductIds.Any())
+                {
+                    foreach (var baseProductId in createDesignDto.BaseProductIds)
+                    {
+                        await _variantGeneratorService.GenerateVariantsAsync(design.Id, baseProductId);
+                    }
+                }
 
                 // Map back to DTO
                 var resultDto = _mapper.Map<DesignDto>(design);
                 Console.WriteLine($"✅ Result DTO created with ID: {resultDto.Id}");
 
                 Console.WriteLine("=== DEBUG: CreateAsync completed successfully ===");
+                
                 return resultDto;
             }
             catch (Exception ex)

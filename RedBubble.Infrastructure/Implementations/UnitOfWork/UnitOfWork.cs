@@ -1,4 +1,5 @@
-﻿using RedBubble.Domain.Entities.Base;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+using RedBubble.Domain.Entities.Base;
 using RedBubble.Domain.Interfaces;
 using RedBubble.Infrastructure.DataAccess;
 using RedBubble.Infrastructure.Implementations.Base;
@@ -32,6 +33,10 @@ namespace RedBubble.Infrastructure.Implementations.UnitOfWork
 
             return (IGenericRepository<TEntity, TKey>)repositories.GetOrAdd(typeof(TEntity).Name, _ => new GenericRepository<TEntity, TKey>(dbContext));
 
+        }
+        public async Task<IDbContextTransaction> BeginTransactionAsync()
+        {
+            return await dbContext.Database.BeginTransactionAsync();
         }
     }
 }

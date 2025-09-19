@@ -33,30 +33,30 @@ namespace RedBubble.Application.Services
             if (cart == null) return null;
 
             decimal shippingPrice = 0;
-            if (cart.DeliveryMethodId.HasValue)
-            {
-                var deliveryMethod = await _unitOfWork.GetRepository<DeliveryMethod, int>().GetByIdAsync(cart.DeliveryMethodId.Value);
-                shippingPrice = deliveryMethod.Cost;
-            }
+            //if (cart.DeliveryMethodId.HasValue)
+            //{
+            //    var deliveryMethod = await _unitOfWork.GetRepository<DeliveryMethod, int>().GetByIdAsync(cart.DeliveryMethodId.Value);
+            //    shippingPrice = deliveryMethod.Cost;
+            //}
 
-            var subtotal = cart.Items.Sum(i => i.Quantity * i.UnitPrice);
+            var subtotal = 7;
             var totalAmount = (long)((subtotal + shippingPrice) * 100);
 
             var service = new PaymentIntentService();
             PaymentIntent intent;
 
-            if (string.IsNullOrEmpty(cart.PaymentIntentId))
-            {
-                var options = new PaymentIntentCreateOptions { Amount = totalAmount, Currency = "usd", PaymentMethodTypes = new List<string> { "card" } };
-                intent = await service.CreateAsync(options);
-                cart.PaymentIntentId = intent.Id;
-                cart.ClientSecret = intent.ClientSecret;
-            }
-            else
-            {
-                var options = new PaymentIntentUpdateOptions { Amount = totalAmount };
-                intent = await service.UpdateAsync(cart.PaymentIntentId, options);
-            }
+            //if (string.IsNullOrEmpty(cart.PaymentIntentId))
+            //{
+            //    var options = new PaymentIntentCreateOptions { Amount = totalAmount, Currency = "usd", PaymentMethodTypes = new List<string> { "card" } };
+            //    intent = await service.CreateAsync(options);
+            //    //cart.PaymentIntentId = intent.Id;
+            //    //cart.ClientSecret = intent.ClientSecret;
+            //}
+            //else
+            //{
+            //    var options = new PaymentIntentUpdateOptions { Amount = totalAmount };
+            //    //intent = await service.UpdateAsync(cart.PaymentIntentId, options);
+            //}
 
             await _cartRepository.UpdateCartAsync(cart, TimeSpan.FromDays(15));
             return cart;

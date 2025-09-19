@@ -19,7 +19,7 @@ namespace RedBubble.Infrastructure.Implementations.Repositories
 
         public async Task<IQueryable<Order>> GetAllActive()
         {
-            var orders = context.Orders.Where(o => o.Status != OrderStatus.Cancelled);
+            var orders = context.Orders;
             return orders;
         }
 
