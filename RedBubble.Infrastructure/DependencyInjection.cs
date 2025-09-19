@@ -4,14 +4,16 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RedBubble.Application.Interfaces;
+using RedBubble.Application.Interfaces.Products;
 using RedBubble.Domain.Entities.Models;
 using RedBubble.Domain.Entities.Models.Identity;
 using RedBubble.Domain.Interfaces;
 using RedBubble.Infrastructure.DataAccess;
 using RedBubble.Infrastructure.Implementations.Base;
-using RedBubble.Infrastructure.Implementations.CartRepository;
-//using RedBubble.Infrastructure.Implementations.Repositories;
+using RedBubble.Infrastructure.Implementations.images;
+using RedBubble.Infrastructure.Implementations.Repositories;
 using RedBubble.Infrastructure.Implementations.UnitOfWork;
+using RedBubble.Infrastructure.Services;
 using StackExchange.Redis;
 using System;
 using System.Collections;
@@ -37,7 +39,7 @@ namespace RedBubble.Infrastructure
     {
         public static IServiceCollection AddPersistenceServices(this IServiceCollection services, IConfiguration configuration)
         {
-
+          
 
             services.AddDbContext<AppDbContext>(options =>
             {
@@ -50,10 +52,12 @@ namespace RedBubble.Infrastructure
             //    .AddDefaultTokenProviders();
 
       
-            
+
+            services.AddScoped<IImageService, ImageService>();
+            services.AddScoped<IMockupGeneratorService, MockupGeneratorService>();
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-
+          
             services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
             //services.AddScoped<IDesignRepository, DesignRepository>();
             #region is generic one alternative of this ??
@@ -64,7 +68,7 @@ namespace RedBubble.Infrastructure
             #endregion
 
             //services.AddScoped<IOrderRepository, OrderRepository>();
-
+          
             // Redis
             var redisConnectionString = configuration.GetConnectionString("Redis");
             if (!string.IsNullOrWhiteSpace(redisConnectionString))

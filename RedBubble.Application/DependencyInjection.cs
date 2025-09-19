@@ -39,14 +39,8 @@ namespace RedBubble.Application
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IColorService, ColorService>();
-            services.AddScoped<ICartService, CartService>();
-            services.AddScoped<ICurrentUserService, CurrentUserService>();
-            services.AddScoped(typeof(Func<ICartService>), (serviceporvider) =>
-            {
 
-                return () => serviceporvider.GetRequiredService<ICartService>();
 
-            });
             services.AddScoped<ISizeService, SizeService>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IAiService, AiService>();
@@ -67,14 +61,14 @@ namespace RedBubble.Application
                 new Lazy<IDesignService>(() => provider.GetRequiredService<IDesignService>()));
             services.AddScoped<Lazy<IFileService>>(provider =>
                 new Lazy<IFileService>(() => provider.GetRequiredService<IFileService>()));
-            services.AddScoped<Lazy<IOrderService>>(provider =>
-                new Lazy<IOrderService>(() => provider.GetRequiredService<IOrderService>()));
             services.AddScoped<Lazy<IColorService>>(provider =>
                 new Lazy<IColorService>(() => provider.GetRequiredService<IColorService>()));
             services.AddScoped<Lazy<ISizeService>>(provider =>
                 new Lazy<ISizeService>(() => provider.GetRequiredService<ISizeService>()));
             services.AddScoped<Lazy<ICategoryService>>(provider =>
               new Lazy<ICategoryService>(() => provider.GetRequiredService<ICategoryService>()));
+            services.AddScoped<Lazy<IVariantGeneratorService>>(provider =>
+              new Lazy<IVariantGeneratorService>(() => provider.GetRequiredService<IVariantGeneratorService>()));
             //services.AddScoped<Lazy<ICartService>>(provider =>
             // new Lazy<ICartService>(() => provider.GetRequiredService<ICartService>()));
 
@@ -91,10 +85,6 @@ namespace RedBubble.Application
             //services.AddScoped<IDesignService, DesignService>();
 
             // ingect Order Service and Order mapper
-            // services.AddScoped<IOrderService, OrderService>(); // Already registered above
-            services.AddAutoMapper(m => m.AddProfile<OrderProfile>());
-            services.AddAutoMapper(m => m.AddProfile<OrderItemProfile>());
-            services.AddScoped<IPaymentService, PaymentService>();
 
 
 

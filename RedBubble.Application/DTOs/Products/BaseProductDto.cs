@@ -5,9 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace RedBubble.Application.DTOs.Products
 {
-    // Remove the problematic BaseDto abstract class
-
-    // Main BaseProduct DTOs
+    // FIXED: Main BaseProduct DTOs with proper checkbox binding
     public class CreateBaseProductDto
     {
         [Required(ErrorMessage = "Name is required")]
@@ -25,8 +23,9 @@ namespace RedBubble.Application.DTOs.Products
         [Required(ErrorMessage = "Category is required")]
         public int CategoryId { get; set; }
 
-        public bool HasSizes { get; set; }
-        public bool HasColors { get; set; }
+        // FIXED: Explicit boolean properties with proper initialization
+        public bool HasSizes { get; set; } = false;
+        public bool HasColors { get; set; } = false;
 
       
 
@@ -39,11 +38,88 @@ namespace RedBubble.Application.DTOs.Products
         [MinLength(1, ErrorMessage = "At least one template is required")]
         public List<CreateTemplateDto> Templates { get; set; } = new();
 
+        // FIXED: Initialize as empty lists to prevent null reference errors
         public List<int> AvailableSizeIds { get; set; } = new();
         public List<int> AvailableColorIds { get; set; } = new();
+
+        // FIXED: Custom validation method
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            var results = new List<ValidationResult>();
+
+            // Business rule validation
+            if (HasSizes && !AvailableSizeIds.Any())
+            {
+                results.Add(new ValidationResult(
+                    "At least one size must be selected when 'Has Sizes' is enabled.",
+                    new[] { nameof(AvailableSizeIds) }));
+            }
+
+            if (HasColors && !AvailableColorIds.Any())
+            {
+                results.Add(new ValidationResult(
+                    "At least one color must be selected when 'Has Colors' is enabled.",
+                    new[] { nameof(AvailableColorIds) }));
+            }
+
+            // Template validation
+            if (Templates != null)
+            {
+                var primaryCount = Templates.Count(t => t.IsPrimary);
+                if (primaryCount == 0)
+                {
+                    results.Add(new ValidationResult(
+                        "At least one template must be marked as primary.",
+                        new[] { nameof(Templates) }));
+                }
+                else if (primaryCount > 1)
+                {
+                    results.Add(new ValidationResult(
+                        "Only one template can be marked as primary.",
+                        new[] { nameof(Templates) }));
+                }
+
+                // Check for unique view names
+                var viewNames = Templates.Select(t => t.ViewName?.ToLower()).Where(n => !string.IsNullOrEmpty(n)).ToList();
+                if (viewNames.Count != viewNames.Distinct().Count())
+                {
+                    results.Add(new ValidationResult(
+                        "Template view names must be unique.",
+                        new[] { nameof(Templates) }));
+                }
+            }
+
+            // Print area validation
+            if (PrintAreas != null && Templates != null)
+            {
+                var templateViews = Templates.Select(t => t.ViewName?.ToLower()).Where(n => !string.IsNullOrEmpty(n)).ToHashSet();
+                var areaNames = PrintAreas.Select(pa => pa.AreaName?.ToLower()).Where(n => !string.IsNullOrEmpty(n)).ToList();
+
+                // Check for unique area names
+                if (areaNames.Count != areaNames.Distinct().Count())
+                {
+                    results.Add(new ValidationResult(
+                        "Print area names must be unique.",
+                        new[] { nameof(PrintAreas) }));
+                }
+
+                // Check that print areas reference existing template views
+                foreach (var area in PrintAreas)
+                {
+                    if (!string.IsNullOrEmpty(area.AreaName) && !templateViews.Contains(area.AreaName.ToLower()))
+                    {
+                        results.Add(new ValidationResult(
+                            $"Print area '{area.AreaName}' references a template view that doesn't exist.",
+                            new[] { nameof(PrintAreas) }));
+                    }
+                }
+            }
+
+            return results;
+        }
     }
 
-    public class UpdateBaseProductDto
+    public class UpdateBaseProductDto : IValidatableObject
     {
         [Required]
         public int Id { get; set; }
@@ -63,8 +139,9 @@ namespace RedBubble.Application.DTOs.Products
         [Required(ErrorMessage = "Category is required")]
         public int CategoryId { get; set; }
 
-        public bool HasSizes { get; set; }
-        public bool HasColors { get; set; }
+        // FIXED: Explicit boolean properties
+        public bool HasSizes { get; set; } = false;
+        public bool HasColors { get; set; } = false;
         public bool IsActive { get; set; } = true;
 
         [Required(ErrorMessage = "At least one print area is required")]
@@ -75,10 +152,30 @@ namespace RedBubble.Application.DTOs.Products
         [MinLength(1, ErrorMessage = "At least one template is required")]
         public List<UpdateTemplateDto> Templates { get; set; } = new();
 
-        public List<int>? AvailableSizeIds { get; set; } = new();
-        public List<int>? AvailableColorIds { get; set; } = new();
-    }
+        public List<int> AvailableSizeIds { get; set; } = new();
+        public List<int> AvailableColorIds { get; set; } = new();
 
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            var results = new List<ValidationResult>();
+
+            if (HasSizes && !AvailableSizeIds.Any())
+            {
+                results.Add(new ValidationResult(
+                    "At least one size must be selected when 'Has Sizes' is enabled.",
+                    new[] { nameof(AvailableSizeIds) }));
+            }
+
+            if (HasColors && !AvailableColorIds.Any())
+            {
+                results.Add(new ValidationResult(
+                    "At least one color must be selected when 'Has Colors' is enabled.",
+                    new[] { nameof(AvailableColorIds) }));
+            }
+
+            return results;
+        }
+    }
 
     public class BaseProductDto
     {
@@ -91,7 +188,7 @@ namespace RedBubble.Application.DTOs.Products
         public bool HasSizes { get; set; }
         public bool HasColors { get; set; }
         public bool IsActive { get; set; }
-       
+
 
         // Related data
         public List<PrintAreaDto> PrintAreas { get; set; } = new();
@@ -114,11 +211,11 @@ namespace RedBubble.Application.DTOs.Products
         public string AreaName { get; set; } = null!;
 
         [Required(ErrorMessage = "Width is required")]
-        [Range(0.1, 50, ErrorMessage = "Width must be between 0.1 and 50")]
+        [Range(0.1, 5000, ErrorMessage = "Width must be between 0.1 and 5000")]
         public decimal Width { get; set; }
 
         [Required(ErrorMessage = "Height is required")]
-        [Range(0.1, 50, ErrorMessage = "Height must be between 0.1 and 50")]
+        [Range(0.1, 5000, ErrorMessage = "Height must be between 0.1 and 5000")]
         public decimal Height { get; set; }
 
         [Range(0, int.MaxValue, ErrorMessage = "Position X must be non-negative")]
@@ -161,17 +258,28 @@ namespace RedBubble.Application.DTOs.Products
         [StringLength(50)]
         public string ViewName { get; set; } = null!;
 
-        // Instead of URLs, accept uploaded files
-        public IFormFile TemplateFile { get; set; } = null!;
-        public IFormFile MockupFile { get; set; } = null!;
+        // File uploads - marked as required for creation
+        [Required(ErrorMessage = "Template file is required")]
+        public IFormFile? TemplateFile { get; set; }
+
+        [Required(ErrorMessage = "Mockup file is required")]
+        public IFormFile? MockupFile { get; set; }
+
         public IFormFile? FlatMockupFile { get; set; }
 
-        public bool IsPrimary { get; set; }
+        public bool IsPrimary { get; set; } = false;
+
+        [Range(1, 100, ErrorMessage = "Display order must be between 1 and 100")]
         public int DisplayOrder { get; set; } = 1;
+
+        // Dimension fields - will be populated automatically
+        [Range(1, 10000, ErrorMessage = "Template width must be between 1 and 10000")]
         public int TemplateWidth { get; set; }
+
+        [Range(1, 10000, ErrorMessage = "Template height must be between 1 and 10000")]
         public int TemplateHeight { get; set; }
 
-        // These will be filled later by the FileService
+        // URL fields - will be filled by the FileService
         public string? TemplateUrl { get; set; }
         public string? MockupUrl { get; set; }
         public string? FlatMockupUrl { get; set; }
@@ -182,6 +290,13 @@ namespace RedBubble.Application.DTOs.Products
     {
         public int Id { get; set; }
         public bool IsActive { get; set; } = true;
+
+        // FIXED: For updates, files are optional (existing URLs will be kept if no new file)
+        [Required(ErrorMessage = "Template file or URL is required")]
+        public new IFormFile? TemplateFile { get; set; }
+
+        [Required(ErrorMessage = "Mockup file or URL is required")]
+        public new IFormFile? MockupFile { get; set; }
     }
 
     public class TemplateDto
@@ -236,6 +351,17 @@ namespace RedBubble.Application.DTOs.Products
         public bool IsActive { get; set; }
         public DateTime CreatedOn { get; set; }
         public string PrimaryMockupUrl { get; set; } = string.Empty;
-        public int VariantsCount { get; set; } // Useful for admin interface
+        public int VariantsCount { get; set; }
     }
+    public class CreatePrintAreaInput
+    {
+        public string AreaName { get; set; } = null!;
+
+        // UI sends these as percentages (0–100)
+        public decimal WidthPercent { get; set; }
+        public decimal HeightPercent { get; set; }
+        public decimal PositionXPercent { get; set; }
+        public decimal PositionYPercent { get; set; }
+    }
+
 }

@@ -19,6 +19,7 @@ using System.Threading.Tasks;
 namespace RedBubble.Infrastructure.DataAccess
 {
     public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
+
     {
         private readonly ICurrentUserService _currentUserService;
 
@@ -46,7 +47,7 @@ namespace RedBubble.Infrastructure.DataAccess
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-           
+
             var currentUserId = _currentUserService.UserId ?? "system";
             foreach (var entry in ChangeTracker.Entries<IBaseAuditableEntity>())
             {

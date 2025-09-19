@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using RedBubble.Application.DTOs.Design;
 using RedBubble.Application.Interfaces;
 using RedBubble.Domain.Entities.Models.Identity;
@@ -14,15 +15,18 @@ namespace RedBubble.Dashboard.Controllers
         private readonly IDesignService _designService;
         private readonly IFileService _fileService;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IServiceManager _serviceManager;
 
         public DesignController(
             IDesignService designService,
             IFileService fileService,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            IServiceManager serviceManager)
         {
             _designService = designService;
             _fileService = fileService;
             _userManager = userManager;
+            _serviceManager = serviceManager;
         }
 
         // GET: Design
@@ -51,12 +55,18 @@ namespace RedBubble.Dashboard.Controllers
         }
 
         // GET: Design/Create
-        public IActionResult Create()
+         public async Task<IActionResult> Create()
         {
             var model = new CreateDesignDto { IsActive = true };
             model.AdminId = User.Claims.FirstOrDefault().Value;
+
+            // Populate BaseProducts
+            var baseProducts = await _serviceManager.baseProductService.GetAllBaseProductsAsync();
+            ViewBag.BaseProducts = new MultiSelectList(baseProducts, "Id", "Name");
+
             return View(model);
         }
+
 
         // POST: Design/Create
         [HttpPost]

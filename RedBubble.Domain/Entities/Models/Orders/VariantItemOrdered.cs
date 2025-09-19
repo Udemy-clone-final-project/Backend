@@ -8,7 +8,7 @@ namespace RedBubble.Domain.Entities.Models.Orders
 {
     public class VariantItemOrdered
     {
-
+       
         private VariantItemOrdered() { }
 
         public VariantItemOrdered(int variantId, string designTitle, string productName, string pictureUrl, string? colorName = null, string? sizeName = null)

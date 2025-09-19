@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using RedBubble.Application.Interfaces.Products;
+
 
 namespace RedBubble.Application.Services
 {
@@ -18,15 +20,17 @@ namespace RedBubble.Application.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IFileService _fileService;
-
+        private readonly IImageService _imageService;
         public BaseProductService(
             IUnitOfWork unitOfWork,
             IMapper mapper,
-            IFileService fileService)
+            IFileService fileService,
+            IImageService imageService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _fileService = fileService;
+            _imageService = imageService; 
         }
 
         public async Task<IEnumerable<BaseProductListDto>> GetAllBaseProductsAsync()
@@ -93,6 +97,7 @@ namespace RedBubble.Application.Services
             await CreateTemplatesAsync(baseProduct, createProductDto.Templates);
             await CreateAvailableSizesAsync(baseProduct, createProductDto.AvailableSizeIds);
             await CreateAvailableColorsAsync(baseProduct, createProductDto.AvailableColorIds);
+            await _unitOfWork.CompleteAsync();
 
             return await GetBaseProductByIdAsync(baseProduct.Id)
                 ?? throw new InvalidOperationException("Failed to retrieve created product.");
@@ -165,7 +170,7 @@ namespace RedBubble.Application.Services
             product.LastModifiedBy = deletedBy;
             product.LastModifiedOn = DateTime.UtcNow;
             repository.Update(product);
-
+ 
             // Cascade soft-delete to related entities
             await SoftDeleteRelatedAsync(id);
             await _unitOfWork.CompleteAsync();
@@ -199,15 +204,21 @@ namespace RedBubble.Application.Services
 
             // Validate business rules
             ValidateBusinessRules(dto.PrintAreas, dto.Templates, dto.HasSizes, dto.AvailableSizeIds,
-                                dto.HasColors, dto.AvailableColorIds);
+                                  dto.HasColors, dto.AvailableColorIds);
 
-            // Validate primary template rule
+            // Ensure exactly one primary template
             var primaryTemplates = dto.Templates.Count(t => t.IsPrimary);
-            if (primaryTemplates != 1)
+            if (primaryTemplates == 0)
             {
-                throw new InvalidOperationException("Exactly one template must be marked as primary.");
+                // Default the first template to primary
+                dto.Templates.First().IsPrimary = true;
+            }
+            else if (primaryTemplates > 1)
+            {
+                throw new InvalidOperationException("Only one template can be marked as primary.");
             }
         }
+
 
         private async Task ValidateUpdateDtoAsync(UpdateBaseProductDto dto)
         {
@@ -221,17 +232,25 @@ namespace RedBubble.Application.Services
                 throw new InvalidOperationException("Base product name must be unique.");
             }
 
+            // Validate business rules
             ValidateBusinessRules(dto.PrintAreas.Cast<CreatePrintAreaDto>(),
-                                dto.Templates.Cast<CreateTemplateDto>(),
-                                dto.HasSizes, dto.AvailableSizeIds,
-                                dto.HasColors, dto.AvailableColorIds);
+                                  dto.Templates.Cast<CreateTemplateDto>(),
+                                  dto.HasSizes, dto.AvailableSizeIds,
+                                  dto.HasColors, dto.AvailableColorIds);
 
+            // Ensure exactly one primary template
             var primaryTemplates = dto.Templates.Count(t => t.IsPrimary);
-            if (primaryTemplates != 1)
+            if (primaryTemplates == 0)
             {
-                throw new InvalidOperationException("Exactly one template must be marked as primary.");
+                // Default the first template to primary
+                dto.Templates.First().IsPrimary = true;
+            }
+            else if (primaryTemplates > 1)
+            {
+                throw new InvalidOperationException("Only one template can be marked as primary.");
             }
         }
+
 
         private void ValidateBusinessRules(IEnumerable<CreatePrintAreaDto> printAreas,
                                          IEnumerable<CreateTemplateDto> templates,
@@ -308,66 +327,117 @@ namespace RedBubble.Application.Services
         private async Task CreatePrintAreasAsync(BaseProduct product, List<CreatePrintAreaDto> printAreas)
         {
             var repo = _unitOfWork.GetRepository<BaseProductPrintArea, int>();
-            var entities = new List<BaseProductPrintArea>();
+            var existing = await repo.GetAll()
+                .Where(x => x.BaseProductId == product.Id && x.IsActive)
+                .Select(x => x.AreaName.ToLower())
+                .ToListAsync();
 
-            foreach (var pa in printAreas)
+            var newAreas = printAreas
+                .GroupBy(pa => pa.AreaName.ToLower())
+                .Select(g => g.First())
+                .Where(pa => !existing.Contains(pa.AreaName.ToLower()))
+                .ToList();
+
+            foreach (var pa in newAreas)
             {
                 var printArea = _mapper.Map<BaseProductPrintArea>(pa);
                 printArea.BaseProductId = product.Id;
                 printArea.IsActive = true;
-                entities.Add(printArea);
+                await repo.AddAsync(printArea);
             }
 
             await repo.AddRangeAsync(entities);
         }
+
 
         private async Task CreateTemplatesAsync(BaseProduct product, List<CreateTemplateDto> templates)
         {
             var repo = _unitOfWork.GetRepository<BaseProductTemplate, int>();
-            var entities = new List<BaseProductTemplate>();
+            var existing = await repo.GetAll()
+                .Where(x => x.BaseProductId == product.Id && x.IsActive)
+                .Select(x => x.ViewName.ToLower())
+                .ToListAsync();
 
-            foreach (var t in templates)
+            var newTemplates = templates
+                .GroupBy(t => t.ViewName.ToLower())
+                .Select(g => g.First())
+                .Where(t => !existing.Contains(t.ViewName.ToLower()))
+                .ToList();
+
+            foreach (var t in newTemplates)
             {
+                // Map to entity
                 var template = _mapper.Map<BaseProductTemplate>(t);
                 template.BaseProductId = product.Id;
                 template.IsActive = true;
-                entities.Add(template);
-            }
 
-            await repo.AddRangeAsync(entities);
+                // Get dimensions automatically if not provided
+                if ((t.TemplateWidth == 0 || t.TemplateHeight == 0) && t.TemplateFile != null)
+                {
+                    var (w, h) = await _imageService.GetImageDimensionsAsync(t.TemplateFile);
+                    template.TemplateWidth = w;
+                    template.TemplateHeight = h;
+                }
+
+                await repo.AddAsync(template);
+            }
         }
+
+
 
         private async Task CreateAvailableSizesAsync(BaseProduct product, List<int> sizeIds)
         {
             if (!sizeIds.Any()) return;
 
             var repo = _unitOfWork.GetRepository<BaseProductSize, int>();
-            var entities = sizeIds.Select(sizeId => new BaseProductSize
-            {
-                BaseProductId = product.Id,
-                SizeId = sizeId,
-                IsActive = true,
-                PriceModifier = 0
-            }).ToList();
+            var existing = await repo.GetAll()
+                .Where(x => x.BaseProductId == product.Id && x.IsActive)
+                .Select(x => x.SizeId)
+                .ToListAsync();
 
-            await repo.AddRangeAsync(entities);
+            var newSizes = sizeIds
+                .Distinct()
+                .Where(sizeId => !existing.Contains(sizeId))
+                .Select(sizeId => new BaseProductSize
+                {
+                    BaseProductId = product.Id,
+                    SizeId = sizeId,
+                    IsActive = true,
+                    PriceModifier = 0
+                })
+                .ToList();
+
+            if (newSizes.Any())
+                await repo.AddRangeAsync(newSizes);
         }
+
 
         private async Task CreateAvailableColorsAsync(BaseProduct product, List<int> colorIds)
         {
             if (!colorIds.Any()) return;
 
             var repo = _unitOfWork.GetRepository<BaseProductColor, int>();
-            var entities = colorIds.Select(colorId => new BaseProductColor
-            {
-                BaseProductId = product.Id,
-                ColorId = colorId,
-                IsActive = true,
-                PriceModifier = 0
-            }).ToList();
+            var existing = await repo.GetAll()
+                .Where(x => x.BaseProductId == product.Id && x.IsActive)
+                .Select(x => x.ColorId)
+                .ToListAsync();
 
-            await repo.AddRangeAsync(entities);
+            var newColors = colorIds
+                .Distinct()
+                .Where(colorId => !existing.Contains(colorId))
+                .Select(colorId => new BaseProductColor
+                {
+                    BaseProductId = product.Id,
+                    ColorId = colorId,
+                    IsActive = true,
+                    PriceModifier = 0
+                })
+                .ToList();
+
+            if (newColors.Any())
+                await repo.AddRangeAsync(newColors);
         }
+
 
         private async Task UpdatePrintAreasAsync(BaseProduct product, List<UpdatePrintAreaDto> newPrintAreas)
         {
@@ -737,5 +807,6 @@ namespace RedBubble.Application.Services
             await _unitOfWork.CompleteAsync();
             return true;
         }
+      
     }
 }

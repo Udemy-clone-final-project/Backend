@@ -32,7 +32,7 @@ namespace RedBubble.Dashboard
             //AddApplicationServices() => from App/DependencyInjection
             // Register Application Services
             builder.Services.AddApplicationServices();
-            
+
             // Add HttpContextAccessor for CurrentUserService
             builder.Services.AddHttpContextAccessor();
 

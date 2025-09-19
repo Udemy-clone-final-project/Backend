@@ -1,4 +1,5 @@
-﻿using RedBubble.Domain.Entities.Base;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+using RedBubble.Domain.Entities.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,7 @@ namespace RedBubble.Domain.Interfaces
             where TKey : IEquatable<TKey>;
 
         Task<int> CompleteAsync();
+        Task<IDbContextTransaction> BeginTransactionAsync();
 
     }
 }

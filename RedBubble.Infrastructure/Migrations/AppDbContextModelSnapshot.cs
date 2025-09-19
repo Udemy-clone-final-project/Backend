@@ -390,8 +390,45 @@ namespace RedBubble.Infrastructure.Migrations
                         new
                         {
                             Id = 10,
+                            ColorCode = "#FF69B4",
+                            ColorName = "Rose Pink",
                             ColorCode = "#808080",
                             ColorName = "Gray",
+                            IsActive = true
+                        },
+                        new
+                        {
+                            Id = 11,
+                            ColorCode = "#FF4500",
+                            ColorName = "Sunset Orange",
+                            IsActive = true
+                        },
+                        new
+                        {
+                            Id = 12,
+                            ColorCode = "#8B4513",
+                            ColorName = "Chocolate Brown",
+                            IsActive = true
+                        },
+                        new
+                        {
+                            Id = 13,
+                            ColorCode = "#87CEEB",
+                            ColorName = "Sky Blue",
+                            IsActive = true
+                        },
+                        new
+                        {
+                            Id = 14,
+                            ColorCode = "#50C878",
+                            ColorName = "Emerald Green",
+                            IsActive = true
+                        },
+                        new
+                        {
+                            Id = 15,
+                            ColorCode = "#800020",
+                            ColorName = "Burgundy",
                             IsActive = true
                         });
                 });
@@ -453,6 +490,7 @@ namespace RedBubble.Infrastructure.Migrations
                     b.HasIndex("AdminId");
 
                     b.ToTable("Designs");
+                });
 
                     b.HasData(
                         new
@@ -2040,7 +2078,7 @@ namespace RedBubble.Infrastructure.Migrations
                             Title = "Majestic Eagle #99"
                         },
                         new
-                        {
+                {
                             Id = 100,
                             AdminId = "admin-001",
                             AltText = "Coffee Lover design artwork",
@@ -2250,6 +2288,16 @@ namespace RedBubble.Infrastructure.Migrations
                         new
                         {
                             Id = 16,
+                            ApplicationUserId = "customer-015",
+                            City = "Malmö",
+                            Country = "Sweden",
+                            FirstName = "Customer15First",
+                            LastName = "Customer15Last",
+                            Street = "1601 Oak Avenue"
+                        },
+                        new
+                        {
+                            Id = 17,
                             ApplicationUserId = "customer-016",
                             City = "Los Angeles",
                             Country = "Australia",
@@ -3217,7 +3265,7 @@ namespace RedBubble.Infrastructure.Migrations
                             DeliveryTime = "1-2 weeks",
                             Description = "Free! You get what you pay for",
                             ShortName = "FREE"
-                        });
+                });
                 });
 
             modelBuilder.Entity("RedBubble.Domain.Entities.Models.Orders.Order", b =>
@@ -3593,7 +3641,7 @@ namespace RedBubble.Infrastructure.Migrations
                             LastModifiedBy = "admin-001",
                             LastModifiedOn = new DateTime(2023, 11, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Premium Tote Bag"
-                        });
+                });
                 });
 
             modelBuilder.Entity("RedBubble.Domain.Entities.Models.Products.BaseProductColor", b =>
@@ -7626,6 +7674,49 @@ namespace RedBubble.Infrastructure.Migrations
                             Price = 27.49m,
                             SizeId = 2
                         });
+                });
+
+            modelBuilder.Entity("RedBubble.Domain.Entities.Models.Products.ProductVariant", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BaseProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ColorId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DesignId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<decimal>("Price")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
+
+                    b.Property<int?>("SizeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BaseProductId");
+
+                    b.HasIndex("ColorId");
+
+                    b.HasIndex("DesignId");
+
+                    b.HasIndex("SizeId");
+
+                    b.ToTable("ProductVariants");
                 });
 
             modelBuilder.Entity("RedBubble.Domain.Entities.Models.Products.ProductVariantImages", b =>
@@ -18240,6 +18331,13 @@ namespace RedBubble.Infrastructure.Migrations
                         new
                         {
                             Id = 7,
+                            Description = "Triple Extra Large",
+                            IsActive = true,
+                            SizeName = "3XL"
+                        },
+                        new
+                        {
+                            Id = 8,
                             Description = "Universal Size",
                             IsActive = true,
                             SizeName = "One Size"
@@ -18305,6 +18403,17 @@ namespace RedBubble.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Admin");
+                });
+
+            modelBuilder.Entity("RedBubble.Domain.Entities.Models.DesignImage", b =>
+                {
+                    b.HasOne("RedBubble.Domain.Entities.Models.Design", "Design")
+                        .WithMany()
+                        .HasForeignKey("DesignId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Design");
                 });
 
             modelBuilder.Entity("RedBubble.Domain.Entities.Models.Identity.Address", b =>

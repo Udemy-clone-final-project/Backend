@@ -4,9 +4,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using RedBubble.Application.DTOs.Products;
 using RedBubble.Application.Interfaces;
+using RedBubble.Application.Interfaces.Products;
 using RedBubble.Application.Interfaces.Services;
 using RedBubble.Domain.Entities.Models.Products;
 using RedBubble.Domain.Interfaces;
+using System.Text.Json;
 
 namespace RedBubble.Web.Controllers
 {
@@ -16,17 +18,20 @@ namespace RedBubble.Web.Controllers
         private readonly IBaseProductService _baseProductService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IFileService _fileService;
+        private readonly IImageService _imageService;
         private readonly IServiceManager _serviceManager;
 
         public BaseProductController(
             IBaseProductService baseProductService,
             IUnitOfWork unitOfWork,
             IFileService fileService,
+            IImageService imageService,
             IServiceManager serviceManager)
         {
             _baseProductService = baseProductService;
             _unitOfWork = unitOfWork;
             _fileService = fileService;
+            _imageService = imageService;
             _serviceManager = serviceManager;
         }
 
@@ -85,25 +90,114 @@ namespace RedBubble.Web.Controllers
         // POST: BaseProduct/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreateBaseProductDto createDto,
-            List<IFormFile>? templateFiles, List<IFormFile>? mockupFiles)
+        public async Task<IActionResult> Create(CreateBaseProductDto createDto)
         {
-            if (!ModelState.IsValid)
-             {
+            try
+            {
+                // FIXED: Log the received data for debugging
+                var hasColorsValue = Request.Form["HasColors"];
+                var hasSizesValue = Request.Form["HasSizes"];
+
+                Console.WriteLine($"HasColors form value: '{hasColorsValue}'");
+                Console.WriteLine($"HasSizes form value: '{hasSizesValue}'");
+                Console.WriteLine($"DTO HasColors: {createDto.HasColors}");
+                Console.WriteLine($"DTO HasSizes: {createDto.HasSizes}");
+
+                // FIXED: Manual checkbox parsing if needed
+                createDto.HasColors = Request.Form["HasColors"].Contains("true");
+                createDto.HasSizes = Request.Form["HasSizes"].Contains("true");
+
+                // Validate model state first
+                if (!ModelState.IsValid)
+                {
+                    // FIXED: Log validation errors for debugging
+                    foreach (var error in ModelState)
+                    {
+                        if (error.Value.Errors.Count > 0)
+                        {
+                            Console.WriteLine($"Validation error in {error.Key}: {string.Join(", ", error.Value.Errors.Select(e => e.ErrorMessage))}");
+                        }
+                    }
+
+                    await PopulateDropdownsAsync();
+                    return View(createDto);
+                }
+
+                // FIXED: Process template file uploads with better error handling
+                if (createDto.Templates != null && createDto.Templates.Any())
+                {
+                    for (int i = 0; i < createDto.Templates.Count; i++)
+                    {
+                        var template = createDto.Templates[i];
+                        try
+                        {
+                            await ProcessTemplateUploadsAsync(template);
+                        }
+                        catch (Exception ex)
+                        {
+                            ModelState.AddModelError($"Templates[{i}]", $"Template upload failed: {ex.Message}");
+                            await PopulateDropdownsAsync();
+                            return View(createDto);
+                        }
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError("Templates", "At least one template is required.");
+                    await PopulateDropdownsAsync();
+                    return View(createDto);
+                }
+
+                // FIXED: Validate print areas against template dimensions with better error messages
+                var validationResult = await ValidatePrintAreasAsync(createDto);
+                if (!validationResult.IsValid)
+                {
+                    ModelState.AddModelError("PrintAreas", validationResult.ErrorMessage);
+                    await PopulateDropdownsAsync();
+                    return View(createDto);
+                }
+
+                // FIXED: Validate business rules before saving
+                if (createDto.HasSizes && (createDto.AvailableSizeIds == null || !createDto.AvailableSizeIds.Any()))
+                {
+                    ModelState.AddModelError("AvailableSizeIds", "Please select at least one size when 'Has Sizes' is enabled.");
+                    await PopulateDropdownsAsync();
+                    return View(createDto);
+                }
+
+                if (createDto.HasColors && (createDto.AvailableColorIds == null || !createDto.AvailableColorIds.Any()))
+                {
+                    ModelState.AddModelError("AvailableColorIds", "Please select at least one color when 'Has Colors' is enabled.");
+                    await PopulateDropdownsAsync();
+                    return View(createDto);
+                }
+
+                var currentUser = User.Identity?.Name ?? "Admin";
+                var result = await _baseProductService.CreateBaseProductAsync(createDto, currentUser);
+
+                TempData["SuccessMessage"] = $"Base product '{result.Name}' created successfully.";
+                return RedirectToAction(nameof(Details), new { id = result.Id });
+            }
+            catch (ArgumentException ex)
+            {
+                ModelState.AddModelError("", ex.Message);
                 await PopulateDropdownsAsync();
                 return View(createDto);
             }
-
-            if (templateFiles != null && templateFiles.Any())
+            catch (InvalidOperationException ex)
             {
-                await HandleTemplateUploadsAsync(createDto, templateFiles, mockupFiles);
+                ModelState.AddModelError("", ex.Message);
+                await PopulateDropdownsAsync();
+                return View(createDto);
             }
-
-            var currentUser = User.Identity?.Name ?? "Admin";
-            var result = await _baseProductService.CreateBaseProductAsync(createDto, currentUser);
-
-            TempData["SuccessMessage"] = $"Base product '{result.Name}' created successfully.";
-            return RedirectToAction(nameof(Details), new { id = result.Id });
+            catch (Exception ex)
+            {
+                // FIXED: Better error logging
+                Console.WriteLine($"Unexpected error creating base product: {ex}");
+                ModelState.AddModelError("", "An unexpected error occurred while creating the product. Please check the logs and try again.");
+                await PopulateDropdownsAsync();
+                return View(createDto);
+            }
         }
 
         // GET: BaseProduct/Edit/5
@@ -112,7 +206,240 @@ namespace RedBubble.Web.Controllers
             var product = await _baseProductService.GetBaseProductByIdAsync(id);
             if (product == null) return NotFound();
 
-            var updateDto = new UpdateBaseProductDto
+            var updateDto = MapToUpdateDto(product);
+            await PopulateDropdownsAsync();
+            return View(updateDto);
+        }
+
+        // POST: BaseProduct/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, UpdateBaseProductDto updateDto)
+        {
+            if (id != updateDto.Id) return BadRequest();
+
+            // FIXED: Manual checkbox parsing for edit as well
+            updateDto.HasColors = Request.Form["HasColors"].Contains("true");
+            updateDto.HasSizes = Request.Form["HasSizes"].Contains("true");
+
+            if (!ModelState.IsValid)
+            {
+                await PopulateDropdownsAsync();
+                return View(updateDto);
+            }
+
+            try
+            {
+                // Process updated template file uploads
+                if (updateDto.Templates != null)
+                {
+                    foreach (var template in updateDto.Templates)
+                    {
+                        await ProcessTemplateUploadsAsync(template);
+                    }
+                }
+
+                var currentUser = User.Identity?.Name ?? "Admin";
+                var result = await _baseProductService.UpdateBaseProductAsync(updateDto, currentUser);
+
+                TempData["SuccessMessage"] = $"Base product '{result.Name}' updated successfully.";
+                return RedirectToAction(nameof(Details), new { id = result.Id });
+            }
+            catch (ArgumentException ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                await PopulateDropdownsAsync();
+                return View(updateDto);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetImageDimensions(IFormFile file)
+        {
+            try
+            {
+                if (file == null || file.Length == 0)
+                    return BadRequest("No file provided");
+
+                var (width, height) = await _imageService.GetImageDimensionsAsync(file);
+                return Json(new { success = true, width, height });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ValidatePrintArea([FromBody] PrintAreaValidationRequest request)
+        {
+            try
+            {
+                var isValid = _imageService.ValidatePrintAreaBounds(
+                    request.TemplateWidth,
+                    request.TemplateHeight,
+                    request.PrintAreaX,
+                    request.PrintAreaY,
+                    request.PrintAreaWidth,
+                    request.PrintAreaHeight);
+
+                return Json(new
+                {
+                    success = true,
+                    isValid,
+                    message = isValid ? "Print area is within bounds" : "Print area exceeds template boundaries"
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = ex.Message });
+            }
+        }
+
+        public async Task<IActionResult> Delete(int id)
+        {
+            var product = await _baseProductService.GetBaseProductByIdAsync(id);
+            if (product == null) return NotFound();
+
+            var variantRepository = _unitOfWork.GetRepository<ProductVariant, int>();
+            var variants = await variantRepository.GetAllAsync();
+            var hasActiveVariants = variants.Any(v => v.BaseProductId == id && v.IsActive);
+
+            ViewBag.CanDelete = !hasActiveVariants;
+            ViewBag.DeleteMessage = hasActiveVariants
+                ? "This base product cannot be deleted because it has active variants. Please deactivate them first."
+                : "Are you sure you want to delete this base product?";
+
+            return View(product);
+        }
+
+        // POST: BaseProduct/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var success = await _baseProductService.DeleteBaseProductAsync(id, "system");
+
+            TempData["SuccessMessage"] = success
+                ? "Base product deleted successfully."
+                : "Base product not found.";
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        #region Helper Methods
+
+        private async Task ProcessTemplateUploadsAsync<T>(T template) where T : CreateTemplateDto
+        {
+            if (template.TemplateFile != null && template.TemplateFile.Length > 0)
+            {
+                // FIXED: Validate file before upload
+                if (!_fileService.IsValidImageFile(template.TemplateFile))
+                {
+                    throw new ArgumentException($"Template file '{template.TemplateFile.FileName}' is not a valid image file.");
+                }
+
+                // Upload file and extract dimensions
+                template.TemplateUrl = await _fileService.UploadImageAsync(template.TemplateFile, "templates");
+                var (width, height) = await _imageService.GetImageDimensionsAsync(template.TemplateFile);
+                template.TemplateWidth = width;
+                template.TemplateHeight = height;
+            }
+
+            if (template.MockupFile != null && template.MockupFile.Length > 0)
+            {
+                if (!_fileService.IsValidImageFile(template.MockupFile))
+                {
+                    throw new ArgumentException($"Mockup file '{template.MockupFile.FileName}' is not a valid image file.");
+                }
+
+                template.MockupUrl = await _fileService.UploadImageAsync(template.MockupFile, "mockups");
+            }
+
+            if (template.FlatMockupFile != null && template.FlatMockupFile.Length > 0)
+            {
+                if (!_fileService.IsValidImageFile(template.FlatMockupFile))
+                {
+                    throw new ArgumentException($"Flat mockup file '{template.FlatMockupFile.FileName}' is not a valid image file.");
+                }
+
+                template.FlatMockupUrl = await _fileService.UploadImageAsync(template.FlatMockupFile, "mockups");
+            }
+        }
+
+        private async Task<ValidationResult> ValidatePrintAreasAsync(CreateBaseProductDto createDto)
+        {
+            if (createDto.Templates == null || createDto.PrintAreas == null)
+            {
+                return new ValidationResult { IsValid = true };
+            }
+
+            var errors = new List<string>();
+
+            foreach (var printArea in createDto.PrintAreas)
+            {
+                // Find matching template for validation
+                var matchingTemplate = createDto.Templates.FirstOrDefault(t =>
+                    t.ViewName.Equals(printArea.AreaName, StringComparison.OrdinalIgnoreCase));
+
+                if (matchingTemplate != null)
+                {
+                    var isValid = _imageService.ValidatePrintAreaBounds(
+                        matchingTemplate.TemplateWidth,
+                        matchingTemplate.TemplateHeight,
+                        printArea.PositionX,
+                        printArea.PositionY,
+                        (int)printArea.Width,
+                        (int)printArea.Height);
+
+                    if (!isValid)
+                    {
+                        errors.Add($"Print area '{printArea.AreaName}' exceeds template '{matchingTemplate.ViewName}' boundaries " +
+                                  $"(Template: {matchingTemplate.TemplateWidth}x{matchingTemplate.TemplateHeight}px, " +
+                                  $"Print Area: {printArea.PositionX},{printArea.PositionY} {printArea.Width}x{printArea.Height}px)");
+                    }
+                }
+                else
+                {
+                    errors.Add($"Print area '{printArea.AreaName}' references template view that doesn't exist.");
+                }
+            }
+
+            return new ValidationResult
+            {
+                IsValid = !errors.Any(),
+                ErrorMessage = string.Join("; ", errors)
+            };
+        }
+
+        private async Task PopulateDropdownsAsync()
+        {
+            try
+            {
+                var categoryRepository = _unitOfWork.GetRepository<Category, int>();
+                var categories = await categoryRepository.GetAllAsync();
+                var subCategories = categories
+                    .Where(c => c.IsActive && c.ParentCategoryId != null)
+                    .OrderBy(c => c.CategoryName);
+
+                ViewBag.SubCategories = new SelectList(subCategories, "Id", "CategoryName");
+
+                ViewBag.AllSizes = await _serviceManager.sizeService.GetAllSizesAsync();
+                ViewBag.AllColors = await _serviceManager.colorService.GetAllAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error populating dropdowns: {ex}");
+                ViewBag.SubCategories = new SelectList(Enumerable.Empty<Category>(), "Id", "CategoryName");
+                ViewBag.AllSizes = Enumerable.Empty<RedBubble.Application.DTOs.SizeDto>();
+                ViewBag.AllColors = Enumerable.Empty<RedBubble.Application.DTOs.ColorDto>();
+                throw; // Re-throw to let the controller handle the error
+            }
+        }
+
+        private UpdateBaseProductDto MapToUpdateDto(BaseProductDto product)
+        {
+            return new UpdateBaseProductDto
             {
                 Id = product.Id,
                 Name = product.Name,
@@ -147,131 +474,31 @@ namespace RedBubble.Web.Controllers
                     DisplayOrder = t.DisplayOrder,
                     IsActive = t.IsActive
                 }).ToList(),
-                AvailableSizeIds = product.AvailableSizes.Select(s => s.SizeId).ToList(),
-                AvailableColorIds = product.AvailableColors.Select(c => c.ColorId).ToList()
+                AvailableSizeIds = product.AvailableSizes.Where(s => s.IsActive).Select(s => s.SizeId).ToList(),
+                AvailableColorIds = product.AvailableColors.Where(c => c.IsActive).Select(c => c.ColorId).ToList()
             };
-
-            await PopulateDropdownsAsync();
-            return View(updateDto);
         }
 
-        // POST: BaseProduct/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, UpdateBaseProductDto updateDto,
-            List<IFormFile>? templateFiles, List<IFormFile>? mockupFiles)
-        {
-            if (id != updateDto.Id) return BadRequest();
-            if (!ModelState.IsValid)
-            {
-                await PopulateDropdownsAsync();
-                return View(updateDto);
-            }
-
-            if (templateFiles != null && templateFiles.Any())
-            {
-                await HandleTemplateUploadsAsync(updateDto, templateFiles, mockupFiles);
-            }
-
-            var currentUser = User.Identity?.Name ?? "Admin";
-            var result = await _baseProductService.UpdateBaseProductAsync(updateDto, currentUser);
-
-            TempData["SuccessMessage"] = $"Base product '{result.Name}' updated successfully.";
-            return RedirectToAction(nameof(Details), new { id = result.Id });
-        }
-
-        // GET: BaseProduct/Delete/5
-        public async Task<IActionResult> Delete(int id)
-        {
-            var product = await _baseProductService.GetBaseProductByIdAsync(id);
-            if (product == null) return NotFound();
-
-            var variantRepository = _unitOfWork.GetRepository<ProductVariant, int>();
-            var variants = await variantRepository.GetAllAsync();
-            var hasActiveVariants = variants.Any(v => v.BaseProductId == id && v.IsActive);
-
-            ViewBag.CanDelete = !hasActiveVariants;
-            ViewBag.DeleteMessage = hasActiveVariants
-                ? "This base product cannot be deleted because it has active variants. Please deactivate them first."
-                : "Are you sure you want to delete this base product?";
-
-            return View(product);
-        }
-
-        // POST: BaseProduct/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var success = await _baseProductService.DeleteBaseProductAsync(id, "system");
-
-            TempData["SuccessMessage"] = success
-                ? "Base product deleted successfully."
-                : "Base product not found.";
-
-            return RedirectToAction(nameof(Index));
-        }
-
-        // GET: BaseProduct/Variants/5
-        public async Task<IActionResult> Variants(int id)
-        {
-            var product = await _baseProductService.GetBaseProductByIdAsync(id);
-            if (product == null) return NotFound();
-
-            var variantRepository = _unitOfWork.GetRepository<ProductVariant, int>();
-            var variants = await variantRepository.GetAllAsync();
-            var productVariants = variants.Where(v => v.BaseProductId == id && v.IsActive).ToList();
-
-            ViewBag.BaseProductName = product.Name;
-            ViewBag.BaseProductId = id;
-
-            return View(productVariants);
-        }
-
-        #region Helpers
-
-        private async Task PopulateDropdownsAsync()
-        {
-            var categoryRepository = _unitOfWork.GetRepository<Category, int>();
-            var categories = await categoryRepository.GetAllAsync();
-            var subCategories = categories
-                .Where(c => c.IsActive && c.ParentCategoryId != null)
-                .OrderBy(c => c.CategoryName);
-
-            ViewBag.SubCategories = new SelectList(subCategories, "Id", "CategoryName");
-
-            ViewBag.AllSizes = await _serviceManager.sizeService.GetAllSizesAsync();
-            ViewBag.AllColors = await _serviceManager.colorService.GetAllAsync();
-        }
-
-
-
-        private async Task HandleTemplateUploadsAsync<T>(T dto, List<IFormFile> templateFiles, List<IFormFile>? mockupFiles)
-            where T : class
-        {
-            var templates = GetPropertyValue<List<CreateTemplateDto>>(dto, "Templates") ?? new();
-            var updateTemplates = GetPropertyValue<List<UpdateTemplateDto>>(dto, "Templates");
-
-            for (int i = 0; i < templateFiles.Count && i < templates.Count; i++)
-            {
-                var templateUrl = await _fileService.UploadImageAsync(templateFiles[i], "templates");
-                if (templates.Any()) templates[i].TemplateUrl = templateUrl;
-                else if (updateTemplates != null && updateTemplates.Any()) updateTemplates[i].TemplateUrl = templateUrl;
-
-                if (mockupFiles != null && i < mockupFiles.Count)
-                {
-                    var mockupUrl = await _fileService.UploadImageAsync(mockupFiles[i], "mockups");
-                    if (templates.Any()) templates[i].MockupUrl = mockupUrl;
-                    else if (updateTemplates != null) updateTemplates[i].MockupUrl = mockupUrl;
-                }
-            }
-        }
-
-        private static TValue GetPropertyValue<TValue>(object obj, string propertyName)
-        {
-            var property = obj.GetType().GetProperty(propertyName);
-            return property != null ? (TValue)property.GetValue(obj) : default!;
-        }
         #endregion
+
+        #region Helper Classes
+
+        public class ValidationResult
+        {
+            public bool IsValid { get; set; }
+            public string ErrorMessage { get; set; } = string.Empty;
+        }
+
+        #endregion
+    }
+
+    public class PrintAreaValidationRequest
+    {
+        public int TemplateWidth { get; set; }
+        public int TemplateHeight { get; set; }
+        public int PrintAreaX { get; set; }
+        public int PrintAreaY { get; set; }
+        public int PrintAreaWidth { get; set; }
+        public int PrintAreaHeight { get; set; }
     }
 }
