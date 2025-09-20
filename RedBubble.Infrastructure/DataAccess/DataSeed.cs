@@ -345,438 +345,438 @@ namespace RedBubble.Infrastructure.DataAccess
             modelBuilder.Entity<Size>().HasData(sizes);
         }
 
-        private static void SeedBaseProducts(ModelBuilder modelBuilder)
-        {
-            var products = new List<BaseProduct>();
-            var baseDate = new DateTime(2024, 1, 1);
-            var createdDate = baseDate.AddDays(-60);
+        //private static void SeedBaseProducts(ModelBuilder modelBuilder)
+        //{
+        //    var products = new List<BaseProduct>();
+        //    var baseDate = new DateTime(2024, 1, 1);
+        //    var createdDate = baseDate.AddDays(-60);
 
-            // T-Shirts (Category 5)
-            products.AddRange(new[]
-            {
-                new BaseProduct
-                {
-                    Id = 1,
-                    Name = "Classic T-Shirt",
-                    Description = "Comfortable cotton t-shirt with a relaxed fit",
-                    CategoryId = 5,
-                    BasePrice = 19.99m,
-                    IsActive = true,
-                    CreatedBy = "admin-001",
-                    CreatedOn = createdDate,
-                    LastModifiedBy = "admin-001",
-                    LastModifiedOn = createdDate.AddDays(10)
-                },
-                new BaseProduct
-                {
-                    Id = 2,
-                    Name = "Premium T-Shirt",
-                    Description = "High-quality cotton t-shirt with a modern fit",
-                    CategoryId = 5,
-                    BasePrice = 24.99m,
-                    IsActive = true,
-                    CreatedBy = "admin-001",
-                    CreatedOn = createdDate,
-                    LastModifiedBy = "admin-001",
-                    LastModifiedOn = createdDate.AddDays(10)
-                }
-            });
+        //    // T-Shirts (Category 5)
+        //    products.AddRange(new[]
+        //    {
+        //        new BaseProduct
+        //        {
+        //            Id = 1,
+        //            Name = "Classic T-Shirt",
+        //            Description = "Comfortable cotton t-shirt with a relaxed fit",
+        //            CategoryId = 5,
+        //            BasePrice = 19.99m,
+        //            IsActive = true,
+        //            CreatedBy = "admin-001",
+        //            CreatedOn = createdDate,
+        //            LastModifiedBy = "admin-001",
+        //            LastModifiedOn = createdDate.AddDays(10)
+        //        },
+        //        new BaseProduct
+        //        {
+        //            Id = 2,
+        //            Name = "Premium T-Shirt",
+        //            Description = "High-quality cotton t-shirt with a modern fit",
+        //            CategoryId = 5,
+        //            BasePrice = 24.99m,
+        //            IsActive = true,
+        //            CreatedBy = "admin-001",
+        //            CreatedOn = createdDate,
+        //            LastModifiedBy = "admin-001",
+        //            LastModifiedOn = createdDate.AddDays(10)
+        //        }
+        //    });
 
-            // Hoodies (Category 6)
-            products.AddRange(new[]
-            {
-                new BaseProduct
-                {
-                    Id = 3,
-                    Name = "Classic Hoodie",
-                    Description = "Warm and comfortable hoodie for casual wear",
-                    CategoryId = 6,
-                    BasePrice = 39.99m,
-                    IsActive = true,
-                    CreatedBy = "admin-001",
-                    CreatedOn = createdDate,
-                    LastModifiedBy = "admin-001",
-                    LastModifiedOn = createdDate.AddDays(10)
-                },
-                new BaseProduct
-                {
-                    Id = 4,
-                    Name = "Premium Hoodie",
-                    Description = "High-quality hoodie with premium materials",
-                    CategoryId = 6,
-                    BasePrice = 49.99m,
-                    IsActive = true,
-                    CreatedBy = "admin-001",
-                    CreatedOn = createdDate,
-                    LastModifiedBy = "admin-001",
-                    LastModifiedOn = createdDate.AddDays(10)
-                }
-            });
+        //    // Hoodies (Category 6)
+        //    products.AddRange(new[]
+        //    {
+        //        new BaseProduct
+        //        {
+        //            Id = 3,
+        //            Name = "Classic Hoodie",
+        //            Description = "Warm and comfortable hoodie for casual wear",
+        //            CategoryId = 6,
+        //            BasePrice = 39.99m,
+        //            IsActive = true,
+        //            CreatedBy = "admin-001",
+        //            CreatedOn = createdDate,
+        //            LastModifiedBy = "admin-001",
+        //            LastModifiedOn = createdDate.AddDays(10)
+        //        },
+        //        new BaseProduct
+        //        {
+        //            Id = 4,
+        //            Name = "Premium Hoodie",
+        //            Description = "High-quality hoodie with premium materials",
+        //            CategoryId = 6,
+        //            BasePrice = 49.99m,
+        //            IsActive = true,
+        //            CreatedBy = "admin-001",
+        //            CreatedOn = createdDate,
+        //            LastModifiedBy = "admin-001",
+        //            LastModifiedOn = createdDate.AddDays(10)
+        //        }
+        //    });
 
-            // Tank Tops (Category 7)
-            products.AddRange(new[]
-            {
-                new BaseProduct
-                {
-                    Id = 5,
-                    Name = "Classic Tank Top",
-                    Description = "Lightweight tank top perfect for summer",
-                    CategoryId = 7,
-                    BasePrice = 16.99m,
-                    IsActive = true,
-                    CreatedBy = "admin-001",
-                    CreatedOn = createdDate,
-                    LastModifiedBy = "admin-001",
-                    LastModifiedOn = createdDate.AddDays(10)
-                }
-            });
+        //    // Tank Tops (Category 7)
+        //    products.AddRange(new[]
+        //    {
+        //        new BaseProduct
+        //        {
+        //            Id = 5,
+        //            Name = "Classic Tank Top",
+        //            Description = "Lightweight tank top perfect for summer",
+        //            CategoryId = 7,
+        //            BasePrice = 16.99m,
+        //            IsActive = true,
+        //            CreatedBy = "admin-001",
+        //            CreatedOn = createdDate,
+        //            LastModifiedBy = "admin-001",
+        //            LastModifiedOn = createdDate.AddDays(10)
+        //        }
+        //    });
 
-            // Long Sleeve (Category 8)
-            products.AddRange(new[]
-            {
-                new BaseProduct
-                {
-                    Id = 6,
-                    Name = "Classic Long Sleeve",
-                    Description = "Comfortable long sleeve shirt for cooler weather",
-                    CategoryId = 8,
-                    BasePrice = 22.99m,
-                    IsActive = true,
-                    CreatedBy = "admin-001",
-                    CreatedOn = createdDate,
-                    LastModifiedBy = "admin-001",
-                    LastModifiedOn = createdDate.AddDays(10)
-                }
-            });
+        //    // Long Sleeve (Category 8)
+        //    products.AddRange(new[]
+        //    {
+        //        new BaseProduct
+        //        {
+        //            Id = 6,
+        //            Name = "Classic Long Sleeve",
+        //            Description = "Comfortable long sleeve shirt for cooler weather",
+        //            CategoryId = 8,
+        //            BasePrice = 22.99m,
+        //            IsActive = true,
+        //            CreatedBy = "admin-001",
+        //            CreatedOn = createdDate,
+        //            LastModifiedBy = "admin-001",
+        //            LastModifiedOn = createdDate.AddDays(10)
+        //        }
+        //    });
 
-            // Bags (Category 9)
-            products.AddRange(new[]
-            {
-                new BaseProduct
-                {
-                    Id = 7,
-                    Name = "Tote Bag",
-                    Description = "Spacious tote bag for everyday use",
-                    CategoryId = 9,
-                    BasePrice = 12.99m,
-                    IsActive = true,
-                    CreatedBy = "admin-001",
-                    CreatedOn = createdDate,
-                    LastModifiedBy = "admin-001",
-                    LastModifiedOn = createdDate.AddDays(10)
-                }
-            });
+        //    // Bags (Category 9)
+        //    products.AddRange(new[]
+        //    {
+        //        new BaseProduct
+        //        {
+        //            Id = 7,
+        //            Name = "Tote Bag",
+        //            Description = "Spacious tote bag for everyday use",
+        //            CategoryId = 9,
+        //            BasePrice = 12.99m,
+        //            IsActive = true,
+        //            CreatedBy = "admin-001",
+        //            CreatedOn = createdDate,
+        //            LastModifiedBy = "admin-001",
+        //            LastModifiedOn = createdDate.AddDays(10)
+        //        }
+        //    });
 
-            // Stickers (Category 10)
-            products.AddRange(new[]
-            {
-                new BaseProduct
-                {
-                    Id = 8,
-                    Name = "Vinyl Sticker",
-                    Description = "Durable vinyl sticker for various surfaces",
-                    CategoryId = 10,
-                    BasePrice = 3.99m,
-                    IsActive = true,
-                    CreatedBy = "admin-001",
-                    CreatedOn = createdDate,
-                    LastModifiedBy = "admin-001",
-                    LastModifiedOn = createdDate.AddDays(10)
-                }
-            });
+        //    // Stickers (Category 10)
+        //    products.AddRange(new[]
+        //    {
+        //        new BaseProduct
+        //        {
+        //            Id = 8,
+        //            Name = "Vinyl Sticker",
+        //            Description = "Durable vinyl sticker for various surfaces",
+        //            CategoryId = 10,
+        //            BasePrice = 3.99m,
+        //            IsActive = true,
+        //            CreatedBy = "admin-001",
+        //            CreatedOn = createdDate,
+        //            LastModifiedBy = "admin-001",
+        //            LastModifiedOn = createdDate.AddDays(10)
+        //        }
+        //    });
 
-            // Phone Cases (Category 11)
-            products.AddRange(new[]
-            {
-                new BaseProduct
-                {
-                    Id = 9,
-                    Name = "Phone Case",
-                    Description = "Protective case for smartphones",
-                    CategoryId = 11,
-                    BasePrice = 15.99m,
-                    IsActive = true,
-                    CreatedBy = "admin-001",
-                    CreatedOn = createdDate,
-                    LastModifiedBy = "admin-001",
-                    LastModifiedOn = createdDate.AddDays(10)
-                }
-            });
+        //    // Phone Cases (Category 11)
+        //    products.AddRange(new[]
+        //    {
+        //        new BaseProduct
+        //        {
+        //            Id = 9,
+        //            Name = "Phone Case",
+        //            Description = "Protective case for smartphones",
+        //            CategoryId = 11,
+        //            BasePrice = 15.99m,
+        //            IsActive = true,
+        //            CreatedBy = "admin-001",
+        //            CreatedOn = createdDate,
+        //            LastModifiedBy = "admin-001",
+        //            LastModifiedOn = createdDate.AddDays(10)
+        //        }
+        //    });
   
-            // Mugs (Category 12)
-            products.AddRange(new[]
-            {
-                new BaseProduct
-                {
-                    Id = 10,
-                    Name = "Ceramic Mug",
-                    Description = "High-quality ceramic mug for beverages",
-                    CategoryId = 12,
-                    BasePrice = 11.99m,
-                    IsActive = true,
-                    CreatedBy = "admin-001",
-                    CreatedOn = createdDate,
-                    LastModifiedBy = "admin-001",
-                    LastModifiedOn = createdDate.AddDays(10)
-                }
-            });
+        //    // Mugs (Category 12)
+        //    products.AddRange(new[]
+        //    {
+        //        new BaseProduct
+        //        {
+        //            Id = 10,
+        //            Name = "Ceramic Mug",
+        //            Description = "High-quality ceramic mug for beverages",
+        //            CategoryId = 12,
+        //            BasePrice = 11.99m,
+        //            IsActive = true,
+        //            CreatedBy = "admin-001",
+        //            CreatedOn = createdDate,
+        //            LastModifiedBy = "admin-001",
+        //            LastModifiedOn = createdDate.AddDays(10)
+        //        }
+        //    });
 
-            // Posters (Category 13)
-            products.AddRange(new[]
-            {
-                new BaseProduct
-                {
-                    Id = 11,
-                    Name = "Poster Print",
-                    Description = "High-quality poster print for wall decoration",
-                    CategoryId = 13,
-                    BasePrice = 8.99m,
-                    IsActive = true,
-                    CreatedBy = "admin-001",
-                    CreatedOn = createdDate,
-                    LastModifiedBy = "admin-001",
-                    LastModifiedOn = createdDate.AddDays(10)
-                }
-            });
+        //    // Posters (Category 13)
+        //    products.AddRange(new[]
+        //    {
+        //        new BaseProduct
+        //        {
+        //            Id = 11,
+        //            Name = "Poster Print",
+        //            Description = "High-quality poster print for wall decoration",
+        //            CategoryId = 13,
+        //            BasePrice = 8.99m,
+        //            IsActive = true,
+        //            CreatedBy = "admin-001",
+        //            CreatedOn = createdDate,
+        //            LastModifiedBy = "admin-001",
+        //            LastModifiedOn = createdDate.AddDays(10)
+        //        }
+        //    });
 
-            // Canvas Prints (Category 14)
-            products.AddRange(new[]
-            {
-                new BaseProduct
-                {
-                    Id = 12,
-                    Name = "Canvas Print",
-                    Description = "Premium canvas print for wall art",
-                    CategoryId = 14,
-                    BasePrice = 24.99m,
-                    IsActive = true,
-                    CreatedBy = "admin-001",
-                    CreatedOn = createdDate,
-                    LastModifiedBy = "admin-001",
-                    LastModifiedOn = createdDate.AddDays(10)
-                }
-            });
+        //    // Canvas Prints (Category 14)
+        //    products.AddRange(new[]
+        //    {
+        //        new BaseProduct
+        //        {
+        //            Id = 12,
+        //            Name = "Canvas Print",
+        //            Description = "Premium canvas print for wall art",
+        //            CategoryId = 14,
+        //            BasePrice = 24.99m,
+        //            IsActive = true,
+        //            CreatedBy = "admin-001",
+        //            CreatedOn = createdDate,
+        //            LastModifiedBy = "admin-001",
+        //            LastModifiedOn = createdDate.AddDays(10)
+        //        }
+        //    });
 
-            // Laptop Stickers (Category 15)
-            products.AddRange(new[]
-            {
-                new BaseProduct
-                {
-                    Id = 13,
-                    Name = "Laptop Sticker",
-                    Description = "Decorative sticker for laptops and devices",
-                    CategoryId = 15,
-                    BasePrice = 2.99m,
-                    IsActive = true,
-                    CreatedBy = "admin-001",
-                    CreatedOn = createdDate,
-                    LastModifiedBy = "admin-001",
-                    LastModifiedOn = createdDate.AddDays(10)
-                }
-            });
+        //    // Laptop Stickers (Category 15)
+        //    products.AddRange(new[]
+        //    {
+        //        new BaseProduct
+        //        {
+        //            Id = 13,
+        //            Name = "Laptop Sticker",
+        //            Description = "Decorative sticker for laptops and devices",
+        //            CategoryId = 15,
+        //            BasePrice = 2.99m,
+        //            IsActive = true,
+        //            CreatedBy = "admin-001",
+        //            CreatedOn = createdDate,
+        //            LastModifiedBy = "admin-001",
+        //            LastModifiedOn = createdDate.AddDays(10)
+        //        }
+        //    });
 
-            // Mouse Pads (Category 16)
-            products.AddRange(new[]
-            {
-                new BaseProduct
-                {
-                    Id = 14,
-                    Name = "Mouse Pad",
-                    Description = "Comfortable mouse pad for computer use",
-                    CategoryId = 16,
-                    BasePrice = 9.99m,
-                    IsActive = true,
-                    CreatedBy = "admin-001",
-                    CreatedOn = createdDate,
-                    LastModifiedBy = "admin-001",
-                    LastModifiedOn = createdDate.AddDays(10)
-                }
-            });
+        //    // Mouse Pads (Category 16)
+        //    products.AddRange(new[]
+        //    {
+        //        new BaseProduct
+        //        {
+        //            Id = 14,
+        //            Name = "Mouse Pad",
+        //            Description = "Comfortable mouse pad for computer use",
+        //            CategoryId = 16,
+        //            BasePrice = 9.99m,
+        //            IsActive = true,
+        //            CreatedBy = "admin-001",
+        //            CreatedOn = createdDate,
+        //            LastModifiedBy = "admin-001",
+        //            LastModifiedOn = createdDate.AddDays(10)
+        //        }
+        //    });
 
-            // Additional products
-            products.AddRange(new[]
-            {
-                new BaseProduct
-                {
-                    Id = 15,
-                    Name = "Premium Tote Bag",
-                    Description = "High-quality tote bag with reinforced handles",
-                    CategoryId = 9,
-                    BasePrice = 14.99m,
-                    IsActive = true,
-                    CreatedBy = "admin-001",
-                    CreatedOn = createdDate,
-                    LastModifiedBy = "admin-001",
-                    LastModifiedOn = createdDate.AddDays(10)
-                }
-            });
+        //    // Additional products
+        //    products.AddRange(new[]
+        //    {
+        //        new BaseProduct
+        //        {
+        //            Id = 15,
+        //            Name = "Premium Tote Bag",
+        //            Description = "High-quality tote bag with reinforced handles",
+        //            CategoryId = 9,
+        //            BasePrice = 14.99m,
+        //            IsActive = true,
+        //            CreatedBy = "admin-001",
+        //            CreatedOn = createdDate,
+        //            LastModifiedBy = "admin-001",
+        //            LastModifiedOn = createdDate.AddDays(10)
+        //        }
+        //    });
 
-            modelBuilder.Entity<BaseProduct>().HasData(products);
-        }
+        //    modelBuilder.Entity<BaseProduct>().HasData(products);
+        //}
 
-        private static void SeedDesigns(ModelBuilder modelBuilder)
-        {
-            var designs = new List<Design>();
-            var random = new Random(42);
-            var baseDate = new DateTime(2024, 1, 1);
+        //private static void SeedDesigns(ModelBuilder modelBuilder)
+        //{
+        //    var designs = new List<Design>();
+        //    var random = new Random(42);
+        //    var baseDate = new DateTime(2024, 1, 1);
 
-            // Curated design themes for a more realistic RedBubble experience
-            var designTemplates = new[]
-            {
-                // Nature & Landscapes
-                new { Title = "Mountain Sunset", Description = "Breathtaking mountain landscape at sunset", Tags = "nature,mountains,sunset,landscape" },
-                new { Title = "Forest Path", Description = "Peaceful forest trail through tall trees", Tags = "nature,forest,trees,path" },
-                new { Title = "Ocean Waves", Description = "Powerful ocean waves crashing on shore", Tags = "nature,ocean,waves,beach" },
+        //    // Curated design themes for a more realistic RedBubble experience
+        //    var designTemplates = new[]
+        //    {
+        //        // Nature & Landscapes
+        //        new { Title = "Mountain Sunset", Description = "Breathtaking mountain landscape at sunset", Tags = "nature,mountains,sunset,landscape" },
+        //        new { Title = "Forest Path", Description = "Peaceful forest trail through tall trees", Tags = "nature,forest,trees,path" },
+        //        new { Title = "Ocean Waves", Description = "Powerful ocean waves crashing on shore", Tags = "nature,ocean,waves,beach" },
                 
-                // Abstract & Geometric
-                new { Title = "Geometric Mandala", Description = "Intricate geometric mandala pattern", Tags = "abstract,geometric,mandala,pattern" },
-                new { Title = "Colorful Spiral", Description = "Vibrant spiral design with flowing colors", Tags = "abstract,spiral,colorful,flow" },
-                new { Title = "Minimalist Lines", Description = "Clean minimalist line art design", Tags = "abstract,minimalist,lines,simple" },
+        //        // Abstract & Geometric
+        //        new { Title = "Geometric Mandala", Description = "Intricate geometric mandala pattern", Tags = "abstract,geometric,mandala,pattern" },
+        //        new { Title = "Colorful Spiral", Description = "Vibrant spiral design with flowing colors", Tags = "abstract,spiral,colorful,flow" },
+        //        new { Title = "Minimalist Lines", Description = "Clean minimalist line art design", Tags = "abstract,minimalist,lines,simple" },
                 
-                // Typography & Text
-                new { Title = "Motivational Quote", Description = "Inspirational typography design", Tags = "typography,quote,motivational,text" },
-                new { Title = "Vintage Script", Description = "Elegant vintage script typography", Tags = "typography,vintage,script,elegant" },
-                new { Title = "Modern Sans Serif", Description = "Clean modern sans serif typography", Tags = "typography,modern,sans-serif,clean" },
+        //        // Typography & Text
+        //        new { Title = "Motivational Quote", Description = "Inspirational typography design", Tags = "typography,quote,motivational,text" },
+        //        new { Title = "Vintage Script", Description = "Elegant vintage script typography", Tags = "typography,vintage,script,elegant" },
+        //        new { Title = "Modern Sans Serif", Description = "Clean modern sans serif typography", Tags = "typography,modern,sans-serif,clean" },
                 
-                // Animals & Wildlife
-                new { Title = "Majestic Eagle", Description = "Powerful eagle in flight", Tags = "animals,eagle,bird,wildlife" },
-                new { Title = "Cute Cat", Description = "Adorable cat illustration", Tags = "animals,cat,cute,pet" },
-                new { Title = "Tropical Fish", Description = "Colorful tropical fish in coral reef", Tags = "animals,fish,tropical,coral" },
+        //        // Animals & Wildlife
+        //        new { Title = "Majestic Eagle", Description = "Powerful eagle in flight", Tags = "animals,eagle,bird,wildlife" },
+        //        new { Title = "Cute Cat", Description = "Adorable cat illustration", Tags = "animals,cat,cute,pet" },
+        //        new { Title = "Tropical Fish", Description = "Colorful tropical fish in coral reef", Tags = "animals,fish,tropical,coral" },
                 
-                // Space & Sci-Fi
-                new { Title = "Galaxy Nebula", Description = "Stunning galaxy nebula in deep space", Tags = "space,galaxy,nebula,cosmic" },
-                new { Title = "Rocket Launch", Description = "Rocket launching into space", Tags = "space,rocket,launch,sci-fi" },
-                new { Title = "Alien Planet", Description = "Mysterious alien planet landscape", Tags = "space,alien,planet,sci-fi" },
+        //        // Space & Sci-Fi
+        //        new { Title = "Galaxy Nebula", Description = "Stunning galaxy nebula in deep space", Tags = "space,galaxy,nebula,cosmic" },
+        //        new { Title = "Rocket Launch", Description = "Rocket launching into space", Tags = "space,rocket,launch,sci-fi" },
+        //        new { Title = "Alien Planet", Description = "Mysterious alien planet landscape", Tags = "space,alien,planet,sci-fi" },
                 
-                // Pop Culture & Fun
-                new { Title = "Retro Gaming", Description = "Nostalgic retro gaming pixel art", Tags = "gaming,retro,pixel,nostalgic" },
-                new { Title = "Coffee Lover", Description = "Coffee-themed design for caffeine enthusiasts", Tags = "coffee,caffeine,drink,lifestyle" },
-                new { Title = "Music Notes", Description = "Musical notes and instruments", Tags = "music,notes,instruments,sound" }
-            };
+        //        // Pop Culture & Fun
+        //        new { Title = "Retro Gaming", Description = "Nostalgic retro gaming pixel art", Tags = "gaming,retro,pixel,nostalgic" },
+        //        new { Title = "Coffee Lover", Description = "Coffee-themed design for caffeine enthusiasts", Tags = "coffee,caffeine,drink,lifestyle" },
+        //        new { Title = "Music Notes", Description = "Musical notes and instruments", Tags = "music,notes,instruments,sound" }
+        //    };
 
-            // Generate 100 designs with varied themes
-            for (int i = 1; i <= 100; i++)
-            {
-                var template = designTemplates[random.Next(designTemplates.Length)];
-                var designDate = baseDate.AddDays(-random.Next(1, 180));
+        //    // Generate 100 designs with varied themes
+        //    for (int i = 1; i <= 100; i++)
+        //    {
+        //        var template = designTemplates[random.Next(designTemplates.Length)];
+        //        var designDate = baseDate.AddDays(-random.Next(1, 180));
 
-                designs.Add(new Design
-                {
-                    Id = i,
-                    Title = $"{template.Title} #{i}",
-                    Description = template.Description,
-                    // Tags property removed - not in Design entity
-                    Price = Math.Round((decimal)(random.NextDouble() * 8 + 2), 2), // $2-10
-                    IsActive = true,
-                    ImageUrl = $"https://picsum.photos/seed/design{i}/800/600",
-                    FileName = $"design_{i}.jpg",
-                    AltText = $"{template.Title} design artwork",
-                    AdminId = "admin-001", // Admin creates all designs now
-                    CreatedBy = "admin-001",
-                    CreatedOn = designDate,
-                    LastModifiedBy = "admin-001",
-                    LastModifiedOn = designDate.AddDays(random.Next(1, 30))
-                });
-            }
+        //        designs.Add(new Design
+        //        {
+        //            Id = i,
+        //            Title = $"{template.Title} #{i}",
+        //            Description = template.Description,
+        //            // Tags property removed - not in Design entity
+        //            Price = Math.Round((decimal)(random.NextDouble() * 8 + 2), 2), // $2-10
+        //            IsActive = true,
+        //            ImageUrl = $"https://picsum.photos/seed/design{i}/800/600",
+        //            FileName = $"design_{i}.jpg",
+        //            AltText = $"{template.Title} design artwork",
+        //            AdminId = "admin-001", // Admin creates all designs now
+        //            CreatedBy = "admin-001",
+        //            CreatedOn = designDate,
+        //            LastModifiedBy = "admin-001",
+        //            LastModifiedOn = designDate.AddDays(random.Next(1, 30))
+        //        });
+        //    }
 
-            modelBuilder.Entity<Design>().HasData(designs);
-        }
+        //    modelBuilder.Entity<Design>().HasData(designs);
+        //}
 
-        private static void SeedProductVariants(ModelBuilder modelBuilder)
-        {
-            var productVariants = new List<ProductVariant>();
-            var random = new Random(456);
-            var baseDate = new DateTime(2024, 1, 1);
-            int variantId = 1;
+        //private static void SeedProductVariants(ModelBuilder modelBuilder)
+        //{
+        //    var productVariants = new List<ProductVariant>();
+        //    var random = new Random(456);
+        //    var baseDate = new DateTime(2024, 1, 1);
+        //    int variantId = 1;
 
-            // Generate variants for each base product
-            for (int productId = 1; productId <= 15; productId++)
-            {
-                var baseProdPrice = GetBaseProductPrice(productId);
+        //    // Generate variants for each base product
+        //    for (int productId = 1; productId <= 15; productId++)
+        //    {
+        //        var baseProdPrice = GetBaseProductPrice(productId);
 
-                // Generate variants for different designs, colors, and sizes
-                for (int designId = 1; designId <= 20; designId++) // Use first 20 designs
-                {
-                    for (int colorId = 1; colorId <= 5; colorId++) // Use first 5 colors
-                    {
-                        for (int sizeId = 1; sizeId <= 4; sizeId++) // Use first 4 sizes
-                        {
-                            if (variantId > 400) break; // Limit to prevent too many variants
+        //        // Generate variants for different designs, colors, and sizes
+        //        for (int designId = 1; designId <= 20; designId++) // Use first 20 designs
+        //        {
+        //            for (int colorId = 1; colorId <= 5; colorId++) // Use first 5 colors
+        //            {
+        //                for (int sizeId = 1; sizeId <= 4; sizeId++) // Use first 4 sizes
+        //                {
+        //                    if (variantId > 400) break; // Limit to prevent too many variants
 
-                            var designPrice = Math.Round((decimal)(random.NextDouble() * 6 + 2), 2); // $2-8
-                            var totalPrice = baseProdPrice + designPrice;
+        //                    var designPrice = Math.Round((decimal)(random.NextDouble() * 6 + 2), 2); // $2-8
+        //                    var totalPrice = baseProdPrice + designPrice;
 
-                            productVariants.Add(new ProductVariant
-                            {
-                                Id = variantId++,
-                                Price = totalPrice,
-                                IsActive = true,
-                                BaseProductId = productId,
-                                DesignId = designId,
-                                ColorId = colorId,
-                                SizeId = sizeId
-                            });
-                        }
-                    }
-                }
-            }
+        //                    productVariants.Add(new ProductVariant
+        //                    {
+        //                        Id = variantId++,
+        //                        Price = totalPrice,
+        //                        IsActive = true,
+        //                        BaseProductId = productId,
+        //                        DesignId = designId,
+        //                        ColorId = colorId,
+        //                        SizeId = sizeId
+        //                    });
+        //                }
+        //            }
+        //        }
+        //    }
 
-            modelBuilder.Entity<ProductVariant>().HasData(productVariants.Take(350));
-        }
+        //    modelBuilder.Entity<ProductVariant>().HasData(productVariants.Take(350));
+        //}
 
-        private static void SeedProductVariantImages(ModelBuilder modelBuilder)
-        {
-            var images = new List<ProductVariantImages>();
-            var random = new Random(789);
-            var baseDate = new DateTime(2024, 1, 1);
+        //private static void SeedProductVariantImages(ModelBuilder modelBuilder)
+        //{
+        //    var images = new List<ProductVariantImages>();
+        //    var random = new Random(789);
+        //    var baseDate = new DateTime(2024, 1, 1);
 
-            // More realistic mockup URLs for different product types
-            var clothingMockups = new[]
-            {
-                "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&h=600&fit=crop", // T-shirt on person
-                "https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=800&h=600&fit=crop", // Hoodie mockup
-                "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=800&h=600&fit=crop"  // Tank top mockup
-            };
+        //    // More realistic mockup URLs for different product types
+        //    var clothingMockups = new[]
+        //    {
+        //        "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&h=600&fit=crop", // T-shirt on person
+        //        "https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=800&h=600&fit=crop", // Hoodie mockup
+        //        "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=800&h=600&fit=crop"  // Tank top mockup
+        //    };
 
-            var accessoryMockups = new[]
-            {
-                "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800&h=600&fit=crop", // Tote bag
-                "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=800&h=600&fit=crop", // Phone case
-                "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=800&h=600&fit=crop"  // Mug
-            };
+        //    var accessoryMockups = new[]
+        //    {
+        //        "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800&h=600&fit=crop", // Tote bag
+        //        "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=800&h=600&fit=crop", // Phone case
+        //        "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=800&h=600&fit=crop"  // Mug
+        //    };
 
-            var homeMockups = new[]
-            {
-                "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=800&h=600&fit=crop", // Poster
-                "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=800&h=600&fit=crop", // Canvas print
-                "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=800&h=600&fit=crop"  // Sticker
-            };
+        //    var homeMockups = new[]
+        //    {
+        //        "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=800&h=600&fit=crop", // Poster
+        //        "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=800&h=600&fit=crop", // Canvas print
+        //        "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=800&h=600&fit=crop"  // Sticker
+        //    };
 
-            // Generate images for each product variant
-            for (int variantId = 1; variantId <= 350; variantId++)
-            {
-                var mockupPool = variantId <= 200 ? clothingMockups : 
-                                variantId <= 300 ? accessoryMockups : homeMockups;
+        //    // Generate images for each product variant
+        //    for (int variantId = 1; variantId <= 350; variantId++)
+        //    {
+        //        var mockupPool = variantId <= 200 ? clothingMockups : 
+        //                        variantId <= 300 ? accessoryMockups : homeMockups;
 
-                // Generate 2-4 images per variant
-                var imageCount = random.Next(2, 5);
-                for (int j = 0; j < imageCount; j++)
-                {
-                    images.Add(new ProductVariantImages
-                    {
-                        Id = (variantId - 1) * 4 + j + 1,
-                        ImageUrl = mockupPool[random.Next(mockupPool.Length)],
-                        FileName = $"variant_{variantId}_mockup_{j + 1}.jpg",
-                        AltText = $"Product variant {variantId} mockup view {j + 1}",
-                        IsPrimary = j == 0,
-                        IsActive = true,
-                        ProductVariantId = variantId
-                    });
-                }
-            }
+        //        // Generate 2-4 images per variant
+        //        var imageCount = random.Next(2, 5);
+        //        for (int j = 0; j < imageCount; j++)
+        //        {
+        //            images.Add(new ProductVariantImages
+        //            {
+        //                Id = (variantId - 1) * 4 + j + 1,
+        //                ImageUrl = mockupPool[random.Next(mockupPool.Length)],
+        //                FileName = $"variant_{variantId}_mockup_{j + 1}.jpg",
+        //                AltText = $"Product variant {variantId} mockup view {j + 1}",
+        //                IsPrimary = j == 0,
+        //                IsActive = true,
+        //                ProductVariantId = variantId
+        //            });
+        //        }
+        //    }
 
-            modelBuilder.Entity<ProductVariantImages>().HasData(images);
-        }
+        //    modelBuilder.Entity<ProductVariantImages>().HasData(images);
+        //}
 
         private static void SeedDeliveryMethods(ModelBuilder modelBuilder)
         {

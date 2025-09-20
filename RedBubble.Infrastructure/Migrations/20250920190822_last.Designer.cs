@@ -12,8 +12,8 @@ using RedBubble.Infrastructure.DataAccess;
 namespace RedBubble.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250915073832_test")]
-    partial class test
+    [Migration("20250920190822_last")]
+    partial class last
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -493,53 +493,6 @@ namespace RedBubble.Infrastructure.Migrations
                     b.ToTable("Designs");
                 });
 
-            modelBuilder.Entity("RedBubble.Domain.Entities.Models.DesignImage", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AltText")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("DesignId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("FileName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ImageUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsPrimary")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastModifiedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DesignId");
-
-                    b.ToTable("DesignImages");
-                });
-
             modelBuilder.Entity("RedBubble.Domain.Entities.Models.Identity.Address", b =>
                 {
                     b.Property<int>("Id")
@@ -583,312 +536,302 @@ namespace RedBubble.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            ApplicationUserId = "admin-001",
-                            City = "San Francisco",
-                            Country = "United States",
-                            FirstName = "System",
-                            LastName = "Administrator",
-                            Street = "123 Admin Plaza"
+                            ApplicationUserId = "customer-001",
+                            City = "San Jose",
+                            Country = "Spain",
+                            FirstName = "Customer1",
+                            LastName = "User",
+                            Street = "9846 Main St"
                         },
                         new
                         {
                             Id = 2,
-                            ApplicationUserId = "customer-001",
-                            City = "Hamburg",
-                            Country = "Germany",
-                            FirstName = "Customer1First",
-                            LastName = "Customer1Last",
-                            Street = "3721 Oak Avenue"
+                            ApplicationUserId = "customer-002",
+                            City = "San Diego",
+                            Country = "USA",
+                            FirstName = "Customer2",
+                            LastName = "User",
+                            Street = "8134 Main St"
                         },
                         new
                         {
                             Id = 3,
-                            ApplicationUserId = "customer-002",
-                            City = "Houston",
-                            Country = "United States",
-                            FirstName = "Customer2First",
-                            LastName = "Customer2Last",
-                            Street = "741 Elm Drive"
+                            ApplicationUserId = "customer-003",
+                            City = "Los Angeles",
+                            Country = "Canada",
+                            FirstName = "Customer3",
+                            LastName = "User",
+                            Street = "268 Main St"
                         },
                         new
                         {
                             Id = 4,
-                            ApplicationUserId = "customer-003",
-                            City = "Paris",
-                            Country = "France",
-                            FirstName = "Customer3First",
-                            LastName = "Customer3Last",
-                            Street = "7660 Cedar Way"
+                            ApplicationUserId = "customer-004",
+                            City = "San Jose",
+                            Country = "Germany",
+                            FirstName = "Customer4",
+                            LastName = "User",
+                            Street = "6337 Main St"
                         },
                         new
                         {
                             Id = 5,
-                            ApplicationUserId = "customer-004",
-                            City = "Los Angeles",
-                            Country = "United States",
-                            FirstName = "Customer4First",
-                            LastName = "Customer4Last",
-                            Street = "4680 First Street"
+                            ApplicationUserId = "customer-005",
+                            City = "Phoenix",
+                            Country = "USA",
+                            FirstName = "Customer5",
+                            LastName = "User",
+                            Street = "1972 Main St"
                         },
                         new
                         {
                             Id = 6,
-                            ApplicationUserId = "customer-005",
-                            City = "Toulouse",
-                            Country = "France",
-                            FirstName = "Customer5First",
-                            LastName = "Customer5Last",
-                            Street = "1701 Market Street"
+                            ApplicationUserId = "customer-006",
+                            City = "Philadelphia",
+                            Country = "United Kingdom",
+                            FirstName = "Customer6",
+                            LastName = "User",
+                            Street = "8478 Main St"
                         },
                         new
                         {
                             Id = 7,
-                            ApplicationUserId = "customer-006",
-                            City = "Ottawa",
+                            ApplicationUserId = "customer-007",
+                            City = "San Jose",
                             Country = "Canada",
-                            FirstName = "Customer6First",
-                            LastName = "Customer6Last",
-                            Street = "8620 Oak Avenue"
+                            FirstName = "Customer7",
+                            LastName = "User",
+                            Street = "167 Main St"
                         },
                         new
                         {
                             Id = 8,
-                            ApplicationUserId = "customer-007",
-                            City = "Osaka",
-                            Country = "Japan",
-                            FirstName = "Customer7First",
-                            LastName = "Customer7Last",
-                            Street = "5640 Elm Drive"
+                            ApplicationUserId = "customer-008",
+                            City = "San Diego",
+                            Country = "USA",
+                            FirstName = "Customer8",
+                            LastName = "User",
+                            Street = "342 Main St"
                         },
                         new
                         {
                             Id = 9,
-                            ApplicationUserId = "customer-008",
-                            City = "Montreal",
-                            Country = "Canada",
-                            FirstName = "Customer8First",
-                            LastName = "Customer8Last",
-                            Street = "2661 Park Boulevard"
+                            ApplicationUserId = "customer-009",
+                            City = "San Antonio",
+                            Country = "Italy",
+                            FirstName = "Customer9",
+                            LastName = "User",
+                            Street = "7570 Main St"
                         },
                         new
                         {
                             Id = 10,
-                            ApplicationUserId = "customer-009",
-                            City = "Yokohama",
-                            Country = "Japan",
-                            FirstName = "Customer9First",
-                            LastName = "Customer9Last",
-                            Street = "9580 Second Avenue"
+                            ApplicationUserId = "customer-010",
+                            City = "Philadelphia",
+                            Country = "Canada",
+                            FirstName = "Customer10",
+                            LastName = "User",
+                            Street = "9003 Main St"
                         },
                         new
                         {
                             Id = 11,
-                            ApplicationUserId = "customer-010",
-                            City = "Toronto",
-                            Country = "Canada",
-                            FirstName = "Customer10First",
-                            LastName = "Customer10Last",
-                            Street = "6600 Main Street"
+                            ApplicationUserId = "customer-011",
+                            City = "Dallas",
+                            Country = "Spain",
+                            FirstName = "Customer11",
+                            LastName = "User",
+                            Street = "5999 Main St"
                         },
                         new
                         {
                             Id = 12,
-                            ApplicationUserId = "customer-011",
-                            City = "Rotterdam",
-                            Country = "Netherlands",
-                            FirstName = "Customer11First",
-                            LastName = "Customer11Last",
-                            Street = "3620 Pine Road"
+                            ApplicationUserId = "customer-012",
+                            City = "Philadelphia",
+                            Country = "USA",
+                            FirstName = "Customer12",
+                            LastName = "User",
+                            Street = "815 Main St"
                         },
                         new
                         {
                             Id = 13,
-                            ApplicationUserId = "customer-012",
-                            City = "Liverpool",
-                            Country = "United Kingdom",
-                            FirstName = "Customer12First",
-                            LastName = "Customer12Last",
-                            Street = "641 Maple Lane"
+                            ApplicationUserId = "customer-013",
+                            City = "Chicago",
+                            Country = "Germany",
+                            FirstName = "Customer13",
+                            LastName = "User",
+                            Street = "9180 Main St"
                         },
                         new
                         {
                             Id = 14,
-                            ApplicationUserId = "customer-013",
-                            City = "Eindhoven",
+                            ApplicationUserId = "customer-014",
+                            City = "San Jose",
                             Country = "Netherlands",
-                            FirstName = "Customer13First",
-                            LastName = "Customer13Last",
-                            Street = "7560 Park Boulevard"
+                            FirstName = "Customer14",
+                            LastName = "User",
+                            Street = "7991 Main St"
                         },
                         new
                         {
                             Id = 15,
-                            ApplicationUserId = "customer-014",
-                            City = "Manchester",
-                            Country = "United Kingdom",
-                            FirstName = "Customer14First",
-                            LastName = "Customer14Last",
-                            Street = "4580 Second Avenue"
+                            ApplicationUserId = "customer-015",
+                            City = "Los Angeles",
+                            Country = "Spain",
+                            FirstName = "Customer15",
+                            LastName = "User",
+                            Street = "4980 Main St"
                         },
                         new
                         {
                             Id = 16,
-                            ApplicationUserId = "customer-015",
-                            City = "Malmö",
-                            Country = "Sweden",
-                            FirstName = "Customer15First",
-                            LastName = "Customer15Last",
-                            Street = "1601 Oak Avenue"
+                            ApplicationUserId = "customer-016",
+                            City = "Los Angeles",
+                            Country = "Australia",
+                            FirstName = "Customer16",
+                            LastName = "User",
+                            Street = "1223 Main St"
                         },
                         new
                         {
                             Id = 17,
-                            ApplicationUserId = "customer-016",
-                            City = "Adelaide",
-                            Country = "Australia",
-                            FirstName = "Customer16First",
-                            LastName = "Customer16Last",
-                            Street = "8520 Elm Drive"
+                            ApplicationUserId = "customer-017",
+                            City = "Phoenix",
+                            Country = "Spain",
+                            FirstName = "Customer17",
+                            LastName = "User",
+                            Street = "1715 Main St"
                         },
                         new
                         {
                             Id = 18,
-                            ApplicationUserId = "customer-017",
-                            City = "Stockholm",
-                            Country = "Sweden",
-                            FirstName = "Customer17First",
-                            LastName = "Customer17Last",
-                            Street = "5540 Cedar Way"
+                            ApplicationUserId = "customer-018",
+                            City = "New York",
+                            Country = "France",
+                            FirstName = "Customer18",
+                            LastName = "User",
+                            Street = "1633 Main St"
                         },
                         new
                         {
                             Id = 19,
-                            ApplicationUserId = "customer-018",
-                            City = "Brisbane",
-                            Country = "Australia",
-                            FirstName = "Customer18First",
-                            LastName = "Customer18Last",
-                            Street = "2560 First Street"
+                            ApplicationUserId = "customer-019",
+                            City = "San Jose",
+                            Country = "Canada",
+                            FirstName = "Customer19",
+                            LastName = "User",
+                            Street = "8248 Main St"
                         },
                         new
                         {
                             Id = 20,
-                            ApplicationUserId = "customer-019",
-                            City = "Uppsala",
-                            Country = "Sweden",
-                            FirstName = "Customer19First",
-                            LastName = "Customer19Last",
-                            Street = "9480 Market Street"
+                            ApplicationUserId = "customer-020",
+                            City = "New York",
+                            Country = "Canada",
+                            FirstName = "Customer20",
+                            LastName = "User",
+                            Street = "7438 Main St"
                         },
                         new
                         {
                             Id = 21,
-                            ApplicationUserId = "customer-020",
-                            City = "Berlin",
-                            Country = "Germany",
-                            FirstName = "Customer20First",
-                            LastName = "Customer20Last",
-                            Street = "6500 Oak Avenue"
+                            ApplicationUserId = "customer-021",
+                            City = "Los Angeles",
+                            Country = "Italy",
+                            FirstName = "Customer21",
+                            LastName = "User",
+                            Street = "3695 Main St"
                         },
                         new
                         {
                             Id = 22,
-                            ApplicationUserId = "customer-021",
-                            City = "Bergen",
-                            Country = "Norway",
-                            FirstName = "Customer21First",
-                            LastName = "Customer21Last",
-                            Street = "3520 Elm Drive"
+                            ApplicationUserId = "customer-022",
+                            City = "New York",
+                            Country = "USA",
+                            FirstName = "Customer22",
+                            LastName = "User",
+                            Street = "638 Main St"
                         },
                         new
                         {
                             Id = 23,
-                            ApplicationUserId = "customer-022",
-                            City = "Cologne",
-                            Country = "Germany",
-                            FirstName = "Customer22First",
-                            LastName = "Customer22Last",
-                            Street = "541 Cedar Way"
+                            ApplicationUserId = "customer-023",
+                            City = "Los Angeles",
+                            Country = "Netherlands",
+                            FirstName = "Customer23",
+                            LastName = "User",
+                            Street = "7393 Main St"
                         },
                         new
                         {
                             Id = 24,
-                            ApplicationUserId = "customer-023",
-                            City = "Drammen",
-                            Country = "Norway",
-                            FirstName = "Customer23First",
-                            LastName = "Customer23Last",
-                            Street = "7460 Second Avenue"
+                            ApplicationUserId = "customer-024",
+                            City = "San Jose",
+                            Country = "Australia",
+                            FirstName = "Customer24",
+                            LastName = "User",
+                            Street = "9852 Main St"
                         },
                         new
                         {
                             Id = 25,
-                            ApplicationUserId = "customer-024",
-                            City = "Lyon",
-                            Country = "France",
-                            FirstName = "Customer24First",
-                            LastName = "Customer24Last",
-                            Street = "4480 Main Street"
+                            ApplicationUserId = "customer-025",
+                            City = "Chicago",
+                            Country = "USA",
+                            FirstName = "Customer25",
+                            LastName = "User",
+                            Street = "8495 Main St"
                         },
                         new
                         {
                             Id = 26,
-                            ApplicationUserId = "customer-025",
-                            City = "Chicago",
-                            Country = "United States",
-                            FirstName = "Customer25First",
-                            LastName = "Customer25Last",
-                            Street = "1500 Pine Road"
+                            ApplicationUserId = "customer-026",
+                            City = "Philadelphia",
+                            Country = "France",
+                            FirstName = "Customer26",
+                            LastName = "User",
+                            Street = "2789 Main St"
                         },
                         new
                         {
                             Id = 27,
-                            ApplicationUserId = "customer-026",
-                            City = "Toulouse",
-                            Country = "France",
-                            FirstName = "Customer26First",
-                            LastName = "Customer26Last",
-                            Street = "8420 Maple Lane"
+                            ApplicationUserId = "customer-027",
+                            City = "San Antonio",
+                            Country = "Germany",
+                            FirstName = "Customer27",
+                            LastName = "User",
+                            Street = "2525 Main St"
                         },
                         new
                         {
                             Id = 28,
-                            ApplicationUserId = "customer-027",
-                            City = "New York",
-                            Country = "United States",
-                            FirstName = "Customer27First",
-                            LastName = "Customer27Last",
-                            Street = "5440 Park Boulevard"
+                            ApplicationUserId = "customer-028",
+                            City = "San Diego",
+                            Country = "USA",
+                            FirstName = "Customer28",
+                            LastName = "User",
+                            Street = "3079 Main St"
                         },
                         new
                         {
                             Id = 29,
-                            ApplicationUserId = "customer-028",
-                            City = "Lyon",
-                            Country = "France",
-                            FirstName = "Customer28First",
-                            LastName = "Customer28Last",
-                            Street = "2460 Second Avenue"
+                            ApplicationUserId = "customer-029",
+                            City = "Phoenix",
+                            Country = "Netherlands",
+                            FirstName = "Customer29",
+                            LastName = "User",
+                            Street = "4457 Main St"
                         },
                         new
                         {
                             Id = 30,
-                            ApplicationUserId = "customer-029",
-                            City = "Calgary",
-                            Country = "Canada",
-                            FirstName = "Customer29First",
-                            LastName = "Customer29Last",
-                            Street = "9380 Main Street"
-                        },
-                        new
-                        {
-                            Id = 31,
                             ApplicationUserId = "customer-030",
-                            City = "Nagoya",
-                            Country = "Japan",
-                            FirstName = "Customer30First",
-                            LastName = "Customer30Last",
-                            Street = "6400 Elm Drive"
+                            City = "Chicago",
+                            Country = "Italy",
+                            FirstName = "Customer30",
+                            LastName = "User",
+                            Street = "2198 Main St"
                         });
                 });
 
@@ -932,7 +875,7 @@ namespace RedBubble.Infrastructure.Migrations
                         new
                         {
                             Id = "1",
-                            CreatedAt = new DateTime(2025, 9, 15, 7, 38, 26, 316, DateTimeKind.Utc).AddTicks(9540),
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "System Administrator with full access to manage products and designs",
                             IsActive = true,
                             Name = "Admin",
@@ -941,7 +884,7 @@ namespace RedBubble.Infrastructure.Migrations
                         new
                         {
                             Id = "2",
-                            CreatedAt = new DateTime(2025, 9, 15, 7, 38, 26, 316, DateTimeKind.Utc).AddTicks(9545),
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Customer who can browse and purchase products",
                             IsActive = true,
                             Name = "Customer",
@@ -1033,8 +976,8 @@ namespace RedBubble.Infrastructure.Migrations
                         {
                             Id = "admin-001",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "407e6a1a-8564-4c7c-8822-69b95018e347",
-                            CreatedAt = new DateTime(2025, 9, 15, 7, 38, 26, 432, DateTimeKind.Utc).AddTicks(8394),
+                            ConcurrencyStamp = "d89cfd48-0b4e-4ac3-962d-357e6327790d",
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DisplayName = "System Administrator",
                             Email = "admin@redbubble.com",
                             EmailConfirmed = true,
@@ -1042,612 +985,612 @@ namespace RedBubble.Infrastructure.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@REDBUBBLE.COM",
                             NormalizedUserName = "ADMIN@REDBUBBLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEEYTEBcar48ZHKPZiGvSpMI94cgjOhQYIyL02R/+IwKR/N+zjQ2zMou3D3PUu1os+Q==",
+                            PasswordHash = "AQAAAAIAAYagAAAAENEHrxq2WfsHwWfw1l6I9h1C13uTC+uVDNVRUiXtr0b+vYtXT2kqGJY1SNX6JxAKuw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "f55dcc39-6e46-458d-b2f4-b471a678a2bf",
+                            SecurityStamp = "0d6ff3b4-edd5-4491-95c0-cb9c0b2d6d77",
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 9, 15, 7, 38, 26, 432, DateTimeKind.Utc).AddTicks(8403),
+                            UpdatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UserName = "admin@redbubble.com"
                         },
                         new
                         {
                             Id = "customer-001",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "ba263ff4-6948-442e-ad3d-a54e83982b01",
-                            CreatedAt = new DateTime(2024, 12, 24, 7, 38, 26, 567, DateTimeKind.Utc).AddTicks(5646),
+                            ConcurrencyStamp = "f93e5acc-8313-42d6-8120-925f14669ea6",
+                            CreatedAt = new DateTime(2023, 4, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DisplayName = "John Doe",
-                            Email = "john.doe@email.com",
+                            Email = "customer001@example.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
-                            NormalizedEmail = "JOHN.DOE@EMAIL.COM",
-                            NormalizedUserName = "JOHN.DOE@EMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEBOh31tJ4K20+9ZEnPU2kn9ip9bzLQJSDKEwUX+6mPBQM3iSAuwDJIh8biajRf+eGw==",
+                            NormalizedEmail = "CUSTOMER001@EXAMPLE.COM",
+                            NormalizedUserName = "CUSTOMER001@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEG3IS5wkeOOHxJ9fdjjnsBp7bUhCRmnFwDxCgGAeRqxusRVmzHhrZEHinUGofcFrOg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "4e616b27-e0d9-491c-a785-85f929d92a7d",
+                            SecurityStamp = "e251c6c4-6d48-4dc2-882a-8f5849b4b415",
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 8, 24, 7, 38, 26, 567, DateTimeKind.Utc).AddTicks(5695),
-                            UserName = "john.doe@email.com"
+                            UpdatedAt = new DateTime(2023, 12, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserName = "customer001@example.com"
                         },
                         new
                         {
                             Id = "customer-002",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "210a17e8-eff9-4413-bea5-3a0bfbc3ea9a",
-                            CreatedAt = new DateTime(2025, 6, 16, 7, 38, 26, 700, DateTimeKind.Utc).AddTicks(3307),
+                            ConcurrencyStamp = "008bf57d-3452-430a-ab71-17f87a9a50e4",
+                            CreatedAt = new DateTime(2023, 10, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DisplayName = "Jane Smith",
-                            Email = "jane.smith@email.com",
+                            Email = "customer002@example.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
-                            NormalizedEmail = "JANE.SMITH@EMAIL.COM",
-                            NormalizedUserName = "JANE.SMITH@EMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAECeUZK1ZhYh9Wc+B6aUA8q2yAINGC9WGBcwOORMeDjx30ON3c49ZPoFlCWEzBZ/mdw==",
+                            NormalizedEmail = "CUSTOMER002@EXAMPLE.COM",
+                            NormalizedUserName = "CUSTOMER002@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEG8hBkHrvWE/9OKQ+4El+11Qd4/ppgK95N6AWcr5WABaMtg6AXP0nqRsS0q8goQrYQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "85a70ffb-7396-448d-96ff-8e4d3f1d8506",
+                            SecurityStamp = "7ca57249-b173-4b74-857c-4786c5603758",
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 9, 7, 7, 38, 26, 700, DateTimeKind.Utc).AddTicks(3353),
-                            UserName = "jane.smith@email.com"
+                            UpdatedAt = new DateTime(2023, 12, 24, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserName = "customer002@example.com"
                         },
                         new
                         {
                             Id = "customer-003",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "cbd31069-295c-4502-9758-a6d9b75124f0",
-                            CreatedAt = new DateTime(2024, 12, 8, 7, 38, 26, 832, DateTimeKind.Utc).AddTicks(8405),
+                            ConcurrencyStamp = "50d8528f-f4da-4534-9ddf-986239cca897",
+                            CreatedAt = new DateTime(2023, 3, 26, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DisplayName = "Michael Johnson",
-                            Email = "michael.johnson@email.com",
+                            Email = "customer003@example.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
-                            NormalizedEmail = "MICHAEL.JOHNSON@EMAIL.COM",
-                            NormalizedUserName = "MICHAEL.JOHNSON@EMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEOZKKHzYEHu6S024S3AfpJSeYQj5VEzmPrCBlgsoGF+DAH4GjcU5JnBdV8J4kgxKag==",
+                            NormalizedEmail = "CUSTOMER003@EXAMPLE.COM",
+                            NormalizedUserName = "CUSTOMER003@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAED9ZW6hO3H11Q+SYDwF6308YaqXXhiqBkVNWjjwEaAGdukJDQxvf8D/m6sG7HYleNw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "c7c2e15d-cecf-475e-957c-8862aee18744",
+                            SecurityStamp = "fbb7ef33-b1d9-4ff3-b47b-838d40a90a84",
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 8, 23, 7, 38, 26, 832, DateTimeKind.Utc).AddTicks(8464),
-                            UserName = "michael.johnson@email.com"
+                            UpdatedAt = new DateTime(2023, 12, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserName = "customer003@example.com"
                         },
                         new
                         {
                             Id = "customer-004",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "21bd04f1-75e1-469f-86a3-21bed8f1cb3f",
-                            CreatedAt = new DateTime(2025, 5, 31, 7, 38, 26, 964, DateTimeKind.Utc).AddTicks(8978),
+                            ConcurrencyStamp = "d2cc5179-1f97-4697-b2a3-b3759fd482b5",
+                            CreatedAt = new DateTime(2023, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DisplayName = "Sarah Williams",
-                            Email = "sarah.williams@email.com",
+                            Email = "customer004@example.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
-                            NormalizedEmail = "SARAH.WILLIAMS@EMAIL.COM",
-                            NormalizedUserName = "SARAH.WILLIAMS@EMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEEVoS0xjlq0SJpEw6o1akTQHmRhdum+v72AMHDW8usz7r8vLEqL21eprQOXt2qvVOA==",
+                            NormalizedEmail = "CUSTOMER004@EXAMPLE.COM",
+                            NormalizedUserName = "CUSTOMER004@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEJtZLRS+lJ0sPpPyNMWpCDMIH7968Ynhh82jmLEQ7IufLXm5mhcE4/rtKeDoh7/qJQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "35a39d32-97b0-4833-b410-45429326c64b",
+                            SecurityStamp = "585b8a4c-cf34-44e1-81b3-8ffd01db6a56",
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 9, 6, 7, 38, 26, 964, DateTimeKind.Utc).AddTicks(9290),
-                            UserName = "sarah.williams@email.com"
+                            UpdatedAt = new DateTime(2023, 12, 23, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserName = "customer004@example.com"
                         },
                         new
                         {
                             Id = "customer-005",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "8486582d-d2af-4cf6-acfa-cddca572cad4",
-                            CreatedAt = new DateTime(2024, 11, 21, 7, 38, 27, 96, DateTimeKind.Utc).AddTicks(3832),
+                            ConcurrencyStamp = "07ab89ac-7dba-4230-b7ff-738f7344c6ed",
+                            CreatedAt = new DateTime(2023, 3, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DisplayName = "David Brown",
-                            Email = "david.brown@email.com",
+                            Email = "customer005@example.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
-                            NormalizedEmail = "DAVID.BROWN@EMAIL.COM",
-                            NormalizedUserName = "DAVID.BROWN@EMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEF7n7xtx0pQ5wHtf0b5phKwRtUExyZjv9qIf/yfm1Ho8QTNV4NekNuZP/1R2Nu84bw==",
+                            NormalizedEmail = "CUSTOMER005@EXAMPLE.COM",
+                            NormalizedUserName = "CUSTOMER005@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEBWOJA1n3iua6U5Gn/cugw+KU6GYYjGa7/UGOZmIq02AVGO5RSGXlFZ5llBzf+B1Fw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "d8137448-b426-4d69-a39e-0413e1afa95a",
+                            SecurityStamp = "0b2e6ee0-2e28-45c5-b9b9-020571e345f7",
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 8, 22, 7, 38, 27, 96, DateTimeKind.Utc).AddTicks(3892),
-                            UserName = "david.brown@email.com"
+                            UpdatedAt = new DateTime(2023, 12, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserName = "customer005@example.com"
                         },
                         new
                         {
                             Id = "customer-006",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "04f06082-97c0-4f1f-b9a7-248e1af5cdca",
-                            CreatedAt = new DateTime(2025, 5, 14, 7, 38, 27, 227, DateTimeKind.Utc).AddTicks(3214),
+                            ConcurrencyStamp = "adff1d58-100f-440a-ba90-f5ff1f5372fc",
+                            CreatedAt = new DateTime(2023, 8, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DisplayName = "Emily Davis",
-                            Email = "emily.davis@email.com",
+                            Email = "customer006@example.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
-                            NormalizedEmail = "EMILY.DAVIS@EMAIL.COM",
-                            NormalizedUserName = "EMILY.DAVIS@EMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEP3IKiVQ2B71+MLs8Wev/CS5PYpjBoEVoS6MuAWio1QiBrj+L2IbXWlcA9p6acln7Q==",
+                            NormalizedEmail = "CUSTOMER006@EXAMPLE.COM",
+                            NormalizedUserName = "CUSTOMER006@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEJaDxQCNDPc3zL6KuQgqWdUb1Lr5iadH0Wt7LRkKig/4veksLtQZ+wA9uGx9hhAEBQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "4884f6a3-5b30-48e5-b436-0be606663064",
+                            SecurityStamp = "0b248334-a970-4508-9580-3235b0f9d339",
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 9, 5, 7, 38, 27, 227, DateTimeKind.Utc).AddTicks(3324),
-                            UserName = "emily.davis@email.com"
+                            UpdatedAt = new DateTime(2023, 12, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserName = "customer006@example.com"
                         },
                         new
                         {
                             Id = "customer-007",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "7e34202d-dbf8-4465-8e57-832578594ec7",
-                            CreatedAt = new DateTime(2024, 11, 5, 7, 38, 27, 359, DateTimeKind.Utc).AddTicks(1395),
-                            DisplayName = "James Miller",
-                            Email = "james.miller@email.com",
+                            ConcurrencyStamp = "7768c4c5-2d72-45c3-bbb1-69b5148665dd",
+                            CreatedAt = new DateTime(2023, 2, 21, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DisplayName = "Christopher Wilson",
+                            Email = "customer007@example.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
-                            NormalizedEmail = "JAMES.MILLER@EMAIL.COM",
-                            NormalizedUserName = "JAMES.MILLER@EMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEDQM9JgBmTnJ8wuN70SRFGw5MEumL3Bgbl7RA9B+ZZNBzLcpGjNzCdKnmMazYtWS2A==",
+                            NormalizedEmail = "CUSTOMER007@EXAMPLE.COM",
+                            NormalizedUserName = "CUSTOMER007@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEIokplx3fQwrY4XzGqN0qshgj9LWlR+C2Gd/rrZnzSf7esO4BKndECv1BL8aO2ibeQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "a45bf610-2582-4c62-a6fc-1fc6890e88d6",
+                            SecurityStamp = "34eade0f-b8e6-418c-aded-efdeca591959",
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 8, 21, 7, 38, 27, 359, DateTimeKind.Utc).AddTicks(1442),
-                            UserName = "james.miller@email.com"
+                            UpdatedAt = new DateTime(2023, 12, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserName = "customer007@example.com"
                         },
                         new
                         {
                             Id = "customer-008",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "49c216b1-3ccd-4693-803d-c3f718590e01",
-                            CreatedAt = new DateTime(2025, 4, 28, 7, 38, 27, 491, DateTimeKind.Utc).AddTicks(7170),
-                            DisplayName = "Jessica Wilson",
-                            Email = "jessica.wilson@email.com",
+                            ConcurrencyStamp = "a408f4a3-41dd-465b-83c0-124cc10582a1",
+                            CreatedAt = new DateTime(2023, 8, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DisplayName = "Jessica Martinez",
+                            Email = "customer008@example.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
-                            NormalizedEmail = "JESSICA.WILSON@EMAIL.COM",
-                            NormalizedUserName = "JESSICA.WILSON@EMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEDrUcFgzc03O4weIlIumf+XzYTRjmzD419HTYn42gBTR8HciGuv09r1g/81FH0+Vdg==",
+                            NormalizedEmail = "CUSTOMER008@EXAMPLE.COM",
+                            NormalizedUserName = "CUSTOMER008@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEJXK4InDLd6XTsap25KUvXlpdDi7L3KRvugp+qIEwSIZLZZuBNxmQ7UoLZ99rWHLbA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "e4cd7efa-8255-4ef8-beae-915afde48a9d",
+                            SecurityStamp = "f4fd1553-5f22-4b61-9d4c-8851ae43c7d2",
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 9, 3, 7, 38, 27, 491, DateTimeKind.Utc).AddTicks(7218),
-                            UserName = "jessica.wilson@email.com"
+                            UpdatedAt = new DateTime(2023, 12, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserName = "customer008@example.com"
                         },
                         new
                         {
                             Id = "customer-009",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "5e83af82-5a62-40f7-a998-a4fa51c3082d",
-                            CreatedAt = new DateTime(2024, 10, 20, 7, 38, 27, 624, DateTimeKind.Utc).AddTicks(9873),
-                            DisplayName = "Robert Moore",
-                            Email = "robert.moore@email.com",
+                            ConcurrencyStamp = "f90bb67b-63ec-447b-a79c-b06155b8aae1",
+                            CreatedAt = new DateTime(2023, 2, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DisplayName = "Daniel Anderson",
+                            Email = "customer009@example.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
-                            NormalizedEmail = "ROBERT.MOORE@EMAIL.COM",
-                            NormalizedUserName = "ROBERT.MOORE@EMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEL45/f9SKpjNd38o5HTNGMOIr2Vktqpn3Semz+cAipoEgP5xXhPjmblo4z0OpedREw==",
+                            NormalizedEmail = "CUSTOMER009@EXAMPLE.COM",
+                            NormalizedUserName = "CUSTOMER009@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEOthq+16pY6oZeRXMsIbdOob/J6an2cWZRfWfw4VSZOgCrWpIjs36eIeAtTDiwSlhA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "b3c554ca-c6ff-44b3-878b-edf1a120df62",
+                            SecurityStamp = "d725176a-70f7-4871-955d-55a7d624aa7f",
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 8, 19, 7, 38, 27, 624, DateTimeKind.Utc).AddTicks(9914),
-                            UserName = "robert.moore@email.com"
+                            UpdatedAt = new DateTime(2023, 12, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserName = "customer009@example.com"
                         },
                         new
                         {
                             Id = "customer-010",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "464522ae-9a60-4e62-9836-716e7e08393c",
-                            CreatedAt = new DateTime(2025, 4, 12, 7, 38, 27, 754, DateTimeKind.Utc).AddTicks(1521),
+                            ConcurrencyStamp = "a8ed22c5-2f0b-48c8-b360-65ab3df263a6",
+                            CreatedAt = new DateTime(2023, 7, 29, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DisplayName = "Ashley Taylor",
-                            Email = "ashley.taylor@email.com",
+                            Email = "customer010@example.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
-                            NormalizedEmail = "ASHLEY.TAYLOR@EMAIL.COM",
-                            NormalizedUserName = "ASHLEY.TAYLOR@EMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEDvhI64MKDBsJQ32E0RaCgWFPjMtXv4sHApCqGIEBn3LyxKpoWTFbSvQMBSaVf1thA==",
+                            NormalizedEmail = "CUSTOMER010@EXAMPLE.COM",
+                            NormalizedUserName = "CUSTOMER010@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEJlXHV7PjUBh42ML82x+SDzSV+Ra/vuZMs+xovaL0+/mUqLtzMd72DiVgjNbb0LgTA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "8b5e0851-1a3b-446a-b41d-443c51052b31",
+                            SecurityStamp = "1086e8c4-afbc-4428-b2d2-81d6f83471bf",
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 9, 2, 7, 38, 27, 754, DateTimeKind.Utc).AddTicks(1578),
-                            UserName = "ashley.taylor@email.com"
+                            UpdatedAt = new DateTime(2023, 12, 19, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserName = "customer010@example.com"
                         },
                         new
                         {
                             Id = "customer-011",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "6ef92085-2f5d-4ded-87a8-501be19cdab2",
-                            CreatedAt = new DateTime(2024, 10, 4, 7, 38, 27, 885, DateTimeKind.Utc).AddTicks(7581),
-                            DisplayName = "Christopher Anderson",
-                            Email = "christopher.anderson@email.com",
+                            ConcurrencyStamp = "5cfa1131-1467-4075-b789-a87823709ff2",
+                            CreatedAt = new DateTime(2023, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DisplayName = "Matthew Thomas",
+                            Email = "customer011@example.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
-                            NormalizedEmail = "CHRISTOPHER.ANDERSON@EMAIL.COM",
-                            NormalizedUserName = "CHRISTOPHER.ANDERSON@EMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEBy4pSQgk+ELG4AlzYXPV5P2vHWldkKOaAusJlKHOXsRdavWQO9ec6pZSiI70y7W2w==",
+                            NormalizedEmail = "CUSTOMER011@EXAMPLE.COM",
+                            NormalizedUserName = "CUSTOMER011@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEJMRt4om/U8jQtaYNxkXLDppUzm1HHFn5Bgussf+JPYVTvlbYfbEOZI8Ts9xX7hjIQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "a2e5238b-1d75-4db7-97ec-5d9358d869af",
+                            SecurityStamp = "5404727f-7f5f-4887-a439-b89ba575812f",
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 8, 18, 7, 38, 27, 885, DateTimeKind.Utc).AddTicks(7632),
-                            UserName = "christopher.anderson@email.com"
+                            UpdatedAt = new DateTime(2023, 12, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserName = "customer011@example.com"
                         },
                         new
                         {
                             Id = "customer-012",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "905fb37f-c5f5-416e-9dc0-0e732319c337",
-                            CreatedAt = new DateTime(2025, 3, 26, 7, 38, 28, 18, DateTimeKind.Utc).AddTicks(3812),
-                            DisplayName = "Amanda Thomas",
-                            Email = "amanda.thomas@email.com",
+                            ConcurrencyStamp = "94ca2782-697c-4c90-9c73-c9e8f4530651",
+                            CreatedAt = new DateTime(2023, 7, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DisplayName = "Amanda Jackson",
+                            Email = "customer012@example.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
-                            NormalizedEmail = "AMANDA.THOMAS@EMAIL.COM",
-                            NormalizedUserName = "AMANDA.THOMAS@EMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAENWXd1tJGdl2Pf4HYSUMt3nqE6q+FXPWGwiya+DmltudzNN4T1hisAJMKCNqGSzbaA==",
+                            NormalizedEmail = "CUSTOMER012@EXAMPLE.COM",
+                            NormalizedUserName = "CUSTOMER012@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEH8DFmclOT4eQa35Tu73HRM6P1NLgqyu4THg1AY55gYWw6CAEpXRmClKFiE6U4xxwg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "a3644fea-16d3-4777-9361-4bf3290a216a",
+                            SecurityStamp = "4c14b5ee-97bc-4c3e-8a55-729a3a8f21b4",
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 9, 1, 7, 38, 28, 18, DateTimeKind.Utc).AddTicks(3849),
-                            UserName = "amanda.thomas@email.com"
+                            UpdatedAt = new DateTime(2023, 12, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserName = "customer012@example.com"
                         },
                         new
                         {
                             Id = "customer-013",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "b076aecc-ef0e-4133-86a8-9a0a08e21dd8",
-                            CreatedAt = new DateTime(2024, 9, 17, 7, 38, 28, 143, DateTimeKind.Utc).AddTicks(6287),
-                            DisplayName = "Matthew Jackson",
-                            Email = "matthew.jackson@email.com",
+                            ConcurrencyStamp = "0f43c1da-38b3-445b-b58d-f390cd9335a4",
+                            CreatedAt = new DateTime(2023, 1, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DisplayName = "Joshua White",
+                            Email = "customer013@example.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
-                            NormalizedEmail = "MATTHEW.JACKSON@EMAIL.COM",
-                            NormalizedUserName = "MATTHEW.JACKSON@EMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEHxZ1q6Ny3izcixVPLdAYzEbEhB7zggtJ/iuJksvzT7WVUErlofoB9gB0+M7pWb0hQ==",
+                            NormalizedEmail = "CUSTOMER013@EXAMPLE.COM",
+                            NormalizedUserName = "CUSTOMER013@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEBBKSP8hZ2fzsTEMa/+JZNVBXGAfl+lolUm80ta+M/A87vZiOTh1gteAS/dNVlVkzw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "736f04d9-b9e2-4049-bdc6-564b42a66b55",
+                            SecurityStamp = "56cd0f47-d7f1-4544-9d1c-ed49d04ac19a",
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 8, 17, 7, 38, 28, 143, DateTimeKind.Utc).AddTicks(6330),
-                            UserName = "matthew.jackson@email.com"
+                            UpdatedAt = new DateTime(2023, 12, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserName = "customer013@example.com"
                         },
                         new
                         {
                             Id = "customer-014",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "4d9b5649-b0db-48ae-a6b5-92d62c657b30",
-                            CreatedAt = new DateTime(2025, 3, 10, 7, 38, 28, 263, DateTimeKind.Utc).AddTicks(1277),
-                            DisplayName = "Melissa White",
-                            Email = "melissa.white@email.com",
+                            ConcurrencyStamp = "ecfecb09-8eed-4692-a93d-9517aa1d18e2",
+                            CreatedAt = new DateTime(2023, 6, 26, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DisplayName = "Stephanie Harris",
+                            Email = "customer014@example.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
-                            NormalizedEmail = "MELISSA.WHITE@EMAIL.COM",
-                            NormalizedUserName = "MELISSA.WHITE@EMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEEVwLbwUdl5gfEilzD0DNL/ZtmEQS3anzV+4pDKWMb6yltypnQSzRthzQUIgKeN+sQ==",
+                            NormalizedEmail = "CUSTOMER014@EXAMPLE.COM",
+                            NormalizedUserName = "CUSTOMER014@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEClsuAArctdtLIysyfKOKeR4dDlRMBS++V+HgC6zvSRs3Uw07GhFFq2Qum6lam6+jQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "6614b39e-7ba1-478a-a731-6aff43d84e03",
+                            SecurityStamp = "231e71a0-89ae-4388-b371-bdf982ffc671",
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 8, 30, 7, 38, 28, 263, DateTimeKind.Utc).AddTicks(1316),
-                            UserName = "melissa.white@email.com"
+                            UpdatedAt = new DateTime(2023, 12, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserName = "customer014@example.com"
                         },
                         new
                         {
                             Id = "customer-015",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "1a6139a6-d3c7-493c-be15-aa9ccefccc89",
-                            CreatedAt = new DateTime(2025, 8, 31, 7, 38, 28, 367, DateTimeKind.Utc).AddTicks(9738),
-                            DisplayName = "Anthony Harris",
-                            Email = "anthony.harris@email.com",
+                            ConcurrencyStamp = "f31928b5-d939-448c-83f8-78a1b98a2372",
+                            CreatedAt = new DateTime(2023, 12, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DisplayName = "Andrew Martin",
+                            Email = "customer015@example.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
-                            NormalizedEmail = "ANTHONY.HARRIS@EMAIL.COM",
-                            NormalizedUserName = "ANTHONY.HARRIS@EMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEDUTjPYg8quMJa7vxyH50OLdI+b1W4nnLt+xCzcdiTvFq0ukt5l3Skw2wOlYeKuQ9A==",
+                            NormalizedEmail = "CUSTOMER015@EXAMPLE.COM",
+                            NormalizedUserName = "CUSTOMER015@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEM2A/ouAfwto6u9vfd/pOjrKK3VbBST7gvNNN1Q0qgqh5oPITvcDu2jXB8aSyqe1WQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "31080f6f-4891-49cc-b662-7a21ddcab9e4",
+                            SecurityStamp = "f65a400b-1c9a-4de6-8376-e1def8d1eb13",
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 9, 13, 7, 38, 28, 367, DateTimeKind.Utc).AddTicks(9777),
-                            UserName = "anthony.harris@email.com"
+                            UpdatedAt = new DateTime(2023, 12, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserName = "customer015@example.com"
                         },
                         new
                         {
                             Id = "customer-016",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "29651b25-667b-448e-a518-adccffec9c04",
-                            CreatedAt = new DateTime(2025, 2, 22, 7, 38, 28, 466, DateTimeKind.Utc).AddTicks(4270),
-                            DisplayName = "Stephanie Martin",
-                            Email = "stephanie.martin@email.com",
+                            ConcurrencyStamp = "1b7aef7d-ada7-49d0-aae0-9a56fda79a77",
+                            CreatedAt = new DateTime(2023, 6, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DisplayName = "Nicole Thompson",
+                            Email = "customer016@example.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
-                            NormalizedEmail = "STEPHANIE.MARTIN@EMAIL.COM",
-                            NormalizedUserName = "STEPHANIE.MARTIN@EMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEIrUfF8jfaXHjF/GjV0WNNLjeQCpBvbuaxUddngdB0kcA5emI787op1Uqao/deq2ZQ==",
+                            NormalizedEmail = "CUSTOMER016@EXAMPLE.COM",
+                            NormalizedUserName = "CUSTOMER016@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEG4EzjRyY0/G3QCX27SkmryWMQsfPOAhxPmijGhvMNkgyZWvL/O9mM8ifysDCoBWiQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "ddb4dabb-62b8-4ed3-8075-a8c0158e6621",
+                            SecurityStamp = "bf52bc87-8c32-4332-b6bf-9f56f5f1a72b",
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 8, 29, 7, 38, 28, 466, DateTimeKind.Utc).AddTicks(4311),
-                            UserName = "stephanie.martin@email.com"
+                            UpdatedAt = new DateTime(2023, 12, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserName = "customer016@example.com"
                         },
                         new
                         {
                             Id = "customer-017",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "a9bdee12-3d9c-41ec-973d-0348828c6eb1",
-                            CreatedAt = new DateTime(2025, 8, 15, 7, 38, 28, 565, DateTimeKind.Utc).AddTicks(2290),
-                            DisplayName = "Mark Thompson",
-                            Email = "mark.thompson@email.com",
+                            ConcurrencyStamp = "a301036e-fc3c-41a1-92d6-ed23f69e87f4",
+                            CreatedAt = new DateTime(2023, 12, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DisplayName = "Ryan Garcia",
+                            Email = "customer017@example.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
-                            NormalizedEmail = "MARK.THOMPSON@EMAIL.COM",
-                            NormalizedUserName = "MARK.THOMPSON@EMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEEJu9eIr+75FBjEUf73fisuQgdEl6YnBZJvc2rO79SLvm6PoIQCVPjP64/wzeiAVtQ==",
+                            NormalizedEmail = "CUSTOMER017@EXAMPLE.COM",
+                            NormalizedUserName = "CUSTOMER017@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEILWEslcy1wlvoCSmWATPrMy0uqHhLQqqAmbjfZ8ibRLPy887Nz29e0MrzWCbqliYw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "de05414d-1d0f-4148-81e6-3beada4f621c",
+                            SecurityStamp = "26106778-06f2-497a-a06c-6bc73fe755f6",
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 9, 12, 7, 38, 28, 565, DateTimeKind.Utc).AddTicks(2327),
-                            UserName = "mark.thompson@email.com"
+                            UpdatedAt = new DateTime(2023, 12, 29, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserName = "customer017@example.com"
                         },
                         new
                         {
                             Id = "customer-018",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "75a404a2-b220-46c5-bb5c-9ed130587a3a",
-                            CreatedAt = new DateTime(2025, 2, 5, 7, 38, 28, 663, DateTimeKind.Utc).AddTicks(6978),
-                            DisplayName = "Laura Garcia",
-                            Email = "laura.garcia@email.com",
+                            ConcurrencyStamp = "def01534-e439-407e-b07e-e3367081d20a",
+                            CreatedAt = new DateTime(2023, 5, 24, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DisplayName = "Heather Martinez",
+                            Email = "customer018@example.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
-                            NormalizedEmail = "LAURA.GARCIA@EMAIL.COM",
-                            NormalizedUserName = "LAURA.GARCIA@EMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEAKNDwJyUwum2MzOFZ6jk9SegTTuzYX7pCwrewMeaBFelNCaCrYjM8KiEBWzY/c0Sg==",
+                            NormalizedEmail = "CUSTOMER018@EXAMPLE.COM",
+                            NormalizedUserName = "CUSTOMER018@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEMIKpWvq0/02XezYUKPgsFsASY9HX35LkXGysPZ+KV7vLOuxyoODVBEJDxClVW1hAQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "f12b8a59-6fb8-4c3d-8beb-37711011e881",
+                            SecurityStamp = "74201c63-d1e8-49aa-ba0d-f4851878c40e",
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 8, 28, 7, 38, 28, 663, DateTimeKind.Utc).AddTicks(7018),
-                            UserName = "laura.garcia@email.com"
+                            UpdatedAt = new DateTime(2023, 12, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserName = "customer018@example.com"
                         },
                         new
                         {
                             Id = "customer-019",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "709986c1-fd26-4596-973c-d44803e3fee7",
-                            CreatedAt = new DateTime(2025, 7, 29, 7, 38, 28, 762, DateTimeKind.Utc).AddTicks(4267),
-                            DisplayName = "Steven Martinez",
-                            Email = "steven.martinez@email.com",
+                            ConcurrencyStamp = "fc800a07-ec18-4571-883f-52f274aa7c5e",
+                            CreatedAt = new DateTime(2023, 11, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DisplayName = "Kevin Robinson",
+                            Email = "customer019@example.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
-                            NormalizedEmail = "STEVEN.MARTINEZ@EMAIL.COM",
-                            NormalizedUserName = "STEVEN.MARTINEZ@EMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEPVHf9ufwkhhITb35YG+vWV6nJ5+L33XAtIAG1SyxQV/HZHUhxjypsNOh06HeZW/tg==",
+                            NormalizedEmail = "CUSTOMER019@EXAMPLE.COM",
+                            NormalizedUserName = "CUSTOMER019@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEA/p0u1YKdfnz4Vepnwb/EasXK8SWK2xCCPjk7dQCxIpGrOLm/qLzgCP3K47kKwSTg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "7890dc80-3f4f-4832-8095-67932f17f7aa",
+                            SecurityStamp = "433abf9a-a601-4532-89e7-cc478cf29b07",
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 9, 11, 7, 38, 28, 762, DateTimeKind.Utc).AddTicks(4308),
-                            UserName = "steven.martinez@email.com"
+                            UpdatedAt = new DateTime(2023, 12, 28, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserName = "customer019@example.com"
                         },
                         new
                         {
                             Id = "customer-020",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "42b03328-9e1c-4ce5-ba74-24bdbd06f269",
-                            CreatedAt = new DateTime(2025, 1, 20, 7, 38, 28, 864, DateTimeKind.Utc).AddTicks(1649),
-                            DisplayName = "Michelle Robinson",
-                            Email = "michelle.robinson@email.com",
+                            ConcurrencyStamp = "67765cb7-3e17-486e-8cb0-0441f2135d41",
+                            CreatedAt = new DateTime(2023, 5, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DisplayName = "Rachel Clark",
+                            Email = "customer020@example.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
-                            NormalizedEmail = "MICHELLE.ROBINSON@EMAIL.COM",
-                            NormalizedUserName = "MICHELLE.ROBINSON@EMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEDHr6mqqlvWE6f53B0TMQIqEZQuA2a/dioXm7Eld50+4/Gmut794LBn3GZJYI4LF3Q==",
+                            NormalizedEmail = "CUSTOMER020@EXAMPLE.COM",
+                            NormalizedUserName = "CUSTOMER020@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEP0pV+dKw6ItPjdJEMgN6DLM4XQCOYnMzFvkYCtfR4v3PYUO2TmfJOQ2Rf0jBObE0g==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "ea431832-1cb6-4bb0-9591-02a157c2e927",
+                            SecurityStamp = "e7d9477e-acd4-4bc9-9afc-e8c3b660d1d1",
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 8, 27, 7, 38, 28, 864, DateTimeKind.Utc).AddTicks(1692),
-                            UserName = "michelle.robinson@email.com"
+                            UpdatedAt = new DateTime(2023, 12, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserName = "customer020@example.com"
                         },
                         new
                         {
                             Id = "customer-021",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "2234e8c1-7c57-4db4-92de-ed013969f08d",
-                            CreatedAt = new DateTime(2025, 7, 13, 7, 38, 28, 964, DateTimeKind.Utc).AddTicks(8834),
-                            DisplayName = "Kevin Clark",
-                            Email = "kevin.clark@email.com",
+                            ConcurrencyStamp = "6cd27e28-0203-4292-ad94-f30276c6ae34",
+                            CreatedAt = new DateTime(2023, 10, 29, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DisplayName = "Brandon Rodriguez",
+                            Email = "customer021@example.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
-                            NormalizedEmail = "KEVIN.CLARK@EMAIL.COM",
-                            NormalizedUserName = "KEVIN.CLARK@EMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEPCk3du1rq8Zfyf0LmHkqrMRQvo72jSqYDsr+ZmWyDzf99HYaVRt0+IryTJfE/4udQ==",
+                            NormalizedEmail = "CUSTOMER021@EXAMPLE.COM",
+                            NormalizedUserName = "CUSTOMER021@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEMAJvpNY6Z57k9gk76KEd59qFxyEk8WdDURNGUNAznj3+rCbraG8I/tVzTvv0d9SOA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "0e3e12a5-3f63-4009-a2ac-1a8a8574384b",
+                            SecurityStamp = "57f74f69-d982-4339-927a-b2ccb2a73f1c",
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 9, 9, 7, 38, 28, 964, DateTimeKind.Utc).AddTicks(8884),
-                            UserName = "kevin.clark@email.com"
+                            UpdatedAt = new DateTime(2023, 12, 26, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserName = "customer021@example.com"
                         },
                         new
                         {
                             Id = "customer-022",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "8bfb929f-da27-4d11-9b34-1423b83d533f",
-                            CreatedAt = new DateTime(2025, 1, 4, 7, 38, 29, 75, DateTimeKind.Utc).AddTicks(5136),
-                            DisplayName = "Kimberly Rodriguez",
-                            Email = "kimberly.rodriguez@email.com",
+                            ConcurrencyStamp = "11e0252a-60c2-4804-a234-aa5b329b5c2a",
+                            CreatedAt = new DateTime(2023, 4, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DisplayName = "Lauren Lewis",
+                            Email = "customer022@example.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
-                            NormalizedEmail = "KIMBERLY.RODRIGUEZ@EMAIL.COM",
-                            NormalizedUserName = "KIMBERLY.RODRIGUEZ@EMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEDisM/ypg1MYgB2wnQ91GXbu4YHendSjMvE5UJyf34pf4xSKUGnKhQJx5sK7jpTENw==",
+                            NormalizedEmail = "CUSTOMER022@EXAMPLE.COM",
+                            NormalizedUserName = "CUSTOMER022@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEOoCg1A/pj+dA3mReiJZTeKsWizUFtdiY/LgSflcPW3DcFjyqo5znYn2HSB8DfO5Ow==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "a424f9a4-e51b-4c43-80b6-e35f2d101136",
+                            SecurityStamp = "7a70d589-c90d-47c4-81ee-4c2edd7399d2",
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 8, 25, 7, 38, 29, 75, DateTimeKind.Utc).AddTicks(5184),
-                            UserName = "kimberly.rodriguez@email.com"
+                            UpdatedAt = new DateTime(2023, 12, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserName = "customer022@example.com"
                         },
                         new
                         {
                             Id = "customer-023",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "6e4de95f-e1fb-4085-b530-92ae4deba9a9",
-                            CreatedAt = new DateTime(2025, 6, 27, 7, 38, 29, 195, DateTimeKind.Utc).AddTicks(1286),
-                            DisplayName = "Joshua Lewis",
-                            Email = "joshua.lewis@email.com",
+                            ConcurrencyStamp = "cc330585-0634-4d6d-ad71-cd07cc33726c",
+                            CreatedAt = new DateTime(2023, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DisplayName = "Tyler Lee",
+                            Email = "customer023@example.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
-                            NormalizedEmail = "JOSHUA.LEWIS@EMAIL.COM",
-                            NormalizedUserName = "JOSHUA.LEWIS@EMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEN+v+IX47whtqlClVRHEmQ04CoIXcnzT1ePkFKKNRN9rNEJ6t1AOb+JFLLcEMNCszg==",
+                            NormalizedEmail = "CUSTOMER023@EXAMPLE.COM",
+                            NormalizedUserName = "CUSTOMER023@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEG/aZteFXlpKB5kM6VjHTCXewU+mmenJthbqN6LHwnNgM+B42IP/XKlb5O2ypbWC7w==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "860e0048-20b8-44a0-af66-9687019c3dd6",
+                            SecurityStamp = "6ab4cd96-13ec-4089-a157-fc0e2b1f8259",
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 9, 8, 7, 38, 29, 195, DateTimeKind.Utc).AddTicks(1330),
-                            UserName = "joshua.lewis@email.com"
+                            UpdatedAt = new DateTime(2023, 12, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserName = "customer023@example.com"
                         },
                         new
                         {
                             Id = "customer-024",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "9d5c1594-48b5-4d2e-a8fd-031aa9bd274b",
-                            CreatedAt = new DateTime(2024, 12, 18, 7, 38, 29, 308, DateTimeKind.Utc).AddTicks(8965),
-                            DisplayName = "Lisa Lee",
-                            Email = "lisa.lee@email.com",
+                            ConcurrencyStamp = "a288cf77-2bcd-4db8-bed3-ecae43253742",
+                            CreatedAt = new DateTime(2023, 4, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DisplayName = "Samantha Walker",
+                            Email = "customer024@example.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
-                            NormalizedEmail = "LISA.LEE@EMAIL.COM",
-                            NormalizedUserName = "LISA.LEE@EMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEOTmJLB5WuugdPOVnIaYj+HphkVBn8nwhxUJQfPwRfIsFgojJU0lEUZmq4rbZ8YLwg==",
+                            NormalizedEmail = "CUSTOMER024@EXAMPLE.COM",
+                            NormalizedUserName = "CUSTOMER024@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAECXZKio9HHPkm6RfpSvT2Z89Yg+STofLc0XbaAfb2l0S0uKrEuuUXe+1NCKtyvIViA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "a642a50e-d8fb-43df-a523-2641adb0aa92",
+                            SecurityStamp = "56948ffb-9dfd-4927-828b-bd7ec0515316",
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 8, 24, 7, 38, 29, 308, DateTimeKind.Utc).AddTicks(9004),
-                            UserName = "lisa.lee@email.com"
+                            UpdatedAt = new DateTime(2023, 12, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserName = "customer024@example.com"
                         },
                         new
                         {
                             Id = "customer-025",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "7974aabc-a1f9-4430-9c0e-aff3c82eddd3",
-                            CreatedAt = new DateTime(2025, 6, 10, 7, 38, 29, 405, DateTimeKind.Utc).AddTicks(4994),
-                            DisplayName = "Andrew Walker",
-                            Email = "andrew.walker@email.com",
+                            ConcurrencyStamp = "ae7d5bd3-5c54-4f05-986f-7c9b2841a48a",
+                            CreatedAt = new DateTime(2023, 9, 26, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DisplayName = "Justin Hall",
+                            Email = "customer025@example.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
-                            NormalizedEmail = "ANDREW.WALKER@EMAIL.COM",
-                            NormalizedUserName = "ANDREW.WALKER@EMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEFizeTn4u3D5FX2Wc5MZEvH0EMPyp/yYaGxLj4Pkx8I1L0v3A14pVHELh+BVXnf57Q==",
+                            NormalizedEmail = "CUSTOMER025@EXAMPLE.COM",
+                            NormalizedUserName = "CUSTOMER025@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEMV2ErgOBFhibtuiI0uN7/1l76bCzBdq/mOxwiY9BGcalMdN79ozKVETGSMMTHDGgw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "cd945454-de3a-4289-87e4-1f6820011529",
+                            SecurityStamp = "d97a7e2d-eef8-4bfd-9994-ce8347a6a312",
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 9, 7, 7, 38, 29, 405, DateTimeKind.Utc).AddTicks(5036),
-                            UserName = "andrew.walker@email.com"
+                            UpdatedAt = new DateTime(2023, 12, 24, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserName = "customer025@example.com"
                         },
                         new
                         {
                             Id = "customer-026",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "93b13c7b-0b89-4e1e-86f5-bbee7cb0f025",
-                            CreatedAt = new DateTime(2024, 12, 2, 7, 38, 29, 507, DateTimeKind.Utc).AddTicks(2917),
-                            DisplayName = "Nancy Hall",
-                            Email = "nancy.hall@email.com",
+                            ConcurrencyStamp = "02fb1f90-44cf-4b0d-a209-c4d6e20c4425",
+                            CreatedAt = new DateTime(2023, 3, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DisplayName = "Megan Allen",
+                            Email = "customer026@example.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
-                            NormalizedEmail = "NANCY.HALL@EMAIL.COM",
-                            NormalizedUserName = "NANCY.HALL@EMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEPvRlNV3jY7xutrxRCKuE02WD8Vlb/Glda5Puf4FqpZd9nhmoDLE4Zc8H3HMjzxaRQ==",
+                            NormalizedEmail = "CUSTOMER026@EXAMPLE.COM",
+                            NormalizedUserName = "CUSTOMER026@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEKJp1rF9c1qxZT+LoK4xBPkeg+jMOhcJxLsmeP5MINcFjIIu9SrgBVUBh5hfFf5UTQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "0abbfaa7-1ae4-4f0f-b9b3-79263f1fde9e",
+                            SecurityStamp = "d48ce552-911a-44ae-acd5-305e745af1c9",
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 8, 23, 7, 38, 29, 507, DateTimeKind.Utc).AddTicks(2959),
-                            UserName = "nancy.hall@email.com"
+                            UpdatedAt = new DateTime(2023, 12, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserName = "customer026@example.com"
                         },
                         new
                         {
                             Id = "customer-027",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "7bbc0a5d-d2eb-4269-9b12-5e0a69d4c189",
-                            CreatedAt = new DateTime(2025, 5, 25, 7, 38, 29, 621, DateTimeKind.Utc).AddTicks(8186),
-                            DisplayName = "Brian Allen",
-                            Email = "brian.allen@email.com",
+                            ConcurrencyStamp = "492fc25a-957d-45a8-b012-acad6c666995",
+                            CreatedAt = new DateTime(2023, 9, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DisplayName = "Jacob Young",
+                            Email = "customer027@example.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
-                            NormalizedEmail = "BRIAN.ALLEN@EMAIL.COM",
-                            NormalizedUserName = "BRIAN.ALLEN@EMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEIKYzhA11SkXz1pI/vlbz884ohWskwV85DhHk176vnvYXZSBO9hZ2FILPSrGmHzDpg==",
+                            NormalizedEmail = "CUSTOMER027@EXAMPLE.COM",
+                            NormalizedUserName = "CUSTOMER027@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEGYoPvnF1/FKOMDNSxey+liWd3EnjrMV0tIahWURkgig46JNa0ptw/TNVGm2fe7vFg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "43c3c96f-7e68-49d1-abea-85bc57ceadd8",
+                            SecurityStamp = "9d4152fd-6035-4ade-b40b-3a5ebd3d86ae",
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 9, 6, 7, 38, 29, 621, DateTimeKind.Utc).AddTicks(8458),
-                            UserName = "brian.allen@email.com"
+                            UpdatedAt = new DateTime(2023, 12, 23, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserName = "customer027@example.com"
                         },
                         new
                         {
                             Id = "customer-028",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "fb700be5-f304-450d-a75d-08461277b26b",
-                            CreatedAt = new DateTime(2024, 11, 16, 7, 38, 29, 739, DateTimeKind.Utc).AddTicks(8368),
-                            DisplayName = "Betty Young",
-                            Email = "betty.young@email.com",
+                            ConcurrencyStamp = "e03b4932-325e-47b7-865b-16600452be90",
+                            CreatedAt = new DateTime(2023, 3, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DisplayName = "Kayla King",
+                            Email = "customer028@example.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
-                            NormalizedEmail = "BETTY.YOUNG@EMAIL.COM",
-                            NormalizedUserName = "BETTY.YOUNG@EMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEJpk8qwOLlZ0wm863xRk0Z5OrrUWtxnmQi0EgbxTvtrPQrgzbr19VWnMktGeBcWq1Q==",
+                            NormalizedEmail = "CUSTOMER028@EXAMPLE.COM",
+                            NormalizedUserName = "CUSTOMER028@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEFxkVAe/0EcQDa05b1OwRpZnftAGk9ReEcwKUQySqw4NbvbA8Dqrea6MSjtcW02Ccg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "75bd75b0-fa06-4caf-ae0f-cf4e440a7379",
+                            SecurityStamp = "198e9799-aecd-4312-99ab-590e1797b2aa",
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 8, 21, 7, 38, 29, 739, DateTimeKind.Utc).AddTicks(8404),
-                            UserName = "betty.young@email.com"
+                            UpdatedAt = new DateTime(2023, 12, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserName = "customer028@example.com"
                         },
                         new
                         {
                             Id = "customer-029",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "45853ce4-5d8e-446c-b7dc-82249eb9c5d6",
-                            CreatedAt = new DateTime(2025, 5, 9, 7, 38, 29, 879, DateTimeKind.Utc).AddTicks(9828),
-                            DisplayName = "Gary Hernandez",
-                            Email = "gary.hernandez@email.com",
+                            ConcurrencyStamp = "8f157346-3ead-433f-a074-6b9733955e52",
+                            CreatedAt = new DateTime(2023, 8, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DisplayName = "Nathan Wright",
+                            Email = "customer029@example.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
-                            NormalizedEmail = "GARY.HERNANDEZ@EMAIL.COM",
-                            NormalizedUserName = "GARY.HERNANDEZ@EMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEET7SRQTUaoZ7FOoQ5BF49O4vLMNfxuwmn5DHOFvTKcmSdMj0AVyzUBGtY+JccMjdA==",
+                            NormalizedEmail = "CUSTOMER029@EXAMPLE.COM",
+                            NormalizedUserName = "CUSTOMER029@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEM6uE3HBgv+FAoTTWIm9LSqcQh6pF67or0XFm+h7rLDWi0VpYZpXRpj5U+YW15snJA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "3a5f53a9-b17e-4ff5-b861-04a1573931f6",
+                            SecurityStamp = "5232a21e-cfd7-410b-a632-b9ccf2dc9f9d",
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 9, 4, 7, 38, 29, 879, DateTimeKind.Utc).AddTicks(9880),
-                            UserName = "gary.hernandez@email.com"
+                            UpdatedAt = new DateTime(2023, 12, 21, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserName = "customer029@example.com"
                         },
                         new
                         {
                             Id = "customer-030",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "6c153a3a-57fa-4c59-b57b-1146fa3e8baa",
-                            CreatedAt = new DateTime(2024, 10, 30, 7, 38, 30, 12, DateTimeKind.Utc).AddTicks(9739),
-                            DisplayName = "Helen King",
-                            Email = "helen.king@email.com",
+                            ConcurrencyStamp = "d4bdae27-e275-4599-8765-fb55cadc5719",
+                            CreatedAt = new DateTime(2023, 2, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DisplayName = "Brittany Lopez",
+                            Email = "customer030@example.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
-                            NormalizedEmail = "HELEN.KING@EMAIL.COM",
-                            NormalizedUserName = "HELEN.KING@EMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEFDW+UcKm8AqBF4NJE46+4biP5vC16r6iZrw3vDOUvROGv+c5vD2fDMIo8u4eySo6A==",
+                            NormalizedEmail = "CUSTOMER030@EXAMPLE.COM",
+                            NormalizedUserName = "CUSTOMER030@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEBco2jQH0X9iTa7IroQl2qOvCvKCIUhseNw8FMAhPLt1w7Qu6k6Rl2c/PhbQUcSsuQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "26b8c682-9176-4dad-bc2e-59670a77c244",
+                            SecurityStamp = "20dc775b-8b5f-40c7-b3d7-f8db5f20ba25",
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 8, 20, 7, 38, 30, 12, DateTimeKind.Utc).AddTicks(9789),
-                            UserName = "helen.king@email.com"
+                            UpdatedAt = new DateTime(2023, 12, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserName = "customer030@example.com"
                         });
                 });
 
@@ -1714,9 +1657,8 @@ namespace RedBubble.Infrastructure.Migrations
                     b.Property<string>("PaymentIntentId")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("Subtotal")
                         .HasColumnType("decimal(18,2)");
@@ -1749,6 +1691,12 @@ namespace RedBubble.Infrastructure.Migrations
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -2124,99 +2072,99 @@ namespace RedBubble.Infrastructure.Migrations
                             Id = 1,
                             CategoryName = "Clothing",
                             CreatedBy = "admin-001",
-                            CreatedOn = new DateTime(2025, 6, 17, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8109),
+                            CreatedOn = new DateTime(2023, 10, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Apparel and wearable items for all ages",
                             IsActive = true,
                             LastModifiedBy = "admin-001",
-                            LastModifiedOn = new DateTime(2025, 8, 16, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8114)
+                            LastModifiedOn = new DateTime(2023, 12, 2, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 2,
                             CategoryName = "Accessories",
                             CreatedBy = "admin-001",
-                            CreatedOn = new DateTime(2025, 6, 17, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8131),
+                            CreatedOn = new DateTime(2023, 10, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Fashion and lifestyle accessories",
                             IsActive = true,
                             LastModifiedBy = "admin-001",
-                            LastModifiedOn = new DateTime(2025, 8, 16, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8132)
+                            LastModifiedOn = new DateTime(2023, 12, 2, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 3,
                             CategoryName = "Home & Living",
                             CreatedBy = "admin-001",
-                            CreatedOn = new DateTime(2025, 6, 17, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8134),
+                            CreatedOn = new DateTime(2023, 10, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Home decor and lifestyle items",
                             IsActive = true,
                             LastModifiedBy = "admin-001",
-                            LastModifiedOn = new DateTime(2025, 8, 16, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8134)
+                            LastModifiedOn = new DateTime(2023, 12, 2, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 4,
                             CategoryName = "Stickers & Decals",
                             CreatedBy = "admin-001",
-                            CreatedOn = new DateTime(2025, 6, 17, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8136),
+                            CreatedOn = new DateTime(2023, 10, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Decorative stickers and decals",
                             IsActive = true,
                             LastModifiedBy = "admin-001",
-                            LastModifiedOn = new DateTime(2025, 8, 16, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8137)
+                            LastModifiedOn = new DateTime(2023, 12, 2, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 5,
                             CategoryName = "Wall Art",
                             CreatedBy = "admin-001",
-                            CreatedOn = new DateTime(2025, 6, 17, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8139),
+                            CreatedOn = new DateTime(2023, 10, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Prints, posters, and wall decorations",
                             IsActive = true,
                             LastModifiedBy = "admin-001",
-                            LastModifiedOn = new DateTime(2025, 8, 16, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8140)
+                            LastModifiedOn = new DateTime(2023, 12, 2, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 6,
                             CategoryName = "Stationery & Office",
                             CreatedBy = "admin-001",
-                            CreatedOn = new DateTime(2025, 6, 17, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8144),
+                            CreatedOn = new DateTime(2023, 10, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Notebooks, cards, and office supplies",
                             IsActive = true,
                             LastModifiedBy = "admin-001",
-                            LastModifiedOn = new DateTime(2025, 8, 16, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8144)
+                            LastModifiedOn = new DateTime(2023, 12, 2, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 7,
                             CategoryName = "Bags & Purses",
                             CreatedBy = "admin-001",
-                            CreatedOn = new DateTime(2025, 6, 17, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8146),
+                            CreatedOn = new DateTime(2023, 10, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Tote bags, backpacks, and purses",
                             IsActive = true,
                             LastModifiedBy = "admin-001",
-                            LastModifiedOn = new DateTime(2025, 8, 16, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8147)
+                            LastModifiedOn = new DateTime(2023, 12, 2, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 8,
                             CategoryName = "Tech Accessories",
                             CreatedBy = "admin-001",
-                            CreatedOn = new DateTime(2025, 6, 17, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8149),
+                            CreatedOn = new DateTime(2023, 10, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Phone cases and tech accessories",
                             IsActive = true,
                             LastModifiedBy = "admin-001",
-                            LastModifiedOn = new DateTime(2025, 8, 16, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8149)
+                            LastModifiedOn = new DateTime(2023, 12, 2, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 9,
                             CategoryName = "T-Shirts",
                             CreatedBy = "admin-001",
-                            CreatedOn = new DateTime(2025, 6, 22, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8161),
+                            CreatedOn = new DateTime(2023, 10, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Classic and graphic t-shirts for all occasions",
                             IsActive = true,
                             LastModifiedBy = "admin-001",
-                            LastModifiedOn = new DateTime(2025, 8, 21, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8162),
+                            LastModifiedOn = new DateTime(2023, 12, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ParentCategoryId = 1
                         },
                         new
@@ -2224,11 +2172,11 @@ namespace RedBubble.Infrastructure.Migrations
                             Id = 10,
                             CategoryName = "Tank Tops",
                             CreatedBy = "admin-001",
-                            CreatedOn = new DateTime(2025, 6, 22, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8165),
+                            CreatedOn = new DateTime(2023, 10, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Comfortable sleeveless tank tops",
                             IsActive = true,
                             LastModifiedBy = "admin-001",
-                            LastModifiedOn = new DateTime(2025, 8, 21, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8166),
+                            LastModifiedOn = new DateTime(2023, 12, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ParentCategoryId = 1
                         },
                         new
@@ -2236,11 +2184,11 @@ namespace RedBubble.Infrastructure.Migrations
                             Id = 11,
                             CategoryName = "Long Sleeve Shirts",
                             CreatedBy = "admin-001",
-                            CreatedOn = new DateTime(2025, 6, 22, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8168),
+                            CreatedOn = new DateTime(2023, 10, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Cozy long sleeve t-shirts",
                             IsActive = true,
                             LastModifiedBy = "admin-001",
-                            LastModifiedOn = new DateTime(2025, 8, 21, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8168),
+                            LastModifiedOn = new DateTime(2023, 12, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ParentCategoryId = 1
                         },
                         new
@@ -2248,11 +2196,11 @@ namespace RedBubble.Infrastructure.Migrations
                             Id = 12,
                             CategoryName = "Hoodies & Sweatshirts",
                             CreatedBy = "admin-001",
-                            CreatedOn = new DateTime(2025, 6, 22, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8170),
+                            CreatedOn = new DateTime(2023, 10, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Warm pullover hoodies and sweatshirts",
                             IsActive = true,
                             LastModifiedBy = "admin-001",
-                            LastModifiedOn = new DateTime(2025, 8, 21, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8171),
+                            LastModifiedOn = new DateTime(2023, 12, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ParentCategoryId = 1
                         },
                         new
@@ -2260,11 +2208,11 @@ namespace RedBubble.Infrastructure.Migrations
                             Id = 13,
                             CategoryName = "Zip Hoodies",
                             CreatedBy = "admin-001",
-                            CreatedOn = new DateTime(2025, 6, 22, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8173),
+                            CreatedOn = new DateTime(2023, 10, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Full-zip hoodies and jackets",
                             IsActive = true,
                             LastModifiedBy = "admin-001",
-                            LastModifiedOn = new DateTime(2025, 8, 21, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8174),
+                            LastModifiedOn = new DateTime(2023, 12, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ParentCategoryId = 1
                         },
                         new
@@ -2272,11 +2220,11 @@ namespace RedBubble.Infrastructure.Migrations
                             Id = 14,
                             CategoryName = "Crewneck Sweatshirts",
                             CreatedBy = "admin-001",
-                            CreatedOn = new DateTime(2025, 6, 22, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8175),
+                            CreatedOn = new DateTime(2023, 10, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Classic crewneck style sweatshirts",
                             IsActive = true,
                             LastModifiedBy = "admin-001",
-                            LastModifiedOn = new DateTime(2025, 8, 21, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8176),
+                            LastModifiedOn = new DateTime(2023, 12, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ParentCategoryId = 1
                         },
                         new
@@ -2284,11 +2232,11 @@ namespace RedBubble.Infrastructure.Migrations
                             Id = 15,
                             CategoryName = "Dresses",
                             CreatedBy = "admin-001",
-                            CreatedOn = new DateTime(2025, 6, 22, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8178),
+                            CreatedOn = new DateTime(2023, 10, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Casual and dressy options for all styles",
                             IsActive = true,
                             LastModifiedBy = "admin-001",
-                            LastModifiedOn = new DateTime(2025, 8, 21, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8179),
+                            LastModifiedOn = new DateTime(2023, 12, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ParentCategoryId = 1
                         },
                         new
@@ -2296,11 +2244,11 @@ namespace RedBubble.Infrastructure.Migrations
                             Id = 16,
                             CategoryName = "Skirts",
                             CreatedBy = "admin-001",
-                            CreatedOn = new DateTime(2025, 6, 22, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8180),
+                            CreatedOn = new DateTime(2023, 10, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Mini, midi, and maxi skirts",
                             IsActive = true,
                             LastModifiedBy = "admin-001",
-                            LastModifiedOn = new DateTime(2025, 8, 21, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8181),
+                            LastModifiedOn = new DateTime(2023, 12, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ParentCategoryId = 1
                         },
                         new
@@ -2308,11 +2256,11 @@ namespace RedBubble.Infrastructure.Migrations
                             Id = 17,
                             CategoryName = "Hats & Caps",
                             CreatedBy = "admin-001",
-                            CreatedOn = new DateTime(2025, 6, 27, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8188),
+                            CreatedOn = new DateTime(2023, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Baseball caps, beanies, and fashion hats",
                             IsActive = true,
                             LastModifiedBy = "admin-001",
-                            LastModifiedOn = new DateTime(2025, 8, 26, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8189),
+                            LastModifiedOn = new DateTime(2023, 12, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ParentCategoryId = 2
                         },
                         new
@@ -2320,11 +2268,11 @@ namespace RedBubble.Infrastructure.Migrations
                             Id = 18,
                             CategoryName = "Scarves",
                             CreatedBy = "admin-001",
-                            CreatedOn = new DateTime(2025, 6, 27, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8192),
+                            CreatedOn = new DateTime(2023, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Fashionable scarves and wraps",
                             IsActive = true,
                             LastModifiedBy = "admin-001",
-                            LastModifiedOn = new DateTime(2025, 8, 26, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8193),
+                            LastModifiedOn = new DateTime(2023, 12, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ParentCategoryId = 2
                         },
                         new
@@ -2332,11 +2280,11 @@ namespace RedBubble.Infrastructure.Migrations
                             Id = 19,
                             CategoryName = "Socks",
                             CreatedBy = "admin-001",
-                            CreatedOn = new DateTime(2025, 6, 27, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8277),
+                            CreatedOn = new DateTime(2023, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Fun and colorful socks with unique designs",
                             IsActive = true,
                             LastModifiedBy = "admin-001",
-                            LastModifiedOn = new DateTime(2025, 8, 26, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8278),
+                            LastModifiedOn = new DateTime(2023, 12, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ParentCategoryId = 2
                         },
                         new
@@ -2344,11 +2292,11 @@ namespace RedBubble.Infrastructure.Migrations
                             Id = 20,
                             CategoryName = "Face Masks",
                             CreatedBy = "admin-001",
-                            CreatedOn = new DateTime(2025, 6, 27, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8280),
+                            CreatedOn = new DateTime(2023, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Stylish and protective face coverings",
                             IsActive = true,
                             LastModifiedBy = "admin-001",
-                            LastModifiedOn = new DateTime(2025, 8, 26, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8281),
+                            LastModifiedOn = new DateTime(2023, 12, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ParentCategoryId = 2
                         },
                         new
@@ -2356,11 +2304,11 @@ namespace RedBubble.Infrastructure.Migrations
                             Id = 21,
                             CategoryName = "Pins & Badges",
                             CreatedBy = "admin-001",
-                            CreatedOn = new DateTime(2025, 6, 27, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8283),
+                            CreatedOn = new DateTime(2023, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Enamel pins and collectible badges",
                             IsActive = true,
                             LastModifiedBy = "admin-001",
-                            LastModifiedOn = new DateTime(2025, 8, 26, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8284),
+                            LastModifiedOn = new DateTime(2023, 12, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ParentCategoryId = 2
                         },
                         new
@@ -2368,11 +2316,11 @@ namespace RedBubble.Infrastructure.Migrations
                             Id = 22,
                             CategoryName = "Coffee Mugs",
                             CreatedBy = "admin-001",
-                            CreatedOn = new DateTime(2025, 7, 2, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8292),
+                            CreatedOn = new DateTime(2023, 10, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Ceramic mugs for your favorite beverages",
                             IsActive = true,
                             LastModifiedBy = "admin-001",
-                            LastModifiedOn = new DateTime(2025, 8, 31, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8293),
+                            LastModifiedOn = new DateTime(2023, 12, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ParentCategoryId = 3
                         },
                         new
@@ -2380,11 +2328,11 @@ namespace RedBubble.Infrastructure.Migrations
                             Id = 23,
                             CategoryName = "Travel Mugs",
                             CreatedBy = "admin-001",
-                            CreatedOn = new DateTime(2025, 7, 2, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8296),
+                            CreatedOn = new DateTime(2023, 10, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Insulated travel mugs for on-the-go",
                             IsActive = true,
                             LastModifiedBy = "admin-001",
-                            LastModifiedOn = new DateTime(2025, 8, 31, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8296),
+                            LastModifiedOn = new DateTime(2023, 12, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ParentCategoryId = 3
                         },
                         new
@@ -2392,11 +2340,11 @@ namespace RedBubble.Infrastructure.Migrations
                             Id = 24,
                             CategoryName = "Water Bottles",
                             CreatedBy = "admin-001",
-                            CreatedOn = new DateTime(2025, 7, 2, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8298),
+                            CreatedOn = new DateTime(2023, 10, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Reusable water bottles with custom designs",
                             IsActive = true,
                             LastModifiedBy = "admin-001",
-                            LastModifiedOn = new DateTime(2025, 8, 31, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8299),
+                            LastModifiedOn = new DateTime(2023, 12, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ParentCategoryId = 3
                         },
                         new
@@ -2404,11 +2352,11 @@ namespace RedBubble.Infrastructure.Migrations
                             Id = 25,
                             CategoryName = "Throw Pillows",
                             CreatedBy = "admin-001",
-                            CreatedOn = new DateTime(2025, 7, 2, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8301),
+                            CreatedOn = new DateTime(2023, 10, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Decorative pillows to enhance your space",
                             IsActive = true,
                             LastModifiedBy = "admin-001",
-                            LastModifiedOn = new DateTime(2025, 8, 31, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8301),
+                            LastModifiedOn = new DateTime(2023, 12, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ParentCategoryId = 3
                         },
                         new
@@ -2416,11 +2364,11 @@ namespace RedBubble.Infrastructure.Migrations
                             Id = 26,
                             CategoryName = "Blankets & Throws",
                             CreatedBy = "admin-001",
-                            CreatedOn = new DateTime(2025, 7, 2, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8303),
+                            CreatedOn = new DateTime(2023, 10, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Cozy blankets with artistic designs",
                             IsActive = true,
                             LastModifiedBy = "admin-001",
-                            LastModifiedOn = new DateTime(2025, 8, 31, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8304),
+                            LastModifiedOn = new DateTime(2023, 12, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ParentCategoryId = 3
                         },
                         new
@@ -2428,11 +2376,11 @@ namespace RedBubble.Infrastructure.Migrations
                             Id = 27,
                             CategoryName = "Wall Tapestries",
                             CreatedBy = "admin-001",
-                            CreatedOn = new DateTime(2025, 7, 2, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8306),
+                            CreatedOn = new DateTime(2023, 10, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Large fabric wall art and tapestries",
                             IsActive = true,
                             LastModifiedBy = "admin-001",
-                            LastModifiedOn = new DateTime(2025, 8, 31, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8306),
+                            LastModifiedOn = new DateTime(2023, 12, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ParentCategoryId = 3
                         },
                         new
@@ -2440,11 +2388,11 @@ namespace RedBubble.Infrastructure.Migrations
                             Id = 28,
                             CategoryName = "Wall Clocks",
                             CreatedBy = "admin-001",
-                            CreatedOn = new DateTime(2025, 7, 2, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8308),
+                            CreatedOn = new DateTime(2023, 10, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Functional art for keeping time",
                             IsActive = true,
                             LastModifiedBy = "admin-001",
-                            LastModifiedOn = new DateTime(2025, 8, 31, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8309),
+                            LastModifiedOn = new DateTime(2023, 12, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ParentCategoryId = 3
                         },
                         new
@@ -2452,11 +2400,11 @@ namespace RedBubble.Infrastructure.Migrations
                             Id = 29,
                             CategoryName = "Candles",
                             CreatedBy = "admin-001",
-                            CreatedOn = new DateTime(2025, 7, 2, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8311),
+                            CreatedOn = new DateTime(2023, 10, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Scented candles with custom labels",
                             IsActive = true,
                             LastModifiedBy = "admin-001",
-                            LastModifiedOn = new DateTime(2025, 8, 31, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8311),
+                            LastModifiedOn = new DateTime(2023, 12, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ParentCategoryId = 3
                         },
                         new
@@ -2464,60 +2412,60 @@ namespace RedBubble.Infrastructure.Migrations
                             Id = 30,
                             CategoryName = "iPhone Cases",
                             CreatedBy = "admin-001",
-                            CreatedOn = new DateTime(2025, 7, 7, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8319),
+                            CreatedOn = new DateTime(2023, 10, 23, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Protective cases for iPhone models",
                             IsActive = true,
                             LastModifiedBy = "admin-001",
-                            LastModifiedOn = new DateTime(2025, 9, 5, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8320),
-                            ParentCategoryId = 8
+                            LastModifiedOn = new DateTime(2023, 12, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ParentCategoryId = 4
                         },
                         new
                         {
                             Id = 31,
                             CategoryName = "Samsung Cases",
                             CreatedBy = "admin-001",
-                            CreatedOn = new DateTime(2025, 7, 7, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8322),
+                            CreatedOn = new DateTime(2023, 10, 23, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Samsung Galaxy phone protection",
                             IsActive = true,
                             LastModifiedBy = "admin-001",
-                            LastModifiedOn = new DateTime(2025, 9, 5, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8323),
-                            ParentCategoryId = 8
+                            LastModifiedOn = new DateTime(2023, 12, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ParentCategoryId = 4
                         },
                         new
                         {
                             Id = 32,
                             CategoryName = "Laptop Sleeves",
                             CreatedBy = "admin-001",
-                            CreatedOn = new DateTime(2025, 7, 7, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8335),
+                            CreatedOn = new DateTime(2023, 10, 23, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Padded laptop bags and sleeves",
                             IsActive = true,
                             LastModifiedBy = "admin-001",
-                            LastModifiedOn = new DateTime(2025, 9, 5, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8335),
-                            ParentCategoryId = 8
+                            LastModifiedOn = new DateTime(2023, 12, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ParentCategoryId = 4
                         },
                         new
                         {
                             Id = 33,
                             CategoryName = "Mouse Pads",
                             CreatedBy = "admin-001",
-                            CreatedOn = new DateTime(2025, 7, 7, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8337),
+                            CreatedOn = new DateTime(2023, 10, 23, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Gaming and office mouse pads",
                             IsActive = true,
                             LastModifiedBy = "admin-001",
-                            LastModifiedOn = new DateTime(2025, 9, 5, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8338),
-                            ParentCategoryId = 8
+                            LastModifiedOn = new DateTime(2023, 12, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ParentCategoryId = 4
                         },
                         new
                         {
                             Id = 34,
                             CategoryName = "Tablet Cases",
                             CreatedBy = "admin-001",
-                            CreatedOn = new DateTime(2025, 7, 7, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8343),
+                            CreatedOn = new DateTime(2023, 10, 23, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "iPad and tablet protective cases",
                             IsActive = true,
                             LastModifiedBy = "admin-001",
-                            LastModifiedOn = new DateTime(2025, 9, 5, 7, 38, 30, 13, DateTimeKind.Utc).AddTicks(8344),
-                            ParentCategoryId = 8
+                            LastModifiedOn = new DateTime(2023, 12, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ParentCategoryId = 4
                         });
                 });
 
@@ -2758,17 +2706,6 @@ namespace RedBubble.Infrastructure.Migrations
                     b.Navigation("Admin");
                 });
 
-            modelBuilder.Entity("RedBubble.Domain.Entities.Models.DesignImage", b =>
-                {
-                    b.HasOne("RedBubble.Domain.Entities.Models.Design", "Design")
-                        .WithMany()
-                        .HasForeignKey("DesignId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Design");
-                });
-
             modelBuilder.Entity("RedBubble.Domain.Entities.Models.Identity.Address", b =>
                 {
                     b.HasOne("RedBubble.Domain.Entities.Models.Identity.ApplicationUser", "User")
@@ -2818,6 +2755,10 @@ namespace RedBubble.Infrastructure.Migrations
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
+                            b1.Property<string>("State")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
                             b1.Property<string>("Street")
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
@@ -2855,6 +2796,9 @@ namespace RedBubble.Infrastructure.Migrations
                             b1.Property<int>("OrderItemId")
                                 .HasColumnType("int");
 
+                            b1.Property<string>("ColorName")
+                                .HasColumnType("nvarchar(max)");
+
                             b1.Property<string>("DesignTitle")
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
@@ -2865,6 +2809,9 @@ namespace RedBubble.Infrastructure.Migrations
 
                             b1.Property<string>("ProductName")
                                 .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("SizeName")
                                 .HasColumnType("nvarchar(max)");
 
                             b1.Property<int>("VariantId")

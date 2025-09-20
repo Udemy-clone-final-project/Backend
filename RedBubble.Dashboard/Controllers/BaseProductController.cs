@@ -86,6 +86,20 @@ namespace RedBubble.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateBaseProductDto createDto)
         {
+            Console.WriteLine("=== DEBUG: Print Areas being saved ===");
+            foreach (var printArea in createDto.PrintAreas)
+            {
+                Console.WriteLine($"Area: {printArea.AreaName}");
+                Console.WriteLine($"  Position: ({printArea.PositionX}, {printArea.PositionY})");
+                Console.WriteLine($"  Size: {printArea.Width} x {printArea.Height}");
+            }
+
+            foreach (var template in createDto.Templates)
+            {
+                Console.WriteLine($"Template: {template.ViewName}");
+                Console.WriteLine($"  Dimensions: {template.TemplateWidth} x {template.TemplateHeight}");
+            }
+            Console.WriteLine("=== END DEBUG ===");
             try
             {
                 // FIXED: Log the received data for debugging

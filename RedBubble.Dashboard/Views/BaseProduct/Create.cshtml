@@ -615,7 +615,7 @@
             // Update print area overlay position
             updatePrintAreaOverlay(printAreaItem, templateData);
         }
-                   function updatePrintAreaOverlay(printAreaItem, templateData) {
+                          function updatePrintAreaOverlay(printAreaItem, templateData) {
             const overlay = printAreaItem.querySelector('.print-area-overlay');
             const widthInput = printAreaItem.querySelector('.area-width');
             const heightInput = printAreaItem.querySelector('.area-height');
@@ -630,32 +630,28 @@
             const originalWidth = parseInt(widthInput.value) || 0;
             const originalHeight = parseInt(heightInput.value) || 0;
 
-            // FIXED: More accurate coordinate conversion
-            const displayX = Math.round((originalX * templateData.displayScale) + templateData.displayOffsetX);
-            const displayY = Math.round((originalY * templateData.displayScale) + templateData.displayOffsetY);
-            const displayWidth = Math.round(originalWidth * templateData.displayScale);
-            const displayHeight = Math.round(originalHeight * templateData.displayScale);
+            // Convert to display coordinates
+            const displayX = (originalX * templateData.displayScale) + templateData.displayOffsetX;
+            const displayY = (originalY * templateData.displayScale) + templateData.displayOffsetY;
+            const displayWidth = originalWidth * templateData.displayScale;
+            const displayHeight = originalHeight * templateData.displayScale;
 
-            // FIXED: Reset transform before positioning
+            // Position overlay exactly where it should be
+            overlay.style.left = Math.round(displayX) + 'px';
+            overlay.style.top = Math.round(displayY) + 'px';
+            overlay.style.width = Math.round(displayWidth) + 'px';
+            overlay.style.height = Math.round(displayHeight) + 'px';
+
+            // Reset transform data (important!)
+            overlay.setAttribute('data-x', 0);
+            overlay.setAttribute('data-y', 0);
             overlay.style.transform = 'translate(0px, 0px)';
-            overlay.setAttribute('data-x', '0');
-            overlay.setAttribute('data-y', '0');
 
-            // Position overlay
-            overlay.style.left = displayX + 'px';
-            overlay.style.top = displayY + 'px';
-            overlay.style.width = displayWidth + 'px';
-            overlay.style.height = displayHeight + 'px';
-            overlay.style.display = 'block';
+            // Debug logging
+            console.log(`Positioning overlay for area:`);
+            console.log(`  Input coords: (${originalX}, ${originalY}) ${originalWidth}x${originalHeight}`);
+            console.log(`  Display coords: (${displayX}, ${displayY}) ${displayWidth}x${displayHeight}`);
 
-            console.log(`Print area positioning:
-                Original: (${originalX}, ${originalY}) ${originalWidth}×${originalHeight}
-                Display: (${displayX}, ${displayY}) ${displayWidth}×${displayHeight}
-                Template: ${templateData.originalWidth}×${templateData.originalHeight}
-                Scale: ${templateData.displayScale}
-                Offset: (${templateData.displayOffsetX}, ${templateData.displayOffsetY})`);
-
-            // Validate bounds using original coordinates
             validatePrintAreaBounds(printAreaItem, templateData);
         }
                 function validatePrintAreaBounds(printAreaItem, templateData) {
@@ -899,7 +895,7 @@
                 });
         }
 
-                                        function updateInputsFromPrintArea(printAreaItem, overlay) {
+                                             function updateInputsFromPrintArea(printAreaItem, overlay) {
             const widthInput = printAreaItem.querySelector('.area-width');
             const heightInput = printAreaItem.querySelector('.area-height');
             const xInput = printAreaItem.querySelector('.area-x');
@@ -920,45 +916,43 @@
 
             if (!templateData || !templateData.displayScale) return;
 
-            // FIXED: Get overlay position relative to canvas, accounting for transforms
-            const canvas = overlay.parentElement;
-            const canvasRect = canvas.getBoundingClientRect();
+            // Get overlay's current position relative to canvas (without transforms)
+            const canvasRect = overlay.parentElement.getBoundingClientRect();
             const overlayRect = overlay.getBoundingClientRect();
 
-            // Account for CSS transforms
-            const transformX = parseFloat(overlay.getAttribute('data-x')) || 0;
-            const transformY = parseFloat(overlay.getAttribute('data-y')) || 0;
+            // Calculate actual display position (this is where the overlay currently is)
+            const displayX = overlayRect.left - canvasRect.left;
+            const displayY = overlayRect.top - canvasRect.top;
+            const displayWidth = overlay.offsetWidth;
+            const displayHeight = overlay.offsetHeight;
 
-            // Calculate position in canvas coordinates
-            const canvasX = overlayRect.left - canvasRect.left - transformX;
-            const canvasY = overlayRect.top - canvasRect.top - transformY;
+            // Convert to original image coordinates
+            const originalX = Math.round((displayX - templateData.displayOffsetX) / templateData.displayScale);
+            const originalY = Math.round((displayY - templateData.displayOffsetY) / templateData.displayScale);
+            const originalWidth = Math.round(displayWidth / templateData.displayScale);
+            const originalHeight = Math.round(displayHeight / templateData.displayScale);
 
-            // Convert canvas coordinates to original template coordinates
-            const originalX = Math.round((canvasX - templateData.displayOffsetX) / templateData.displayScale);
-            const originalY = Math.round((canvasY - templateData.displayOffsetY) / templateData.displayScale);
-            const originalWidth = Math.round(overlay.offsetWidth / templateData.displayScale);
-            const originalHeight = Math.round(overlay.offsetHeight / templateData.displayScale);
+            // Clamp to bounds and update inputs
+            const clampedX = Math.max(0, Math.min(originalX, templateData.originalWidth - originalWidth));
+            const clampedY = Math.max(0, Math.min(originalY, templateData.originalHeight - originalHeight));
+            const clampedWidth = Math.max(1, Math.min(originalWidth, templateData.originalWidth - clampedX));
+            const clampedHeight = Math.max(1, Math.min(originalHeight, templateData.originalHeight - clampedY));
 
-            // FIXED: Proper bounds checking and clamping
-            const maxWidth = Math.max(1, templateData.originalWidth - Math.max(0, originalX));
-            const maxHeight = Math.max(1, templateData.originalHeight - Math.max(0, originalY));
-
-            const clampedX = Math.max(0, Math.min(originalX, templateData.originalWidth - 1));
-            const clampedY = Math.max(0, Math.min(originalY, templateData.originalHeight - 1));
-            const clampedWidth = Math.max(1, Math.min(originalWidth, maxWidth));
-            const clampedHeight = Math.max(1, Math.min(originalHeight, maxHeight));
-
-            // Update inputs
+            // Update form inputs
             xInput.value = clampedX;
             yInput.value = clampedY;
             widthInput.value = clampedWidth;
             heightInput.value = clampedHeight;
 
-            // Validate bounds
+            // Debug logging
+            console.log(`Converting coordinates for ${areaName}:`);
+            console.log(`  Display: (${displayX}, ${displayY}) ${displayWidth}x${displayHeight}`);
+            console.log(`  Original: (${originalX}, ${originalY}) ${originalWidth}x${originalHeight}`);
+            console.log(`  Template: ${templateData.originalWidth}x${templateData.originalHeight}`);
+            console.log(`  Scale: ${templateData.displayScale}`);
+
             validatePrintAreaBounds(printAreaItem, templateData);
         }
-
-
 
         function updatePrintAreaFromInputs(input) {
             const printAreaItem = input.closest('.print-area-item');
