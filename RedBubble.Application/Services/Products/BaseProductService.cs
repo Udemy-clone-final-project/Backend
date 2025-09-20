@@ -2,15 +2,18 @@
 using Microsoft.EntityFrameworkCore;
 using RedBubble.Application.DTOs.Products;
 using RedBubble.Application.Interfaces;
+using RedBubble.Application.Interfaces.Products;
 using RedBubble.Application.Interfaces.Services;
+using RedBubble.Domain.Entities.Base;
 using RedBubble.Domain.Entities.Models;
+using RedBubble.Domain.Entities.Models.Orders;
+using RedBubble.Domain.Enums;
 using RedBubble.Domain.Entities.Models.Products;
 using RedBubble.Domain.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using RedBubble.Application.Interfaces.Products;
 
 
 namespace RedBubble.Application.Services
@@ -150,32 +153,63 @@ namespace RedBubble.Application.Services
             return await GetBaseProductByIdAsync(existingProduct.Id)
                 ?? throw new InvalidOperationException("Failed to retrieve updated product.");
         }
+        private async Task DeactivateProductVariantsAsync(int baseProductId, string modifiedBy)
+        {
+            var variantRepo = _unitOfWork.GetRepository<ProductVariant, int>();
+
+            var variants = await variantRepo.GetAll()
+                .Where(v => v.BaseProductId == baseProductId && v.IsActive)
+                .ToListAsync();
+
+            foreach (var variant in variants)
+            {
+                variant.IsActive = false;
+                //variant.LastModifiedBy = modifiedBy;
+                //variant.LastModifiedOn = DateTime.UtcNow;
+                variantRepo.Update(variant);
+            }
+        }
+
 
         public async Task<bool> DeleteBaseProductAsync(int id, string deletedBy)
         {
             var repository = _unitOfWork.GetRepository<BaseProduct, int>();
-            var product = await repository.GetByIdAsync(id);
+            var product = await repository.GetAll()
+                .Include(p => p.ProductVariants) // Include variants to cascade deactivation
+                .FirstOrDefaultAsync(p => p.Id == id);
+
             if (product == null)
             {
                 return false;
             }
 
-            // Check if can deactivate (no active variants)
-            if (await HasActiveVariantsAsync(id))
+            using var transaction = await _unitOfWork.BeginTransactionAsync();
+
+            try
             {
-                throw new InvalidOperationException("Cannot delete base product with active variants. Deactivate variants first.");
+                // 1. Soft delete (deactivate) all related product variants
+                await DeactivateProductVariantsAsync(id, deletedBy);
+
+                // 2. Soft delete the base product
+                product.IsActive = false;
+                product.LastModifiedBy = deletedBy;
+                product.LastModifiedOn = DateTime.UtcNow;
+                repository.Update(product);
+
+                // 3. Cascade soft-delete to all related entities
+                await SoftDeleteRelatedAsync(id, deletedBy);
+
+                // 4. Commit all changes
+                await _unitOfWork.CompleteAsync();
+                await transaction.CommitAsync();
+
+                return true;
             }
-
-            product.IsActive = false;
-            product.LastModifiedBy = deletedBy;
-            product.LastModifiedOn = DateTime.UtcNow;
-            repository.Update(product);
-
-            // Cascade soft-delete to related entities
-            await SoftDeleteRelatedAsync(id);
-            await _unitOfWork.CompleteAsync();
-
-            return true;
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
         public async Task<bool> ActivateBaseProductAsync(int id, string modifiedBy)
@@ -593,52 +627,59 @@ namespace RedBubble.Application.Services
                 .AnyAsync(v => v.BaseProductId == baseProductId && v.IsActive);
         }
 
-        private async Task SoftDeleteRelatedAsync(int baseProductId)
+        private async Task SoftDeleteRelatedAsync(int baseProductId, string deletedBy)
         {
+            var currentTime = DateTime.UtcNow;
+
             // Soft-delete print areas
             var printRepo = _unitOfWork.GetRepository<BaseProductPrintArea, int>();
-            var prints = await printRepo.GetAll()
-                .Where(pa => pa.BaseProductId == baseProductId)
+            var printAreas = await printRepo.GetAll()
+                .Where(pa => pa.BaseProductId == baseProductId && pa.IsActive)
                 .ToListAsync();
-            foreach (var p in prints)
+
+            foreach (var printArea in printAreas)
             {
-                p.IsActive = false;
-                printRepo.Update(p);
+                printArea.IsActive = false;
+                printRepo.Update(printArea);
             }
 
             // Soft-delete templates
             var templateRepo = _unitOfWork.GetRepository<BaseProductTemplate, int>();
             var templates = await templateRepo.GetAll()
-                .Where(t => t.BaseProductId == baseProductId)
+                .Where(t => t.BaseProductId == baseProductId && t.IsActive)
                 .ToListAsync();
-            foreach (var t in templates)
+
+            foreach (var template in templates)
             {
-                t.IsActive = false;
-                templateRepo.Update(t);
+                template.IsActive = false;
+                templateRepo.Update(template);
             }
 
-            // Soft-delete sizes
+            // Soft-delete available sizes
             var sizeRepo = _unitOfWork.GetRepository<BaseProductSize, int>();
             var sizes = await sizeRepo.GetAll()
-                .Where(s => s.BaseProductId == baseProductId)
+                .Where(s => s.BaseProductId == baseProductId && s.IsActive)
                 .ToListAsync();
-            foreach (var s in sizes)
+
+            foreach (var size in sizes)
             {
-                s.IsActive = false;
-                sizeRepo.Update(s);
+                size.IsActive = false;
+                sizeRepo.Update(size);
             }
 
-            // Soft-delete colors
+            // Soft-delete available colors
             var colorRepo = _unitOfWork.GetRepository<BaseProductColor, int>();
             var colors = await colorRepo.GetAll()
-                .Where(c => c.BaseProductId == baseProductId)
+                .Where(c => c.BaseProductId == baseProductId && c.IsActive)
                 .ToListAsync();
-            foreach (var c in colors)
+
+            foreach (var color in colors)
             {
-                c.IsActive = false;
-                colorRepo.Update(c);
+                color.IsActive = false;
+                colorRepo.Update(color);
             }
         }
+
 
         private async Task<bool> ToggleActiveStatusAsync(int id, bool isActive, string modifiedBy)
         {
@@ -654,7 +695,7 @@ namespace RedBubble.Application.Services
             // If deactivating, cascade to related entities
             if (!isActive)
             {
-                await SoftDeleteRelatedAsync(id);
+                await SoftDeleteRelatedAsync(id,"admin");
             }
 
             await _unitOfWork.CompleteAsync();
@@ -703,17 +744,19 @@ namespace RedBubble.Application.Services
 
         public async Task<bool> CanDeleteBaseProductAsync(int id)
         {
-            // Cannot delete if has active variants
-            if (await HasActiveVariantsAsync(id))
-            {
-                return false;
-            }
+            var variantRepo = _unitOfWork.GetRepository<ProductVariant, int>();
 
-            // Add other business rules here
-            // For example: Cannot delete if part of active promotions, etc.
+            // Check if any variants have pending orders or other business constraints
+            var hasActiveVariants = await variantRepo.GetAll()
+                .Include(v => v.OrderItems) // Check for orders
+                .Where(v => v.BaseProductId == id && v.IsActive)
+                .AnyAsync(v => v.OrderItems.Any(oi => oi.Order.Status == Domain.Entities.Models.Orders.OrderStatus.Pending
+                                                    ));
 
-            return true;
+            // You can delete even if there are variants, but not if there are pending orders
+            return !hasActiveVariants;
         }
+
 
         public async Task<IEnumerable<BaseProductListDto>> GetProductsCompatibleWithDesignAsync(int designId)
         {
@@ -799,7 +842,7 @@ namespace RedBubble.Application.Services
                 repo.Update(product);
 
                 // Cascade deactivation
-                await SoftDeleteRelatedAsync(product.Id);
+                await SoftDeleteRelatedAsync(product.Id,"admin1");
             }
 
             await _unitOfWork.CompleteAsync();
