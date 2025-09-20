@@ -38,7 +38,7 @@ namespace RedBubble.WebAPI.Controllers
             // Return the updated cart, which now includes the PaymentIntentId and ClientSecret
             return Ok(cart);
         }
-
+    
         // Refund endpoint temporarily disabled. We'll re-enable when ready.
 
         [HttpPost("create-payment-intent")]

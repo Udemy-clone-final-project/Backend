@@ -81,21 +81,22 @@ namespace RedBubble.Application
             // Register ServiceManager last
             services.AddScoped<IServiceManager, ServiceManager>();
 
-            
-            services.AddScoped<IAccountService,AccountService>();
+
+            services.AddScoped<IAccountService, AccountService>();
 
 
             // inject design mapper
-            //services.AddAutoMapper(m => m.AddProfile<DesignProfile>());
+            services.AddAutoMapper(m => m.AddProfile<DesignProfile>());
 
-            //services.AddScoped<IDesignService, DesignService>();
+            services.AddScoped<IDesignService, DesignService>();
 
             // ingect Order Service and Order mapper
             // services.AddScoped<IOrderService, OrderService>(); // Already registered above
             services.AddAutoMapper(m => m.AddProfile<OrderProfile>());
             services.AddAutoMapper(m => m.AddProfile<OrderItemProfile>());
             services.AddScoped<IPaymentService, PaymentService>();
-
+            services.AddScoped<IVariantGeneratorService, VariantGeneratorService>();
+            
 
 
 

@@ -5,6 +5,9 @@ using RedBubble.Application.Services;
 using RedBubble.Domain.Entities.Models;
 using RedBubble.Domain.Entities.Models.Orders;
 using RedBubble.Domain.Enums;
+using OrderStatus = RedBubble.Domain.Entities.Models.Orders.OrderStatus;
+
+
 
 namespace RedBubble.Dashboard.Controllers
 {
@@ -35,7 +38,7 @@ namespace RedBubble.Dashboard.Controllers
         public async Task<IActionResult> ChangeStatus(int orderId, OrderStatus status)
         {
             var result = await _orderService.ChangeStatus(orderId, status);
-            
+
             if (result)
             {
                 TempData["SuccessMessage"] = "Order status updated successfully.";
@@ -51,7 +54,7 @@ namespace RedBubble.Dashboard.Controllers
         public async Task<IActionResult> Details(int id)
         {
             var order = await _orderService.GetByIdAsync(id);
-            
+
             if (order == null)
             {
                 TempData["ErrorMessage"] = "Order not found.";

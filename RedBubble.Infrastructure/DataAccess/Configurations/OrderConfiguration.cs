@@ -31,20 +31,20 @@ namespace RedBubble.Infrastructure.DataAccess.Configurations
                 addressBuilder.WithOwner();
             });
 
+            
+            //builder.Property(o => o.Status)
+            //    .HasConversion(
+            //        s => s.ToString(),
+            //        s => (OrderStatus)Enum.Parse(typeof(OrderStatus), s)
+            //    );
 
-            builder.Property(o => o.Status)
-                .HasConversion(
-                    s => s.ToString(),
-                    s => (OrderStatus)Enum.Parse(typeof(OrderStatus), s)
-                );
-
-
+           
             builder.HasMany(o => o.OrderItems)
                 .WithOne(oi => oi.Order)
                 .HasForeignKey(oi => oi.OrderId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-
+            
             builder.HasOne(o => o.DeliveryMethod)
                 .WithMany()
                 .OnDelete(DeleteBehavior.SetNull);

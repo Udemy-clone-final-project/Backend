@@ -8,6 +8,7 @@ using RedBubble.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Address = RedBubble.Domain.Entities.Models.Identity.Address;
 
 namespace RedBubble.Infrastructure.DataAccess
 {
@@ -22,13 +23,6 @@ namespace RedBubble.Infrastructure.DataAccess
             SeedCategories(modelBuilder);
             SeedColors(modelBuilder);
             SeedSizes(modelBuilder);
-            SeedBaseProducts(modelBuilder);
-            SeedDesigns(modelBuilder);
-            SeedProductVariants(modelBuilder);
-            SeedProductVariantImages(modelBuilder);
-            SeedDeliveryMethods(modelBuilder);
-            SeedOrders(modelBuilder);
-            SeedOrderItems(modelBuilder);
         }
 
         private static void SeedRoles(ModelBuilder modelBuilder)
@@ -146,7 +140,7 @@ namespace RedBubble.Infrastructure.DataAccess
             for (int i = 1; i <= 30; i++)
             {
                 var customerId = $"customer-{i:D3}";
-                
+
                 addresses.Add(new Domain.Entities.Models.Identity.Address
                 {
                     Id = i, // Use customer number as ID to ensure uniqueness
@@ -171,9 +165,13 @@ namespace RedBubble.Infrastructure.DataAccess
             var mainCategories = new[]
             {
                 new { Id = 1, Name = "Clothing", Desc = "Apparel and wearable items for all ages" },
-                new { Id = 2, Name = "Accessories", Desc = "Fashion accessories and personal items" },
-                new { Id = 3, Name = "Home & Living", Desc = "Home decor and lifestyle products" },
-                new { Id = 4, Name = "Tech Accessories", Desc = "Technology-related accessories and gadgets" }
+                new { Id = 2, Name = "Accessories", Desc = "Fashion and lifestyle accessories" },
+                new { Id = 3, Name = "Home & Living", Desc = "Home decor and lifestyle items" },
+                new { Id = 4, Name = "Stickers & Decals", Desc = "Decorative stickers and decals" },
+                new { Id = 5, Name = "Wall Art", Desc = "Prints, posters, and wall decorations" },
+                new { Id = 6, Name = "Stationery & Office", Desc = "Notebooks, cards, and office supplies" },
+                new { Id = 7, Name = "Bags & Purses", Desc = "Tote bags, backpacks, and purses" },
+                new { Id = 8, Name = "Tech Accessories", Desc = "Phone cases and tech accessories" }
             };
 
             foreach (var cat in mainCategories)
@@ -195,10 +193,14 @@ namespace RedBubble.Infrastructure.DataAccess
             // Clothing Subcategories
             var clothingSubcategories = new[]
             {
-                new { Id = 5, Name = "T-Shirts", Desc = "Comfortable cotton t-shirts for everyday wear" },
-                new { Id = 6, Name = "Hoodies", Desc = "Warm and cozy hoodies for casual style" },
-                new { Id = 7, Name = "Tank Tops", Desc = "Lightweight tank tops for summer" },
-                new { Id = 8, Name = "Long Sleeve", Desc = "Long sleeve shirts for cooler weather" }
+                new { Id = 9, Name = "T-Shirts", Desc = "Classic and graphic t-shirts for all occasions" },
+                new { Id = 10, Name = "Tank Tops", Desc = "Comfortable sleeveless tank tops" },
+                new { Id = 11, Name = "Long Sleeve Shirts", Desc = "Cozy long sleeve t-shirts" },
+                new { Id = 12, Name = "Hoodies & Sweatshirts", Desc = "Warm pullover hoodies and sweatshirts" },
+                new { Id = 13, Name = "Zip Hoodies", Desc = "Full-zip hoodies and jackets" },
+                new { Id = 14, Name = "Crewneck Sweatshirts", Desc = "Classic crewneck style sweatshirts" },
+                new { Id = 15, Name = "Dresses", Desc = "Casual and dressy options for all styles" },
+                new { Id = 16, Name = "Skirts", Desc = "Mini, midi, and maxi skirts" }
             };
 
             foreach (var subcat in clothingSubcategories)
@@ -220,9 +222,11 @@ namespace RedBubble.Infrastructure.DataAccess
             // Accessories Subcategories
             var accessorySubcategories = new[]
             {
-                new { Id = 9, Name = "Bags", Desc = "Stylish bags and totes" },
-                new { Id = 10, Name = "Stickers", Desc = "Decorative stickers and decals" },
-                new { Id = 11, Name = "Phone Cases", Desc = "Protective cases for smartphones" }
+                new { Id = 17, Name = "Hats & Caps", Desc = "Baseball caps, beanies, and fashion hats" },
+                new { Id = 18, Name = "Scarves", Desc = "Fashionable scarves and wraps" },
+                new { Id = 19, Name = "Socks", Desc = "Fun and colorful socks with unique designs" },
+                new { Id = 20, Name = "Face Masks", Desc = "Stylish and protective face coverings" },
+                new { Id = 21, Name = "Pins & Badges", Desc = "Enamel pins and collectible badges" }
             };
 
             foreach (var subcat in accessorySubcategories)
@@ -244,9 +248,14 @@ namespace RedBubble.Infrastructure.DataAccess
             // Home & Living Subcategories
             var homeSubcategories = new[]
             {
-                new { Id = 12, Name = "Mugs", Desc = "Ceramic mugs for beverages" },
-                new { Id = 13, Name = "Posters", Desc = "Wall posters and prints" },
-                new { Id = 14, Name = "Canvas Prints", Desc = "High-quality canvas prints" }
+                new { Id = 22, Name = "Coffee Mugs", Desc = "Ceramic mugs for your favorite beverages" },
+                new { Id = 23, Name = "Travel Mugs", Desc = "Insulated travel mugs for on-the-go" },
+                new { Id = 24, Name = "Water Bottles", Desc = "Reusable water bottles with custom designs" },
+                new { Id = 25, Name = "Throw Pillows", Desc = "Decorative pillows to enhance your space" },
+                new { Id = 26, Name = "Blankets & Throws", Desc = "Cozy blankets with artistic designs" },
+                new { Id = 27, Name = "Wall Tapestries", Desc = "Large fabric wall art and tapestries" },
+                new { Id = 28, Name = "Wall Clocks", Desc = "Functional art for keeping time" },
+                new { Id = 29, Name = "Candles", Desc = "Scented candles with custom labels" }
             };
 
             foreach (var subcat in homeSubcategories)
@@ -268,8 +277,11 @@ namespace RedBubble.Infrastructure.DataAccess
             // Tech Accessories Subcategories
             var techSubcategories = new[]
             {
-                new { Id = 15, Name = "Laptop Stickers", Desc = "Decorative stickers for laptops" },
-                new { Id = 16, Name = "Mouse Pads", Desc = "Comfortable mouse pads" }
+                new { Id = 30, Name = "iPhone Cases", Desc = "Protective cases for iPhone models" },
+                new { Id = 31, Name = "Samsung Cases", Desc = "Samsung Galaxy phone protection" },
+                new { Id = 32, Name = "Laptop Sleeves", Desc = "Padded laptop bags and sleeves" },
+                new { Id = 33, Name = "Mouse Pads", Desc = "Gaming and office mouse pads" },
+                new { Id = 34, Name = "Tablet Cases", Desc = "iPad and tablet protective cases" }
             };
 
             foreach (var subcat in techSubcategories)
@@ -289,6 +301,7 @@ namespace RedBubble.Infrastructure.DataAccess
             }
 
             modelBuilder.Entity<Category>().HasData(categories);
+            
         }
 
         private static void SeedColors(ModelBuilder modelBuilder)
@@ -297,14 +310,19 @@ namespace RedBubble.Infrastructure.DataAccess
             {
                 new Color { Id = 1, ColorName = "Black", ColorCode = "#000000", IsActive = true },
                 new Color { Id = 2, ColorName = "White", ColorCode = "#FFFFFF", IsActive = true },
-                new Color { Id = 3, ColorName = "Red", ColorCode = "#FF0000", IsActive = true },
-                new Color { Id = 4, ColorName = "Blue", ColorCode = "#0000FF", IsActive = true },
-                new Color { Id = 5, ColorName = "Green", ColorCode = "#008000", IsActive = true },
-                new Color { Id = 6, ColorName = "Yellow", ColorCode = "#FFFF00", IsActive = true },
-                new Color { Id = 7, ColorName = "Purple", ColorCode = "#800080", IsActive = true },
-                new Color { Id = 8, ColorName = "Orange", ColorCode = "#FFA500", IsActive = true },
-                new Color { Id = 9, ColorName = "Pink", ColorCode = "#FFC0CB", IsActive = true },
-                new Color { Id = 10, ColorName = "Gray", ColorCode = "#808080", IsActive = true }
+                new Color { Id = 3, ColorName = "Navy Blue", ColorCode = "#000080", IsActive = true },
+                new Color { Id = 4, ColorName = "Heather Gray", ColorCode = "#808080", IsActive = true },
+                new Color { Id = 5, ColorName = "Crimson Red", ColorCode = "#DC143C", IsActive = true },
+                new Color { Id = 6, ColorName = "Forest Green", ColorCode = "#228B22", IsActive = true },
+                new Color { Id = 7, ColorName = "Royal Blue", ColorCode = "#4169E1", IsActive = true },
+                new Color { Id = 8, ColorName = "Sunshine Yellow", ColorCode = "#FFD700", IsActive = true },
+                new Color { Id = 9, ColorName = "Deep Purple", ColorCode = "#663399", IsActive = true },
+                new Color { Id = 10, ColorName = "Rose Pink", ColorCode = "#FF69B4", IsActive = true },
+                new Color { Id = 11, ColorName = "Sunset Orange", ColorCode = "#FF4500", IsActive = true },
+                new Color { Id = 12, ColorName = "Chocolate Brown", ColorCode = "#8B4513", IsActive = true },
+                new Color { Id = 13, ColorName = "Sky Blue", ColorCode = "#87CEEB", IsActive = true },
+                new Color { Id = 14, ColorName = "Emerald Green", ColorCode = "#50C878", IsActive = true },
+                new Color { Id = 15, ColorName = "Burgundy", ColorCode = "#800020", IsActive = true }
             };
 
             modelBuilder.Entity<Color>().HasData(colors);
@@ -320,7 +338,8 @@ namespace RedBubble.Infrastructure.DataAccess
                 new Size { Id = 4, SizeName = "L", Description = "Large", IsActive = true },
                 new Size { Id = 5, SizeName = "XL", Description = "Extra Large", IsActive = true },
                 new Size { Id = 6, SizeName = "XXL", Description = "Double Extra Large", IsActive = true },
-                new Size { Id = 7, SizeName = "One Size", Description = "Universal Size", IsActive = true }
+                new Size { Id = 7, SizeName = "3XL", Description = "Triple Extra Large", IsActive = true },
+                new Size { Id = 8, SizeName = "One Size", Description = "Universal Size", IsActive = true }
             };
 
             modelBuilder.Entity<Size>().HasData(sizes);
@@ -483,7 +502,7 @@ namespace RedBubble.Infrastructure.DataAccess
                     LastModifiedOn = createdDate.AddDays(10)
                 }
             });
-
+  
             // Mugs (Category 12)
             products.AddRange(new[]
             {
@@ -861,5 +880,5 @@ namespace RedBubble.Infrastructure.DataAccess
                 _ => $"{random.Next(10000, 99999)}"
             };
         }
+        }
     }
-}

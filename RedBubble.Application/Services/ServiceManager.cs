@@ -62,6 +62,7 @@ namespace RedBubble.Application.Services
 
             //Lazy<IProductVariantImageService> productVariantImageService
             //Lazy<IUserService> userService
+            //Lazy<IOrderService> orderService
             )
         {
             this.unitOfWork = unitOfWork;

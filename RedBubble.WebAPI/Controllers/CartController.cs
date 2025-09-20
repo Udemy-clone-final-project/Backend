@@ -41,19 +41,19 @@ namespace RedBubble.WebAPI.Controllers
             
             var finalCartId = string.IsNullOrEmpty(cartId) ? Guid.NewGuid().ToString() : cartId;
             Console.WriteLine($"Final cart ID: {finalCartId}");
-
+            
             var updatedCart = await _cartService.AddOrUpdateItemInCartAsync(finalCartId, addItemDto.VariantId, addItemDto.Quantity);
 
             // Set the cart ID in the response headers
             Response.Headers.Add("X-Cart-Id", finalCartId);
             Console.WriteLine($"Sending cart ID in header: {finalCartId}");
-            
+
             // Also set the cart ID in the response body
             updatedCart.Id = finalCartId;
-            
+
             return Ok(updatedCart);
         }
-
+        
         
         [HttpDelete("items/{variantId}")]
         public async Task<IActionResult> RemoveItem(

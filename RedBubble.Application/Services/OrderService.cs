@@ -35,6 +35,9 @@ namespace RedBubble.Application.Services
 
         public async Task<Order?> CreateOrderAsync(string customerEmail, string customerId, OrderDto orderDto)
         {
+            // الخطوة 1: جلب السلة من Redis (كما هي)
+            //var cart = await _cartRepository.GetCartAsync(orderDto.CartId);
+            //if (cart == null || !cart.Items.Any()) return null;
 
             var cart = await _cartRepository.GetCartAsync(orderDto.CartId);
             if (cart == null || !cart.Items.Any()) return null;
@@ -62,6 +65,12 @@ namespace RedBubble.Application.Services
 
             var subtotal = orderItems.Sum(oi => oi.Price * oi.Quantity);
 
+            // ✨ الخطوة 5: التحقق من وجود طلب قديم بنفس عملية الدفع (المنطق الجديد)
+            //var orderRepo = _unitOfWork.GetRepository<Order, int>();
+            //if (!string.IsNullOrEmpty(cart.PaymentIntentId))
+            //{
+            //    var existingOrder = await orderRepo.GetAll()
+            //                                       .FirstOrDefaultAsync(o => o.PaymentIntentId == cart.PaymentIntentId);
 
             var orderRepo = _unitOfWork.GetRepository<Order, int>();
             if (!string.IsNullOrEmpty(cart.PaymentIntentId))
@@ -137,7 +146,7 @@ namespace RedBubble.Application.Services
             return order;
         }
 
-        public async Task<bool> ChangeStatus(int orderId, OrderStatus status)
+        public async Task<bool> ChangeStatus(int orderId, Domain.Entities.Models.Orders.OrderStatus status)
         {
             var orderRepo = _unitOfWork.GetRepository<Order, int>();
             var order = await orderRepo.GetByIdAsync(orderId);
@@ -165,4 +174,4 @@ namespace RedBubble.Application.Services
             return result > 0 && refreshed != null && refreshed.Status == status;
         }
     }
-}
+    }

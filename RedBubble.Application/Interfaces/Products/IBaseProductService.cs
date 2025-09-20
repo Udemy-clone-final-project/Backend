@@ -27,6 +27,6 @@ namespace RedBubble.Application.Interfaces.Services
 
         // Validation helpers
         Task<bool> IsProductNameUniqueAsync(string name, int? excludeId = null);
-        
+
     }
 }
