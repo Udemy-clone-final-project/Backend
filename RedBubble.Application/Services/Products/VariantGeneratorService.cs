@@ -8,30 +8,24 @@ using RedBubble.Domain.Entities.Models;
 using RedBubble.Domain.Entities.Models.Products;
 using RedBubble.Domain.Interfaces;
 using System;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Threading.Tasks;
+
 namespace RedBubble.Application.Services.Products
 {
- 
+    public class VariantGeneratorService : IVariantGeneratorService
+    {
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMockupGeneratorService _mockupGenerator;
 
-    
-        public class VariantGeneratorService : IVariantGeneratorService
+        public VariantGeneratorService(
+            IUnitOfWork unitOfWork,
+            IMockupGeneratorService mockupGenerator)
         {
-            private readonly IUnitOfWork _unitOfWork;
-            private readonly IMockupGeneratorService _mockupGenerator;
-
-            public VariantGeneratorService(
-                IUnitOfWork unitOfWork,
-                IMockupGeneratorService mockupGenerator)
-            {
-                _unitOfWork = unitOfWork;
-                _mockupGenerator = mockupGenerator;
-            }
+            _unitOfWork = unitOfWork;
+            _mockupGenerator = mockupGenerator;
+        }
 
         public async Task GenerateVariantsAsync(int designId, int baseProductId)
         {
@@ -41,23 +35,20 @@ namespace RedBubble.Application.Services.Products
             var variantImageRepo = _unitOfWork.GetRepository<ProductVariantImages, int>();
 
             var design = await designRepo.GetByIdAsync(designId);
-            //var baseProduct = await baseProductRepo.GetByIdAsync(baseProductId);
             var baseProduct = await baseProductRepo.GetAll()
-    .Include(bp => bp.AvailableSizes).ThenInclude(s => s.Size)
-    .Include(bp => bp.AvailableColors).ThenInclude(c => c.Color)
-    .Include(bp => bp.Templates)
-    .Include(bp => bp.PrintAreas)
-    .FirstOrDefaultAsync(bp => bp.Id == baseProductId);
+                .Include(bp => bp.AvailableSizes).ThenInclude(s => s.Size)
+                .Include(bp => bp.AvailableColors).ThenInclude(c => c.Color)
+                .Include(bp => bp.Templates)
+                .Include(bp => bp.PrintAreas)
+                .FirstOrDefaultAsync(bp => bp.Id == baseProductId);
 
             if (design == null || baseProduct == null)
                 throw new ArgumentException("Design or BaseProduct not found.");
 
             // Load sizes and colors
-            //var availableSizes = baseProduct.AvailableSizes?.Where(s => s.IsActive).Select(s => s.Size).ToList() ?? new();
-            //var availableColors = baseProduct.AvailableColors?.Where(c => c.IsActive).Select(c => c.Color).ToList() ?? new();
             var availableSizes = baseProduct.HasSizes
-    ? baseProduct.AvailableSizes?.Where(s => s.IsActive).Select(s => s.Size).ToList()
-    : new List<Size?> { null };
+                ? baseProduct.AvailableSizes?.Where(s => s.IsActive).Select(s => s.Size).ToList()
+                : new List<Size?> { null };
 
             var availableColors = baseProduct.HasColors
                 ? baseProduct.AvailableColors?.Where(c => c.IsActive).Select(c => c.Color).ToList()
@@ -75,7 +66,9 @@ namespace RedBubble.Application.Services.Products
 
             var existingSet = new HashSet<(int? SizeId, int? ColorId)>(
                 existingVariants.Select(v => (v.SizeId, v.ColorId)));
+
             var newVariants = new List<ProductVariant>();
+
             foreach (var size in availableSizes)
             {
                 foreach (var color in availableColors)
@@ -96,14 +89,11 @@ namespace RedBubble.Application.Services.Products
                         IsActive = true
                     };
 
-
                     newVariants.Add(variant);
-                    
-
-                    // also add it into set so it doesn’t regenerate later in the loop
                     existingSet.Add((sizeId, colorId));
                 }
             }
+
             using var transaction = await _unitOfWork.BeginTransactionAsync();
 
             try
@@ -130,31 +120,63 @@ namespace RedBubble.Application.Services.Products
 
                         var printArea = baseProduct.PrintAreas
                             .Where(pa => pa.IsActive &&
-                                         pa.AreaName.Equals(template.ViewName, StringComparison.OrdinalIgnoreCase))
+                                         pa.AreaName.Equals(template?.ViewName, StringComparison.OrdinalIgnoreCase))
                             .OrderBy(pa => pa.DisplayOrder)
                             .FirstOrDefault();
 
                         if (template == null || printArea == null)
                             continue;
 
-                        var mockupUrl = await _mockupGenerator.GenerateMockupAsync(
-                            design.ImageUrl,
-                            template.TemplateUrl,
-                            template.MockupUrl,
-                            variant.Color?.ColorCode ?? "#FFFFFF",
-                            printArea.PositionX,
-                            printArea.PositionY,
-                            (int)printArea.Width,
-                            (int)printArea.Height,
-                            "/uploads/generated/variants"
-                        );
+                        // Check if color-specific mockup exists first
+                        string? colorSpecificMockupUrl = null;
+                        if (variant.ColorId.HasValue)
+                        {
+                            var baseProductColor = baseProduct.AvailableColors
+                                ?.FirstOrDefault(c => c.ColorId == variant.ColorId.Value);
+                            colorSpecificMockupUrl = baseProductColor?.ColorSpecificMockupUrl;
+                        }
+
+                        string mockupUrl;
+
+                        if (!string.IsNullOrEmpty(colorSpecificMockupUrl))
+                        {
+                            // Use photo-based approach for colors with specific mockups
+                            mockupUrl = await _mockupGenerator.GenerateMockupAsync(
+                                design.ImageUrl,
+                                template.TemplateUrl,
+                                template.MockupUrl,
+                                colorSpecificMockupUrl,
+                                printArea.PositionX,
+                                printArea.PositionY,
+                                (int)printArea.Width,
+                                (int)printArea.Height,
+                                "/uploads/generated/variants"
+                            );
+                        }
+                        else
+                        {
+                            // Use programmatic color change for colors without specific mockups
+                            var colorHex = variant.Color?.ColorCode ?? "#FFFFFF";
+                            mockupUrl = await _mockupGenerator.GenerateMockupLegacyAsync(
+                                design.ImageUrl,
+                                template.TemplateUrl,
+                                template.MockupUrl,
+                                colorHex,
+                                printArea.PositionX,
+                                printArea.PositionY,
+                                (int)printArea.Width,
+                                (int)printArea.Height,
+                                "/uploads/generated/variants"
+                            );
+                        }
 
                         variantImages.Add(new ProductVariantImages
                         {
                             ProductVariantId = variant.Id,
                             ImageUrl = mockupUrl,
                             FileName = $"variant_{variant.Id}.png",
-                            AltText = $"{design.Title} on {baseProduct.Name}",
+                            AltText = $"{design.Title} on {baseProduct.Name}" +
+                                     (variant.Color != null ? $" in {variant.Color.ColorName}" : ""),
                             IsPrimary = true,
                             IsActive = true
                         });
@@ -173,15 +195,8 @@ namespace RedBubble.Application.Services.Products
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                throw; // bubble up error for logging/handling
+                throw;
             }
-
-
-
         }
-
     }
 }
-    
-
-

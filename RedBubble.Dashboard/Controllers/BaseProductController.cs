@@ -35,7 +35,6 @@ namespace RedBubble.Web.Controllers
             _serviceManager = serviceManager;
         }
 
-       
         public async Task<IActionResult> Index(string? search, bool? hasSize, bool? hasColors)
         {
             var products = await _baseProductService.GetAllBaseProductsAsync();
@@ -64,8 +63,6 @@ namespace RedBubble.Web.Controllers
             return View(products);
         }
 
-
-        // GET: BaseProduct/Details/5
         public async Task<IActionResult> Details(int id)
         {
             var product = await _baseProductService.GetBaseProductByIdAsync(id);
@@ -79,15 +76,12 @@ namespace RedBubble.Web.Controllers
             return View(product);
         }
 
-        // GET: BaseProduct/Create
         public async Task<IActionResult> Create()
         {
             await PopulateDropdownsAsync();
-
             return View(new CreateBaseProductDto());
         }
 
-        // POST: BaseProduct/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateBaseProductDto createDto)
@@ -200,7 +194,6 @@ namespace RedBubble.Web.Controllers
             }
         }
 
-        // GET: BaseProduct/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
             var product = await _baseProductService.GetBaseProductByIdAsync(id);
@@ -211,7 +204,6 @@ namespace RedBubble.Web.Controllers
             return View(updateDto);
         }
 
-        // POST: BaseProduct/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, UpdateBaseProductDto updateDto)
@@ -313,17 +305,14 @@ namespace RedBubble.Web.Controllers
             return View(product);
         }
 
-        // POST: BaseProduct/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var success = await _baseProductService.DeleteBaseProductAsync(id, "system");
-
             TempData["SuccessMessage"] = success
                 ? "Base product deleted successfully."
                 : "Base product not found.";
-
             return RedirectToAction(nameof(Index));
         }
 
@@ -423,7 +412,6 @@ namespace RedBubble.Web.Controllers
                     .OrderBy(c => c.CategoryName);
 
                 ViewBag.SubCategories = new SelectList(subCategories, "Id", "CategoryName");
-
                 ViewBag.AllSizes = await _serviceManager.sizeService.GetAllSizesAsync();
                 ViewBag.AllColors = await _serviceManager.colorService.GetAllAsync();
             }

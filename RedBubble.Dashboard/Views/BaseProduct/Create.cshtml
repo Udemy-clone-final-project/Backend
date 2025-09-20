@@ -34,8 +34,8 @@
                 animation: invalidPulse 1.5s infinite;
             }
 
-        
-     
+
+
 
         .print-area-overlay.active {
             border-color: #007bff !important;
@@ -92,7 +92,7 @@
             line-height: 1.4;
         }
 
-       
+
 
         .loading-spinner {
             display: inline-block;
@@ -105,9 +105,9 @@
             margin-right: 6px;
         }
 
-      
 
-      
+
+
     </style>
 </head>
 <body>
@@ -141,7 +141,6 @@
                                 <input name="Name" id="Name" class="form-control" required />
                                 <div class="invalid-feedback"></div>
                             </div>
-                        </div>
                             <div class="col-md-6">
                                 <label for="BasePrice" class="form-label">Base Price *</label>
                                 <div class="input-group">
@@ -171,12 +170,6 @@
                             <div class="invalid-feedback">Please select a valid category</div>
                         </div>
                     </div>
-                        <div class="col-md-6">
-                            <div class="form-group mb-3">
-                                <!-- Sizes -->
-                                <div class="form-group">
-                                    <label>Has Sizes?</label>
-                                    <input asp-for="HasSizes" type="checkbox" class="form-check-input" id="hasSizesCheckbox" />
                 </div>
 
                 <!-- Templates Tab -->
@@ -196,15 +189,6 @@
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
-                                <div class="form-group" id="colorsContainer" style="display:none;">
-                                    <label>Select Available Colors</label>
-                                    <select asp-for="AvailableColorIds"
-                                            asp-items="@(new MultiSelectList(ViewBag.AllColors, "Id", "ColorName", Model.AvailableColorIds))"
-                                            multiple
-                                            class="form-control">
-                                    </select>
-                                    <small class="text-muted">Hold CTRL (Windows) or CMD (Mac) to select multiple</small>
-                                </div>
 
                             <div class="row mb-3">
                                 <div class="col-md-4">
@@ -249,22 +233,13 @@
                                         <strong>Dimensions:</strong>
                                         <span class="template-dimensions">Not loaded</span>
                                     </div>
-                                        <div class="col-md-2">
-                                            <label class="form-label">Width (in)</label>
-                                            <input name="PrintAreas[0].Width" class="form-control" type="number" step="0.1" placeholder="8.0" value="8.0" />
                                 </div>
-                                        <div class="col-md-2">
-                                            <label class="form-label">Height (in)</label>
-                                            <input name="PrintAreas[0].Height" class="form-control" type="number" step="0.1" placeholder="10.0" value="10.0" />
                             </div>
 
                             <div class="template-preview-container">
                                 <div class="canvas-container">
                                     <canvas class="template-canvas" width="400" height="300"></canvas>
                                 </div>
-                                        <div class="col-md-2">
-                                            <label class="form-label">Order</label>
-                                            <input name="PrintAreas[0].DisplayOrder" class="form-control" type="number" placeholder="1" value="1" />
                             </div>
 
                             <!-- Hidden dimension inputs -->
@@ -316,11 +291,6 @@
                                     <label class="form-label">Y Position *</label>
                                     <input name="PrintAreas[0].PositionY" class="form-control area-y" type="number" value="50" min="0" required />
                                 </div>
-                                        <div class="col-md-1">
-                                            <label class="form-label">&nbsp;</label>
-                                            <button type="button" class="btn btn-danger btn-sm d-block remove-template">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
                             </div>
 
                             <div class="row mb-3">
@@ -348,18 +318,7 @@
                                         The rectangle shows where designs will be placed on this template.
                                     </small>
                                 </div>
-
-                    <hr>
-
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> Create Base Product
-                        </button>
-                        <a asp-action="Index" class="btn btn-secondary">
-                            <i class="fas fa-times"></i> Cancel
-                        </a>
                             </div>
-                </form>
                         </div>
                     </div>
                 </div>
@@ -377,15 +336,6 @@
                                     <input type="checkbox" name="HasSizes" class="form-check-input" id="hasSizes" value="true" />
                                     <label class="form-check-label" for="hasSizes">This product has sizes</label>
                                 </div>
-                        <div class="text-xs text-gray-900">
-                            <ul class="mb-0 pl-3">
-                                <li>Use unique, descriptive names</li>
-                                <li>Set competitive base pricing</li>
-                                <li>Select appropriate subcategory</li>
-                                <li>Define clear print areas with accurate dimensions</li>
-                                <li>Upload high-quality template and mockup files</li>
-                                <li>Ensure at least one primary template</li>
-                            </ul>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-check">
@@ -394,8 +344,6 @@
                                     <input type="checkbox" name="HasColors" class="form-check-input" id="hasColors" value="true" />
                                     <label class="form-check-label" for="hasColors">This product has colors</label>
                                 </div>
-                    <div class="col-auto">
-                        <i class="fas fa-info-circle fa-2x text-gray-300"></i>
                             </div>
                         </div>
 
@@ -438,21 +386,9 @@
                                     }
                                 </div>
                             </div>
-                            <div class="col-md-2">
-                                <label class="form-label">Width (in)</label>
-                                <input name="PrintAreas[${printAreaIndex}].Width" class="form-control" type="number" step="0.1" placeholder="8.0" />
                         </div>
-                            <div class="col-md-2">
-                                <label class="form-label">Height (in)</label>
-                                <input name="PrintAreas[${printAreaIndex}].Height" class="form-control" type="number" step="0.1" placeholder="10.0" />
                     </div>
-                            <div class="col-md-2">
-                                <label class="form-label">DPI</label>
-                                <input name="PrintAreas[${printAreaIndex}].MinDPI" class="form-control" type="number" placeholder="300" value="300" />
                 </div>
-                            <div class="col-md-2">
-                                <label class="form-label">Order</label>
-                                <input name="PrintAreas[${printAreaIndex}].DisplayOrder" class="form-control" type="number" placeholder="${printAreaIndex + 1}" value="${printAreaIndex + 1}" />
             </div>
 
             <div class="d-flex justify-content-between mt-4">
@@ -679,7 +615,7 @@
             // Update print area overlay position
             updatePrintAreaOverlay(printAreaItem, templateData);
         }
-               function updatePrintAreaOverlay(printAreaItem, templateData) {
+                   function updatePrintAreaOverlay(printAreaItem, templateData) {
             const overlay = printAreaItem.querySelector('.print-area-overlay');
             const widthInput = printAreaItem.querySelector('.area-width');
             const heightInput = printAreaItem.querySelector('.area-height');
@@ -694,83 +630,124 @@
             const originalWidth = parseInt(widthInput.value) || 0;
             const originalHeight = parseInt(heightInput.value) || 0;
 
-            // FIXED: Convert original image coordinates to canvas display coordinates
-            const displayX = (originalX * templateData.displayScale) + templateData.displayOffsetX;
-            const displayY = (originalY * templateData.displayScale) + templateData.displayOffsetY;
-            const displayWidth = originalWidth * templateData.displayScale;
-            const displayHeight = originalHeight * templateData.displayScale;
+            // FIXED: More accurate coordinate conversion
+            const displayX = Math.round((originalX * templateData.displayScale) + templateData.displayOffsetX);
+            const displayY = Math.round((originalY * templateData.displayScale) + templateData.displayOffsetY);
+            const displayWidth = Math.round(originalWidth * templateData.displayScale);
+            const displayHeight = Math.round(originalHeight * templateData.displayScale);
 
-            // Position overlay on canvas
-            overlay.style.left = Math.round(displayX) + 'px';
-            overlay.style.top = Math.round(displayY) + 'px';
-            overlay.style.width = Math.round(displayWidth) + 'px';
-            overlay.style.height = Math.round(displayHeight) + 'px';
-
-            // Reset any transform data
-            overlay.setAttribute('data-x', 0);
-            overlay.setAttribute('data-y', 0);
+            // FIXED: Reset transform before positioning
             overlay.style.transform = 'translate(0px, 0px)';
+            overlay.setAttribute('data-x', '0');
+            overlay.setAttribute('data-y', '0');
 
-            // Validate bounds using ORIGINAL coordinates
+            // Position overlay
+            overlay.style.left = displayX + 'px';
+            overlay.style.top = displayY + 'px';
+            overlay.style.width = displayWidth + 'px';
+            overlay.style.height = displayHeight + 'px';
+            overlay.style.display = 'block';
+
+            console.log(`Print area positioning:
+                Original: (${originalX}, ${originalY}) ${originalWidth}×${originalHeight}
+                Display: (${displayX}, ${displayY}) ${displayWidth}×${displayHeight}
+                Template: ${templateData.originalWidth}×${templateData.originalHeight}
+                Scale: ${templateData.displayScale}
+                Offset: (${templateData.displayOffsetX}, ${templateData.displayOffsetY})`);
+
+            // Validate bounds using original coordinates
             validatePrintAreaBounds(printAreaItem, templateData);
         }
-
-
-                              function validatePrintAreaBounds(printAreaItem, templateData) {
+                function validatePrintAreaBounds(printAreaItem, templateData) {
             const validationMessage = printAreaItem.querySelector('.validation-message');
             const widthInput = printAreaItem.querySelector('.area-width');
             const heightInput = printAreaItem.querySelector('.area-height');
             const xInput = printAreaItem.querySelector('.area-x');
             const yInput = printAreaItem.querySelector('.area-y');
 
-            // FIXED: Use ORIGINAL image coordinates for validation (not display coordinates)
             const x = parseInt(xInput.value) || 0;
             const y = parseInt(yInput.value) || 0;
             const width = parseInt(widthInput.value) || 0;
             const height = parseInt(heightInput.value) || 0;
 
-            // Validate against ORIGINAL template dimensions
-            const withinBounds = x >= 0 && y >= 0 &&
-                               (x + width) <= templateData.originalWidth &&
-                               (y + height) <= templateData.originalHeight &&
-                               width > 0 && height > 0;
+            // Comprehensive bounds checking
+            const withinBounds = x >= 0 && y >= 0 && width > 0 && height > 0 &&
+                                (x + width) <= templateData.originalWidth &&
+                                (y + height) <= templateData.originalHeight;
 
             const overlay = printAreaItem.querySelector('.print-area-overlay');
 
             if (withinBounds) {
-                validationMessage.innerHTML = '<span class="validation-success"><i class="fas fa-check-circle me-1"></i>Print area is within template bounds</span>';
+                const centerX = x + width / 2;
+                const centerY = y + height / 2;
+                const templateCenterX = templateData.originalWidth / 2;
+                const templateCenterY = templateData.originalHeight / 2;
+
+                validationMessage.innerHTML = `
+                    <span class="validation-success">
+                        <i class="fas fa-check-circle me-1"></i>Print area positioned successfully
+                        <br><small>Center: (${Math.round(centerX)}, ${Math.round(centerY)}) of template (${templateData.originalWidth}×${templateData.originalHeight}px)</small>
+                    </span>`;
                 overlay.classList.remove('invalid');
             } else {
-                // FIXED: Better error reporting with actual vs. maximum values
-                const maxX = Math.max(0, templateData.originalWidth - width);
-                const maxY = Math.max(0, templateData.originalHeight - height);
-                const exceedsRight = (x + width) > templateData.originalWidth;
-                const exceedsBottom = (y + height) > templateData.originalHeight;
-                const exceedsLeft = x < 0;
-                const exceedsTop = y < 0;
-                const invalidSize = width <= 0 || height <= 0;
+                let errorDetails = [];
 
-                let errorMsg = '<i class="fas fa-exclamation-triangle me-1"></i>Print area validation failed: ';
-                let errors = [];
-
-                if (invalidSize) {
-                    errors.push('width and height must be greater than 0');
-                } else {
-                    if (exceedsLeft) errors.push(`X position cannot be negative (current: ${x})`);
-                    if (exceedsTop) errors.push(`Y position cannot be negative (current: ${y})`);
-                    if (exceedsRight) errors.push(`extends ${(x + width) - templateData.originalWidth}px beyond right edge (max X: ${maxX})`);
-                    if (exceedsBottom) errors.push(`extends ${(y + height) - templateData.originalHeight}px beyond bottom edge (max Y: ${maxY})`);
+                if (width <= 0 || height <= 0) {
+                    errorDetails.push('Size must be positive');
+                }
+                if (x < 0) errorDetails.push(`X cannot be negative (${x})`);
+                if (y < 0) errorDetails.push(`Y cannot be negative (${y})`);
+                if (x + width > templateData.originalWidth) {
+                    errorDetails.push(`Exceeds right edge by ${(x + width) - templateData.originalWidth}px`);
+                }
+                if (y + height > templateData.originalHeight) {
+                    errorDetails.push(`Exceeds bottom edge by ${(y + height) - templateData.originalHeight}px`);
                 }
 
-                errorMsg += errors.join(', ');
-                errorMsg += `<br><small><strong>Template:</strong> ${templateData.originalWidth}×${templateData.originalHeight}px | <strong>Print area:</strong> position(${x},${y}) size(${width}×${height}px)</small>`;
-
-                validationMessage.innerHTML = `<span class="validation-error">${errorMsg}</span>`;
+                validationMessage.innerHTML = `
+                    <span class="validation-error">
+                        <i class="fas fa-exclamation-triangle me-1"></i>Print area validation failed
+                        <br><small>${errorDetails.join(', ')}</small>
+                        <br><small><strong>Template:</strong> ${templateData.originalWidth}×${templateData.originalHeight}px | <strong>Print area:</strong> (${x},${y}) ${width}×${height}px</small>
+                    </span>`;
                 overlay.classList.add('invalid');
             }
 
             return withinBounds;
         }
+                function setDefaultPrintAreaValues(printAreaItem, templateData) {
+            const widthInput = printAreaItem.querySelector('.area-width');
+            const heightInput = printAreaItem.querySelector('.area-height');
+            const xInput = printAreaItem.querySelector('.area-x');
+            const yInput = printAreaItem.querySelector('.area-y');
+
+            // Skip if values are already set (e.g., when loading existing data)
+            if (widthInput.value && heightInput.value) return;
+
+            const templateWidth = templateData.originalWidth;
+            const templateHeight = templateData.originalHeight;
+
+            // Set print area to 40% of template size, centered
+            const printWidth = Math.round(templateWidth * 0.4);
+            const printHeight = Math.round(templateHeight * 0.4);
+            const printX = Math.round((templateWidth - printWidth) / 2);
+            const printY = Math.round((templateHeight - printHeight) / 2);
+
+            // Ensure minimum size
+            const finalWidth = Math.max(printWidth, 50);
+            const finalHeight = Math.max(printHeight, 50);
+            const finalX = Math.max(0, Math.min(printX, templateWidth - finalWidth));
+            const finalY = Math.max(0, Math.min(printY, templateHeight - finalHeight));
+
+            widthInput.value = finalWidth;
+            heightInput.value = finalHeight;
+            xInput.value = finalX;
+            yInput.value = finalY;
+
+            // Update the overlay immediately
+            updatePrintAreaOverlay(printAreaItem, templateData);
+        }
+                            
 
         function updatePrintAreaDropdowns() {
             // Get all current template view names
@@ -813,7 +790,7 @@
             });
         }
 
-              function handlePrintAreaNameChange(select) {
+                      function handlePrintAreaNameChange(select) {
             const printAreaItem = select.closest('.print-area-item');
             const selectedView = select.value;
             const canvas = printAreaItem.querySelector('.print-area-canvas');
@@ -827,6 +804,9 @@
 
                     if (viewName === selectedView) {
                         updatePrintAreaCanvas(printAreaItem, templateData);
+
+                        // FIXED: Set smart default values based on template dimensions
+                        setDefaultPrintAreaValues(printAreaItem, templateData);
                         return;
                     }
                 }
@@ -919,7 +899,7 @@
                 });
         }
 
-                                function updateInputsFromPrintArea(printAreaItem, overlay) {
+                                        function updateInputsFromPrintArea(printAreaItem, overlay) {
             const widthInput = printAreaItem.querySelector('.area-width');
             const heightInput = printAreaItem.querySelector('.area-height');
             const xInput = printAreaItem.querySelector('.area-x');
@@ -940,29 +920,33 @@
 
             if (!templateData || !templateData.displayScale) return;
 
-            // Get overlay position and size
+            // FIXED: Get overlay position relative to canvas, accounting for transforms
+            const canvas = overlay.parentElement;
+            const canvasRect = canvas.getBoundingClientRect();
             const overlayRect = overlay.getBoundingClientRect();
-            const canvasRect = overlay.parentElement.getBoundingClientRect();
 
+            // Account for CSS transforms
             const transformX = parseFloat(overlay.getAttribute('data-x')) || 0;
             const transformY = parseFloat(overlay.getAttribute('data-y')) || 0;
 
-            const displayX = (overlayRect.left - canvasRect.left) + transformX;
-            const displayY = (overlayRect.top - canvasRect.top) + transformY;
-            const displayWidth = overlay.offsetWidth;
-            const displayHeight = overlay.offsetHeight;
+            // Calculate position in canvas coordinates
+            const canvasX = overlayRect.left - canvasRect.left - transformX;
+            const canvasY = overlayRect.top - canvasRect.top - transformY;
 
-            // Convert to original coordinates
-            const originalX = Math.round((displayX - templateData.displayOffsetX) / templateData.displayScale);
-            const originalY = Math.round((displayY - templateData.displayOffsetY) / templateData.displayScale);
-            const originalWidth = Math.round(displayWidth / templateData.displayScale);
-            const originalHeight = Math.round(displayHeight / templateData.displayScale);
+            // Convert canvas coordinates to original template coordinates
+            const originalX = Math.round((canvasX - templateData.displayOffsetX) / templateData.displayScale);
+            const originalY = Math.round((canvasY - templateData.displayOffsetY) / templateData.displayScale);
+            const originalWidth = Math.round(overlay.offsetWidth / templateData.displayScale);
+            const originalHeight = Math.round(overlay.offsetHeight / templateData.displayScale);
 
-            // Clamp to bounds
-            const clampedX = Math.max(0, Math.min(originalX, templateData.originalWidth - originalWidth));
-            const clampedY = Math.max(0, Math.min(originalY, templateData.originalHeight - originalHeight));
-            const clampedWidth = Math.max(1, Math.min(originalWidth, templateData.originalWidth - clampedX));
-            const clampedHeight = Math.max(1, Math.min(originalHeight, templateData.originalHeight - clampedY));
+            // FIXED: Proper bounds checking and clamping
+            const maxWidth = Math.max(1, templateData.originalWidth - Math.max(0, originalX));
+            const maxHeight = Math.max(1, templateData.originalHeight - Math.max(0, originalY));
+
+            const clampedX = Math.max(0, Math.min(originalX, templateData.originalWidth - 1));
+            const clampedY = Math.max(0, Math.min(originalY, templateData.originalHeight - 1));
+            const clampedWidth = Math.max(1, Math.min(originalWidth, maxWidth));
+            const clampedHeight = Math.max(1, Math.min(originalHeight, maxHeight));
 
             // Update inputs
             xInput.value = clampedX;
@@ -970,6 +954,7 @@
             widthInput.value = clampedWidth;
             heightInput.value = clampedHeight;
 
+            // Validate bounds
             validatePrintAreaBounds(printAreaItem, templateData);
         }
 
@@ -1079,7 +1064,7 @@
 
             return template;
         }
-                function createPrintAreaItem(index) {
+                 function createPrintAreaItem(index) {
             const printArea = document.querySelector('.print-area-item').cloneNode(true);
             printArea.dataset.printareaIndex = index;
 
@@ -1090,11 +1075,12 @@
                 }
             });
 
-            // FIXED: Set reasonable default values (center of a typical template)
-            printArea.querySelector('.area-width').value = '200';   // 200px width
-            printArea.querySelector('.area-height').value = '200';  // 200px height
-            printArea.querySelector('.area-x').value = '100';       // 100px from left
-            printArea.querySelector('.area-y').value = '100';       // 100px from top
+            // FIXED: Don't set hardcoded default values - let them be set dynamically
+            // based on the actual template dimensions when a template is selected
+            printArea.querySelector('.area-width').value = '';
+            printArea.querySelector('.area-height').value = '';
+            printArea.querySelector('.area-x').value = '';
+            printArea.querySelector('.area-y').value = '';
 
             // Update overlay data attribute
             printArea.querySelector('.print-area-overlay').dataset.printArea = index;

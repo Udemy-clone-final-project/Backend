@@ -32,11 +32,11 @@ namespace RedBubble.Infrastructure.DataAccess.Configurations
             });
 
             
-            builder.Property(o => o.Status)
-                .HasConversion(
-                    s => s.ToString(),
-                    s => (OrderStatus)Enum.Parse(typeof(OrderStatus), s)
-                );
+            //builder.Property(o => o.Status)
+            //    .HasConversion(
+            //        s => s.ToString(),
+            //        s => (OrderStatus)Enum.Parse(typeof(OrderStatus), s)
+            //    );
 
            
             builder.HasMany(o => o.OrderItems)

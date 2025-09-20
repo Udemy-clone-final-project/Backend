@@ -30,7 +30,7 @@ namespace RedBubble.Application.Services
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _fileService = fileService;
-            _imageService = imageService; 
+            _imageService = imageService;
         }
 
         public async Task<IEnumerable<BaseProductListDto>> GetAllBaseProductsAsync()
@@ -170,7 +170,7 @@ namespace RedBubble.Application.Services
             product.LastModifiedBy = deletedBy;
             product.LastModifiedOn = DateTime.UtcNow;
             repository.Update(product);
- 
+
             // Cascade soft-delete to related entities
             await SoftDeleteRelatedAsync(id);
             await _unitOfWork.CompleteAsync();
@@ -345,8 +345,6 @@ namespace RedBubble.Application.Services
                 printArea.IsActive = true;
                 await repo.AddAsync(printArea);
             }
-
-            await repo.AddRangeAsync(entities);
         }
 
 
@@ -807,6 +805,6 @@ namespace RedBubble.Application.Services
             await _unitOfWork.CompleteAsync();
             return true;
         }
-      
+
     }
 }

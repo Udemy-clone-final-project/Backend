@@ -1,26 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace RedBubble.Application.Interfaces.Products
 {
-    // IMockupGeneratorService.cs (Application)
     public interface IMockupGeneratorService
     {
         /// <summary>
-        /// Generates a composite mockup (design applied to template + mockup, with optional color overlay).
-        /// Returns the relative URL (e.g. /uploads/generated/variants/xxx.png).
+        /// Generates a mockup with optional color-specific mockup support
         /// </summary>
         Task<string> GenerateMockupAsync(
-            string designImageUrl,   // relative path from DB (/uploads/designs/abc.png)
-            string templateUrl,      // transparent template (optional)
-            string mockupUrl,        // background/mockup (optional)
-            string colorHex,         // "#FFFFFF"
-            int posX, int posY,      // placement of design
-            int width, int height,   // design size in px
+            string designImageUrl,
+            string templateUrl,
+            string mockupUrl,
+            string? colorSpecificMockupUrl,
+            int posX, int posY,
+            int width, int height,
+            string outputFolderRelative = "/uploads/generated/variants");
+
+        /// <summary>
+        /// Legacy method for backward compatibility - uses colorHex parameter (deprecated)
+        /// </summary>
+        Task<string> GenerateMockupLegacyAsync(
+            string designImageUrl,
+            string templateUrl,
+            string mockupUrl,
+            string colorHex,
+            int posX, int posY,
+            int width, int height,
+            string outputFolderRelative = "/uploads/generated/variants");
+
+        /// <summary>
+        /// Generates mockup with programmatic color changing
+        /// </summary>
+        Task<string> GenerateMockupWithColorAsync(
+            string designImageUrl,
+            string templateUrl,
+            string mockupUrl,
+            string colorHex,
+            int posX, int posY,
+            int width, int height,
             string outputFolderRelative = "/uploads/generated/variants");
     }
-
 }

@@ -55,7 +55,7 @@ namespace RedBubble.Dashboard.Controllers
         }
 
         // GET: Design/Create
-         public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create()
         {
             var model = new CreateDesignDto { IsActive = true };
             model.AdminId = User.Claims.FirstOrDefault().Value;
@@ -73,7 +73,7 @@ namespace RedBubble.Dashboard.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateDesignDto model, IFormFile ImageFile)
         {
-            
+
             if (!ModelState.IsValid)
             {
                 return View(model);

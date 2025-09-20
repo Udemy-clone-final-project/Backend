@@ -27,8 +27,6 @@ namespace RedBubble.Application.DTOs.Products
         public bool HasSizes { get; set; } = false;
         public bool HasColors { get; set; } = false;
 
-      
-
         // Related entities - must have at least one of each
         [Required(ErrorMessage = "At least one print area is required")]
         [MinLength(1, ErrorMessage = "At least one print area is required")]
@@ -189,7 +187,6 @@ namespace RedBubble.Application.DTOs.Products
         public bool HasColors { get; set; }
         public bool IsActive { get; set; }
 
-
         // Related data
         public List<PrintAreaDto> PrintAreas { get; set; } = new();
         public List<TemplateDto> Templates { get; set; } = new();
@@ -285,7 +282,6 @@ namespace RedBubble.Application.DTOs.Products
         public string? FlatMockupUrl { get; set; }
     }
 
-
     public class UpdateTemplateDto : CreateTemplateDto
     {
         public int Id { get; set; }
@@ -343,7 +339,6 @@ namespace RedBubble.Application.DTOs.Products
     {
         public int Id { get; set; }
         public string Name { get; set; } = null!;
-        
         public decimal BasePrice { get; set; }
         public string? CategoryName { get; set; }
         public bool HasSizes { get; set; }

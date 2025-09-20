@@ -18,9 +18,9 @@ namespace RedBubble.Application.Interfaces
 
         Task<DesignDto> CreateAsync(CreateDesignDto createDesignDto);
 
-       Task<DesignDto> Update(UpdateDesignDto updateDesignDto);
+        Task<DesignDto> Update(UpdateDesignDto updateDesignDto);
         Task<bool> DeleteDesignAsync(int id);
-        
+
 
 
 

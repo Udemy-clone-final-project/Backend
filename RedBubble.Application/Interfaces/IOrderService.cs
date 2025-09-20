@@ -18,6 +18,6 @@ namespace RedBubble.Application.Interfaces
         Task<IReadOnlyList<Order>> GetOrdersForUserAsync(string customerId);
         Task<IReadOnlyList<Order>> GetAllAsync();
         Task<Order?> GetByIdAsync(int orderId);
-        Task<bool> ChangeStatus(int orderId, OrderStatus status);
+        Task<bool> ChangeStatus(int orderId, Domain.Entities.Models.Orders.OrderStatus status);
     }
 }

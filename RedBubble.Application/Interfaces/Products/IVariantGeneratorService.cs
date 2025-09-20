@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace RedBubble.Application.Interfaces.Products
 {
-    
 
-        public interface IVariantGeneratorService
-        {
-            Task GenerateVariantsAsync(int designId, int baseProductId);
-        }
-    
+
+    public interface IVariantGeneratorService
+    {
+        Task GenerateVariantsAsync(int designId, int baseProductId);
+    }
+
 
 }
