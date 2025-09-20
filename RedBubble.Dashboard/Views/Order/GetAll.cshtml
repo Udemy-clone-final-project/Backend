@@ -1,6 +1,7 @@
-﻿@* @using RedBubble.Domain.Entities.Models
+﻿﻿@using RedBubble.Domain.Entities.Models
 @using RedBubble.Domain.Entities.Models.Orders
-@using RedBubble.Domain.Enums.OrderStatus;
+
+
 @model List<Order>
 
 @{
@@ -20,10 +21,10 @@
 </div>
 
 <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
+    <ol class="breadcrumb">
         <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Dashboard</a></li>
         <li class="breadcrumb-item active" aria-current="page">Orders</li>
-        </ol>
+    </ol>
 </nav>
 
 @if (TempData["SuccessMessage"] != null)
@@ -128,7 +129,7 @@
                 <a class="dropdown-item" href="#" onclick="filterOrders('shipped')">Shipped</a>
                 <a class="dropdown-item" href="#" onclick="filterOrders('delivered')">Delivered</a>
                 <a class="dropdown-item" href="#" onclick="filterOrders('cancelled')">Cancelled</a>
-    </div>
+            </div>
         </div>
     </div>
     <div class="card-body">
@@ -180,42 +181,15 @@
                                 </td>
                                 <td>
                                     <form asp-action="ChangeStatus" asp-controller="Order" method="post" class="d-inline">
-                                        @Html.AntiForgeryToken()
                                         <input type="hidden" name="orderId" value="@order.Id" />
-                                        <input type="hidden" name="status" value="@((int)order.Status)" class="status-hidden" />
-                                        <select class="form-select form-select-sm status-select" onchange="this.previousElementSibling.value=this.value; this.form.submit()" @(order.Status == OrderStatus.Cancelled ? "disabled" : "")>
-                                            @if (order.Status == OrderStatus.Pending)
-                                            {
-                                                <option value="@((int)OrderStatus.Pending)" selected>Pending</option>
-                                            }
-                                            else
-                                            {
-                                                <option value="@((int)OrderStatus.Pending)">Pending</option>
-                                            }
-                                            @if (order.Status == OrderStatus.Processing)
-                                            {
-                                                <option value="@((int)OrderStatus.Processing)" selected>Processing</option>
-                                            }
-                                            else
-                                            {
-                                                <option value="@((int)OrderStatus.Processing)">Processing</option>
-                                            }
-                                            @if (order.Status == OrderStatus.Shipped)
-                                            {
-                                                <option value="@((int)OrderStatus.Shipped)" selected>Shipped</option>
-                                            }
-                                            else
-                                            {
-                                                <option value="@((int)OrderStatus.Shipped)">Shipped</option>
-                                            }
-                                            @if (order.Status == OrderStatus.Delivered)
-                                            {
-                                                <option value="@((int)OrderStatus.Delivered)" selected>Delivered</option>
-                                            }
-                                            else
-                                            {
-                                                <option value="@((int)OrderStatus.Delivered)">Delivered</option>
-                                            }
+                                        <select name="status"
+                                                class="form-select form-select-sm status-select"
+                                                onchange="this.form.submit()"
+                                                @(order.Status == OrderStatus.Cancelled ? "disabled" : "")>
+                                            <option value="@((int)OrderStatus.Pending)" selected="@(order.Status == OrderStatus.Pending)">Pending</option>
+                                            <option value="@((int)OrderStatus.Processing)" selected="@(order.Status == OrderStatus.Processing)">Processing</option>
+                                            <option value="@((int)OrderStatus.Shipped)" selected="@(order.Status == OrderStatus.Shipped)">Shipped</option>
+                                            <option value="@((int)OrderStatus.Delivered)" selected="@(order.Status == OrderStatus.Delivered)">Delivered</option>
                                         </select>
                                     </form>
                                 </td>
@@ -241,7 +215,6 @@
                                                 </button>
                                             </form>
                                         }
-
                                     </div>
                                 </td>
                             </tr>
@@ -271,61 +244,77 @@
     .border-left-primary {
         border-left: 0.25rem solid #4e73df !important;
     }
+
     .border-left-success {
         border-left: 0.25rem solid #1cc88a !important;
     }
+
     .border-left-warning {
         border-left: 0.25rem solid #f6c23e !important;
     }
+
     .border-left-info {
         border-left: 0.25rem solid #36b9cc !important;
     }
+
     .avatar-sm {
         width: 2rem;
         height: 2rem;
         font-size: 0.875rem;
     }
+
     .status-select {
         min-width: 120px;
     }
+
     .table-hover tbody tr:hover {
         background-color: rgba(0,0,0,.075);
     }
+
     .empty-state {
         padding: 3rem 1rem;
     }
+
     .btn-group .btn {
         margin-right: 0.25rem;
     }
-    .btn-group .btn:last-child {
-        margin-right: 0;
-    }
+
+        .btn-group .btn:last-child {
+            margin-right: 0;
+        }
+
     .text-truncate {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
+
     .dropdown-menu {
         border: 0;
         box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
     }
+
     .dropdown-item:hover {
         background-color: #f8f9fc;
     }
+
     .form-check-input:checked {
         background-color: #4e73df;
         border-color: #4e73df;
     }
+
     .table th {
         border-top: none;
         font-weight: 600;
         color: #5a5c69;
         background-color: #f8f9fc;
     }
+
     .card {
         border: none;
         box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
     }
+
     .card-header {
         background-color: #f8f9fc;
         border-bottom: 1px solid #e3e6f0;
@@ -352,7 +341,7 @@
                 row.style.display = 'none';
             }
         });
-        
+
         // Update dropdown text
         const dropdownToggle = document.querySelector('[data-bs-toggle="dropdown"]');
         const statusText = status === 'all' ? 'All Orders' : status.charAt(0).toUpperCase() + status.slice(1);
@@ -375,11 +364,11 @@
         select.addEventListener('change', function() {
             const form = this.closest('form');
             const originalValue = this.value;
-            
+
             // Add loading state
             this.disabled = true;
             this.innerHTML = '<option>Updating...</option>';
-            
+
             // Submit form
             form.submit();
         });
@@ -392,7 +381,7 @@
             alert('Please select at least one order');
             return;
         }
-        
+
         if (confirm(`Are you sure you want to ${action} ${selectedOrders.length} order(s)?`)) {
             // Implement bulk action
             console.log(`${action} orders:`, selectedOrders);
@@ -404,4 +393,4 @@
         // Add any initialization code here
         console.log('Orders page loaded');
     });
-</script> *@
+</script>

@@ -146,7 +146,7 @@ namespace RedBubble.Application.Services
             return order;
         }
 
-        public async Task<bool> ChangeStatus(int orderId, Domain.Entities.Models.Orders.OrderStatus status)
+        public async Task<bool> ChangeStatus(int orderId, OrderStatus status)
         {
             var orderRepo = _unitOfWork.GetRepository<Order, int>();
             var order = await orderRepo.GetByIdAsync(orderId);
