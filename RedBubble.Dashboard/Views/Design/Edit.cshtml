@@ -6,145 +6,239 @@
 
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800">Edit Design</h1>
-    <a asp-action="Index" class="btn btn-sm btn-secondary shadow-sm">
-        <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to List
-    </a>
+    <div>
+        <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-sm btn-info shadow-sm me-2">
+            <i class="fas fa-eye fa-sm text-white-50"></i> View Details
+        </a>
+        <a asp-action="Index" class="btn btn-sm btn-secondary shadow-sm">
+            <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to List
+        </a>
+    </div>
 </div>
 
-@if (TempData["Error"] != null)
+@* Display messages *@
+@if (TempData["SuccessMessage"] != null)
 {
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        @TempData["Error"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle"></i> @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 }
 
 @if (TempData["ErrorMessage"] != null)
 {
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        @TempData["ErrorMessage"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <i class="fas fa-exclamation-circle"></i> @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 }
 
-@if (TempData["SuccessMessage"] != null)
+@if (TempData["WarningMessage"] != null)
 {
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        @TempData["SuccessMessage"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-triangle"></i> @TempData["WarningMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 }
 
 <div class="card shadow">
     <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">Edit Design</h6>
+        <h6 class="m-0 font-weight-bold text-primary">
+            <i class="fas fa-edit"></i> Edit Design Information
+        </h6>
     </div>
     <div class="card-body">
-        <form asp-action="Edit" method="post" enctype="multipart/form-data">
+        <form asp-action="Edit" method="post" enctype="multipart/form-data" id="editDesignForm">
             <input asp-for="Id" type="hidden" />
-            <input asp-for="ImageUrl" type="hidden" />
-            <input asp-for="FileName" type="hidden" />
             <input asp-for="AdminId" type="hidden" />
 
             <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-            <div class="row">
+            <!-- Basic Information -->
+            <div class="row mb-4">
                 <div class="col-md-6 mb-3">
-                    <label asp-for="Title" class="form-label">Title</label>
-                    <input asp-for="Title" class="form-control" />
+                    <label asp-for="Title" class="form-label">
+                        Design Title <span class="text-danger">*</span>
+                    </label>
+                    <input asp-for="Title" class="form-control" placeholder="e.g., Mountain Sunset" />
                     <span asp-validation-for="Title" class="text-danger"></span>
                 </div>
 
                 <div class="col-md-6 mb-3">
-                    <label asp-for="Price" class="form-label">Price</label>
-                    <input asp-for="Price" class="form-control" type="number" step="0.01" />
+                    <label asp-for="Price" class="form-label">
+                        Design Price <span class="text-danger">*</span>
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text">$</span>
+                        <input asp-for="Price" class="form-control" type="number" step="0.01" min="0.01" placeholder="5.00" />
+                    </div>
                     <span asp-validation-for="Price" class="text-danger"></span>
+                    <div class="form-text">This will be added to the base product price</div>
                 </div>
             </div>
 
-            <div class="mb-3">
-                <label asp-for="Description" class="form-label">Description</label>
-                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-
-            <div class="mb-3 form-check">
-                <input asp-for="IsActive" class="form-check-input" type="checkbox" />
-                <label asp-for="IsActive" class="form-check-label">Active</label>
-            </div>
-
-            <!-- Current and New Image Section -->
             <div class="mb-4">
-                <h6 class="mb-3">Design Image</h6>
+                <label asp-for="Description" class="form-label">
+                    Description <span class="text-danger">*</span>
+                </label>
+                <textarea asp-for="Description" class="form-control" rows="4" placeholder="Describe your design in detail..."></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+                <div class="char-counter form-text text-end"></div>
+            </div>
 
-                <!-- Current Image -->
-                @if (!string.IsNullOrEmpty(Model.ImageUrl))
-                {
-                    <div class="mb-3">
-                        <label class="form-label">Current Image:</label>
-                        <div class="border rounded p-2" style="max-width: 300px;">
-                            <img src="@Model.ImageUrl" alt="Current image" class="img-fluid" style="max-height: 200px;" />
-                            <div class="mt-2">
-                                <small class="text-muted">@(Model.FileName ?? "No filename")</small>
-                            </div>
-                        </div>
-                    </div>
-                }
-
-                <!-- Upload New Image -->
-                <div class="row">
-                    <div class="col-md-8">
-                        <label for="ImageFile" class="form-label">Upload New Image (Optional)</label>
-                        <input type="file" name="ImageFile" id="ImageFile" class="form-control" accept="image/*" />
-                        <div class="form-text">
-                            Leave empty to keep current image. Supported formats: JPEG, PNG, GIF, WebP. Max size: 5MB.
-                        </div>
-                        <span id="image-error" class="text-danger"></span>
-
-                        <!-- Display server-side validation errors for ImageFile -->
-                        @if (ViewData.ModelState["ImageFile"]?.Errors.Count > 0)
-                        {
-                            <div class="text-danger">
-                                @foreach (var error in ViewData.ModelState["ImageFile"].Errors)
-                                {
-                                    <small>@error.ErrorMessage</small>
-                            
-                                    <br />
-                                }
-                            </div>
-                        }
-                    </div>
-                    <div class="col-md-4">
-                        <label asp-for="AltText" class="form-label">Alt Text</label>
-                        <input asp-for="AltText" class="form-control" placeholder="Describe the image..." />
-                        <span asp-validation-for="AltText" class="text-danger"></span>
-                    </div>
+            <div class="mb-4">
+                <div class="form-check">
+                    <input asp-for="IsActive" class="form-check-input" type="checkbox" />
+                    <label asp-for="IsActive" class="form-check-label">
+                        Make this design available for purchase
+                    </label>
                 </div>
+            </div>
 
-                <!-- New Image Preview -->
-                <div id="image-preview" class="mt-3" style="display: none;">
-                    <label class="form-label">New Image Preview:</label>
-                    <div class="border rounded p-2" style="max-width: 300px;">
-                        <img id="preview-img" src="" alt="Preview" class="img-fluid" style="max-height: 200px;" />
-                        <div class="mt-2">
-                            <small id="file-info" class="text-muted"></small>
+            <!-- Image Section -->
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">
+                        <i class="fas fa-image text-primary"></i> Design Image
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <!-- Current Image Display -->
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <div class="mb-4">
+                            <label class="form-label">Current Image:</label>
+                            <div class="current-image-container border rounded p-3 bg-light" style="max-width: 400px;">
+                                <img src="@Model.ImageUrl" alt="Current design image" class="img-fluid rounded shadow-sm" style="max-height: 300px;" />
+                                <div class="mt-2">
+                                    <small class="text-muted d-block">
+                                        <strong>File:</strong> @(Model.FileName ?? "No filename available")
+                                    </small>
+                                    <small class="text-success d-block">
+                                        <i class="fas fa-check-circle"></i> Current image will be kept if no new image is uploaded
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- New Image Upload -->
+                    <div class="row">
+                        <div class="col-md-8 mb-3">
+                            <label for="ImageFile" class="form-label">
+                                Upload New Image (Optional)
+                            </label>
+                            <input type="file" name="ImageFile" id="ImageFile" class="form-control" accept="image/*" />
+                            <div class="form-text">
+                                <strong>Leave empty to keep current image.</strong><br>
+                                Supported formats: JPEG, PNG, GIF, or WebP. Maximum size: 5MB.
+                                Recommended: At least 300 DPI for best print quality.
+                            </div>
+                            <span id="image-error" class="text-danger"></span>
+
+                            @* Server-side validation errors *@
+                            @if (ViewData.ModelState.ContainsKey("ImageFile") && ViewData.ModelState["ImageFile"]!.Errors.Count > 0)
+                            {
+                                <div class="text-danger mt-1">
+                                    @foreach (var error in ViewData.ModelState["ImageFile"]!.Errors)
+                                    {
+                                        <small class="d-block">@error.ErrorMessage</small>
+                                    }
+                                </div>
+                            }
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="AltText" class="form-label">Alt Text (Optional)</label>
+                            <input asp-for="AltText" class="form-control" placeholder="Describe the image..." maxlength="255" />
+                            <span asp-validation-for="AltText" class="text-danger"></span>
+                            <div class="form-text">Helps with accessibility and SEO</div>
+                        </div>
+                    </div>
+
+                    <!-- New Image Preview -->
+                    <div id="new-image-preview" class="mt-3" style="display: none;">
+                        <label class="form-label">New Image Preview:</label>
+                        <div class="border rounded p-3 bg-light" style="max-width: 400px;">
+                            <img id="preview-img" src="" alt="Preview" class="img-fluid rounded shadow-sm" style="max-height: 250px;" />
+                            <div class="mt-2">
+                                <small id="file-info" class="text-muted d-block"></small>
+                                <button type="button" class="btn btn-sm btn-outline-danger mt-2" id="remove-new-image">
+                                    <i class="fas fa-trash"></i> Remove New Image
+                                </button>
+                            </div>
+                        </div>
+                        <div class="alert alert-info alert-sm mt-2">
+                            <i class="fas fa-info-circle"></i> This new image will replace the current image when you save.
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="form-group">
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save"></i> Update Design
-                </button>
-                <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-info">
-                    <i class="fas fa-eye"></i> View Details
-                </a>
-                <a asp-action="Index" class="btn btn-secondary">
-                    <i class="fas fa-times"></i> Cancel
-                </a>
+            <!-- Form Actions -->
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                        <i class="fas fa-save"></i> Update Design
+                    </button>
+                    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-info btn-lg ms-2">
+                        <i class="fas fa-eye"></i> View Details
+                    </a>
+                    <a asp-action="Index" class="btn btn-secondary btn-lg ms-2">
+                        <i class="fas fa-times"></i> Cancel
+                    </a>
+                </div>
+                <div class="text-muted">
+                    <small><span class="text-danger">*</span> Required fields</small>
+                </div>
+            </div>
+
+            <!-- Update Progress -->
+            <div id="update-progress" class="mt-4" style="display: none;">
+                <div class="card border-info">
+                    <div class="card-body text-center">
+                        <div class="spinner-border text-primary mb-3" role="status"></div>
+                        <h5>Updating Design...</h5>
+                        <p class="text-muted mb-0">
+                            Saving your changes. Please wait...
+                        </p>
+                    </div>
+                </div>
             </div>
         </form>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel">
+                    <i class="fas fa-exclamation-triangle"></i> Confirm Delete
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Are you sure you want to delete this design?</strong></p>
+                <p class="text-muted">This action cannot be undone. The design and all its associated product variants will be permanently removed.</p>
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Design:</strong> @Model.Title
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <form asp-action="Delete" method="post" class="d-inline">
+                    <input asp-for="Id" type="hidden" />
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Delete Design
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -153,94 +247,267 @@
 
     <script>
         $(document).ready(function () {
-            console.log('Edit Design page loaded');
+            console.log('Edit Design page initialized');
 
-            // File upload preview and validation
-            $('#ImageFile').on('change', function (e) {
-                console.log('File input changed');
+            // Elements
+            const imageFileInput = $('#ImageFile');
+            const newImagePreview = $('#new-image-preview');
+            const previewImg = $('#preview-img');
+            const fileInfo = $('#file-info');
+            const imageError = $('#image-error');
+            const removeNewImageBtn = $('#remove-new-image');
+            const submitBtn = $('#submitBtn');
+            const updateProgress = $('#update-progress');
+            const form = $('#editDesignForm');
+
+            // File validation constants
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+            const maxSize = 5 * 1024 * 1024; // 5MB
+
+            // Image file change handler
+            imageFileInput.on('change', function (e) {
+                console.log('Image file input changed');
                 const file = e.target.files[0];
-                const errorElement = $('#image-error');
-                const previewElement = $('#image-preview');
-                const previewImg = $('#preview-img');
-                const fileInfo = $('#file-info');
+                handleImagePreview(file);
+            });
 
-                // Clear previous errors
-                errorElement.text('');
-                previewElement.hide();
+            // Remove new image button
+            removeNewImageBtn.on('click', function () {
+                console.log('Removing new image preview');
+                imageFileInput.val('');
+                newImagePreview.hide();
+                imageError.text('');
+            });
+
+            // Character counter for description
+            $('#Description').on('input', function () {
+                const current = $(this).val().length;
+                const max = 1000; // Adjust based on your model validation
+                $('.char-counter').text(`${current}/${max} characters`)
+                    .toggleClass('text-danger', current > max * 0.9)
+                    .toggleClass('text-warning', current > max * 0.8 && current <= max * 0.9);
+            }).trigger('input'); // Initialize counter
+
+            // Auto-update alt text based on title if alt text is empty
+            $('#Title').on('blur', function () {
+                const title = $(this).val().trim();
+                const altText = $('#AltText');
+                if (title && !altText.val().trim()) {
+                    altText.val(`Design: ${title}`);
+                }
+            });
+
+            // Form submission handler
+            form.on('submit', function (e) {
+                console.log('Form submission started');
+
+                if (!validateForm()) {
+                    console.log('Form validation failed');
+                    e.preventDefault();
+                    return false;
+                }
+
+                // Show loading state
+                submitBtn.prop('disabled', true)
+                    .html('<i class="fas fa-spinner fa-spin"></i> Updating...');
+                updateProgress.show();
+
+                console.log('Form validation passed, submitting');
+                return true;
+            });
+
+            // Functions
+            function handleImagePreview(file) {
+                console.log('Handling image preview for file:', file ? file.name : 'null');
+
+                // Clear previous state
+                imageError.text('');
+                newImagePreview.hide();
 
                 if (!file) {
                     console.log('No file selected');
                     return;
                 }
 
-                console.log('File selected:', file.name, 'Size:', file.size, 'Type:', file.type);
-
                 // Validate file type
-                const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
                 if (!allowedTypes.includes(file.type)) {
                     console.log('Invalid file type:', file.type);
-                    errorElement.text('Please select a valid image file (JPEG, PNG, GIF, or WebP).');
+                    const errorMsg = 'Please select a valid image file (JPEG, PNG, GIF, or WebP).';
+                    imageError.text(errorMsg);
+                    imageFileInput.val('');
                     return;
                 }
 
-                // Validate file size (5MB to match server-side validation)
-                const maxSize = 5 * 1024 * 1024; // 5MB
+                // Validate file size
                 if (file.size > maxSize) {
-                    console.log('File too large:', file.size, 'Max:', maxSize);
-                    errorElement.text('File size must be less than 5MB.');
+                    console.log('File too large:', file.size, 'bytes');
+                    const errorMsg = `File size must be less than ${(maxSize / 1024 / 1024).toFixed(0)}MB. Selected file is ${(file.size / 1024 / 1024).toFixed(2)}MB.`;
+                    imageError.text(errorMsg);
+                    imageFileInput.val('');
                     return;
                 }
 
-                console.log('File validation passed, showing preview');
+                console.log('File validation passed, creating preview');
 
-                // Show preview
+                // Create preview
                 const reader = new FileReader();
                 reader.onload = function (e) {
-                    console.log('FileReader loaded, setting preview');
+                    console.log('FileReader loaded successfully');
                     previewImg.attr('src', e.target.result);
-                    fileInfo.text(`File: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`);
-                    previewElement.show();
+
+                    // Get image dimensions for display
+                    const img = new Image();
+                    img.onload = function() {
+                        fileInfo.html(`
+                            <strong>File:</strong> ${file.name}<br>
+                            <strong>Size:</strong> ${(file.size / 1024 / 1024).toFixed(2)} MB<br>
+                            <strong>Dimensions:</strong> ${this.width} × ${this.height}px<br>
+                            <strong>Type:</strong> ${file.type}
+                        `);
+                    };
+                    img.src = e.target.result;
+
+                    newImagePreview.show();
                 };
+
                 reader.onerror = function(e) {
                     console.error('FileReader error:', e);
-                    errorElement.text('Error reading file. Please try again.');
+                    imageError.text('Error reading file. Please try again.');
                 };
+
                 reader.readAsDataURL(file);
-            });
+            }
 
-            // Form submission validation
-            $('form').on('submit', function(e) {
-                console.log('Form submission started');
-                const imageFile = $('#ImageFile')[0].files[0];
+            function validateForm() {
+                let isValid = true;
 
-                if (imageFile) {
-                    console.log('Validating file on submit:', imageFile.name);
-                    // Validate file size one more time on submit
-                    const maxSize = 5 * 1024 * 1024;
-                    if (imageFile.size > maxSize) {
-                        console.log('File too large on submit:', imageFile.size);
-                        e.preventDefault();
-                        $('#image-error').text('File size must be less than 5MB.');
-                        return false;
-                    }
-
-                    // Show loading state
-                    const submitBtn = $(this).find('button[type="submit"]');
-                    submitBtn.prop('disabled', true);
-                    submitBtn.html('<i class="fas fa-spinner fa-spin"></i> Updating...');
+                // Validate title
+                const title = $('#Title').val().trim();
+                if (!title) {
+                    $('#Title').addClass('is-invalid');
+                    isValid = false;
+                } else {
+                    $('#Title').removeClass('is-invalid');
                 }
 
-                console.log('Form validation passed, submitting');
-            });
+                // Validate description
+                const description = $('#Description').val().trim();
+                if (!description) {
+                    $('#Description').addClass('is-invalid');
+                    isValid = false;
+                } else {
+                    $('#Description').removeClass('is-invalid');
+                }
 
-            // Reset form state if there are validation errors
+                // Validate price
+                const price = parseFloat($('#Price').val());
+                if (!price || price <= 0) {
+                    $('#Price').addClass('is-invalid');
+                    isValid = false;
+                } else {
+                    $('#Price').removeClass('is-invalid');
+                }
+
+                // Final image validation if new file is selected
+                const imageFile = imageFileInput[0].files[0];
+                if (imageFile) {
+                    if (!allowedTypes.includes(imageFile.type)) {
+                        imageError.text('Invalid file type selected.');
+                        isValid = false;
+                    } else if (imageFile.size > maxSize) {
+                        imageError.text('File size is too large.');
+                        isValid = false;
+                    }
+                }
+
+                return isValid;
+            }
+
+            // Reset form state if there are validation errors (server-side)
             @if (!ViewData.ModelState.IsValid)
             {
                     <text>
-                    console.log('Form has validation errors, resetting submit button');
-                    $('button[type="submit"]').prop('disabled', false).html('<i class="fas fa-save"></i> Update Design');
+                    console.log('Form has server-side validation errors, resetting submit button');
+                    submitBtn.prop('disabled', false).html('<i class="fas fa-save"></i> Update Design');
+                    updateProgress.hide();
                     </text>
             }
+
+            // Initialize character counter on page load
+            setTimeout(function() {
+                $('#Description').trigger('input');
+            }, 100);
+
+            console.log('Edit Design page setup complete');
         });
     </script>
+
+    <style>
+        .current-image-container {
+            background: linear-gradient(145deg, #f8f9fc 0%, #e9ecef 100%);
+        }
+
+            .current-image-container img {
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                border: 2px solid #fff;
+            }
+
+        #new-image-preview img {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .alert-sm {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #f8f9fc 0%, #e9ecef 100%);
+            border-bottom: 2px solid #e3e6f0;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .btn:disabled {
+            cursor: not-allowed;
+        }
+
+        .spinner-border {
+            width: 2rem;
+            height: 2rem;
+        }
+
+        .char-counter {
+            font-size: 0.875rem;
+        }
+
+            .char-counter.text-warning {
+                color: #f39c12 !important;
+            }
+
+            .char-counter.text-danger {
+                color: #e74c3c !important;
+            }
+
+        .is-invalid {
+            border-color: #dc3545;
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+        }
+
+        .current-image-container:hover {
+            transform: translateY(-2px);
+            transition: transform 0.2s ease;
+        }
+
+        .modal-backdrop {
+            z-index: 1040;
+        }
+
+        .modal {
+            z-index: 1050;
+        }
+    </style>
 }

@@ -282,17 +282,38 @@ namespace RedBubble.Application.DTOs.Products
         public string? FlatMockupUrl { get; set; }
     }
 
-    public class UpdateTemplateDto : CreateTemplateDto
+    // Update your UpdateTemplateDto class in BaseProductDto.cs
+    public class UpdateTemplateDto
     {
         public int Id { get; set; }
+
+        [Required(ErrorMessage = "View name is required")]
+        [StringLength(50)]
+        public string ViewName { get; set; } = null!;
+
+        // File upload properties - optional for updates
+        public IFormFile? TemplateFile { get; set; }
+        public IFormFile? MockupFile { get; set; }
+        public IFormFile? FlatMockupFile { get; set; }
+
+        public bool IsPrimary { get; set; } = false;
+
+        [Range(1, 100, ErrorMessage = "Display order must be between 1 and 100")]
+        public int DisplayOrder { get; set; } = 1;
+
         public bool IsActive { get; set; } = true;
 
-        // FIXED: For updates, files are optional (existing URLs will be kept if no new file)
-        [Required(ErrorMessage = "Template file or URL is required")]
-        public new IFormFile? TemplateFile { get; set; }
+        // Dimension fields - will be updated if new template uploaded
+        [Range(1, 10000, ErrorMessage = "Template width must be between 1 and 10000")]
+        public int TemplateWidth { get; set; }
 
-        [Required(ErrorMessage = "Mockup file or URL is required")]
-        public new IFormFile? MockupFile { get; set; }
+        [Range(1, 10000, ErrorMessage = "Template height must be between 1 and 10000")]
+        public int TemplateHeight { get; set; }
+
+        // URL fields - existing URLs that will be kept if no new file uploaded
+        public string? TemplateUrl { get; set; }
+        public string? MockupUrl { get; set; }
+        public string? FlatMockupUrl { get; set; }
     }
 
     public class TemplateDto
