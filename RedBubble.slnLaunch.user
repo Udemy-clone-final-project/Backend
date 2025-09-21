@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "RedBubble.WebAPI\\RedBubble.WebAPI.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "RedBubble.Dashboard\\RedBubble.Dashboard.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

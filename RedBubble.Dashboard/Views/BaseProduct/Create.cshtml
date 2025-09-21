@@ -1,0 +1,1254 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Base Product</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+
+    <!-- CORRECT: All CSS must be inside <style> tags -->
+    <style>
+        .print-area-overlay {
+            position: absolute;
+            border: 2px solid #dc3545;
+            background: rgba(220, 53, 69, 0.25);
+            cursor: move;
+            min-width: 10px;
+            min-height: 10px;
+            box-sizing: border-box;
+            pointer-events: auto;
+            border-radius: 3px;
+            transition: all 0.2s ease;
+        }
+
+            .print-area-overlay:hover {
+                border-color: #c82333;
+                background: rgba(200, 35, 51, 0.35);
+                box-shadow: 0 2px 8px rgba(220, 53, 69, 0.4);
+            }
+
+            .print-area-overlay.invalid {
+                border-color: #ff0000 !important;
+                background: rgba(255, 0, 0, 0.4) !important;
+                border-width: 3px !important;
+                box-shadow: 0 0 10px rgba(255, 0, 0, 0.6) !important;
+                animation: invalidPulse 1.5s infinite;
+            }
+
+
+
+
+        .print-area-overlay.active {
+            border-color: #007bff !important;
+            background: rgba(0, 123, 255, 0.25) !important;
+            box-shadow: 0 2px 10px rgba(0, 123, 255, 0.4);
+        }
+
+        .print-area-overlay::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            right: -4px;
+            width: 12px;
+            height: 12px;
+            background: #dc3545;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            cursor: se-resize;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            transition: all 0.2s ease;
+        }
+
+        .canvas-container {
+            position: relative;
+            display: inline-block;
+            background: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin: 10px 0;
+        }
+
+        .validation-error {
+            color: #dc3545;
+            background: rgba(220, 53, 69, 0.1);
+            border: 1px solid rgba(220, 53, 69, 0.2);
+            border-radius: 4px;
+            padding: 8px 12px;
+            margin-top: 8px;
+            font-size: 12px;
+            line-height: 1.4;
+            animation: errorFadeIn 0.3s ease;
+        }
+
+        .validation-success {
+            color: #28a745;
+            background: rgba(40, 167, 69, 0.1);
+            border: 1px solid rgba(40, 167, 69, 0.2);
+            border-radius: 4px;
+            padding: 8px 12px;
+            margin-top: 8px;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+
+
+        .loading-spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 6px;
+        }
+
+
+
+
+    </style>
+</head>
+<body>
+    <div class="container my-4">
+        <h2 class="mb-4">Create Base Product</h2>
+
+        <form id="productForm" method="post" enctype="multipart/form-data">
+            <!-- Tabs -->
+            <ul class="nav nav-tabs mb-3" id="productTabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="info-tab" data-bs-toggle="tab" href="#info" role="tab">Basic Info</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="templates-tab" data-bs-toggle="tab" href="#templates" role="tab">Templates & Mockups</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="printareas-tab" data-bs-toggle="tab" href="#printareas" role="tab">Print Areas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="attributes-tab" data-bs-toggle="tab" href="#attributes" role="tab">Attributes</a>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="productTabsContent">
+                <!-- Basic Info Tab -->
+                <div class="tab-pane fade show active" id="info" role="tabpanel">
+                    <div class="card p-4">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="Name" class="form-label">Product Name *</label>
+                                <input name="Name" id="Name" class="form-control" required />
+                                <div class="invalid-feedback"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="BasePrice" class="form-label">Base Price *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input name="BasePrice" id="BasePrice" class="form-control" type="number" step="0.01" min="0.01" required />
+                                </div>
+                                <div class="invalid-feedback"></div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="Description" class="form-label">Description *</label>
+                            <textarea name="Description" id="Description" class="form-control" rows="4" required></textarea>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="CategoryId" class="form-label">Category *</label>
+                            <select name="CategoryId" id="CategoryId" class="form-select" required>
+                                <option value="">Select a category...</option>
+                                @if (ViewBag.SubCategories != null)
+                                {
+                                    @foreach (var category in (SelectList)ViewBag.SubCategories)
+                                    {
+                                        <option value="@category.Value">@category.Text</option>
+                                    }
+                                }
+                            </select>
+                            <div class="invalid-feedback">Please select a valid category</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Templates Tab -->
+                <div class="tab-pane fade" id="templates" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5>Templates & Mockups</h5>
+                        <button type="button" class="btn btn-outline-primary" onclick="addTemplate()">
+                            <i class="fas fa-plus"></i> Add Template
+                        </button>
+                    </div>
+
+                    <div id="templatesContainer">
+                        <div class="template-item card p-4 mb-3" data-template-index="0">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="mb-0">Template 1</h6>
+                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeTemplate(this)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">View Name *</label>
+                                    <input name="Templates[0].ViewName" class="form-control template-view-name" value="front" required />
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check mt-4">
+                                        <input type="checkbox" name="Templates[0].IsPrimary" class="form-check-input template-primary" value="true" checked />
+                                        <label class="form-check-label">Primary View</label>
+                                        <!-- FIXED: Hidden field for false value -->
+                                        <input type="hidden" name="Templates[0].IsPrimary" value="false" />
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Display Order</label>
+                                    <input name="Templates[0].DisplayOrder" class="form-control" type="number" value="1" min="1" />
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Template File *</label>
+                                    <input type="file" name="Templates[0].TemplateFile" class="form-control template-file" accept="image/*" required />
+                                    <small class="form-text text-muted">Technical file for design placement (PNG recommended)</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Mockup File *</label>
+                                    <input type="file" name="Templates[0].MockupFile" class="form-control mockup-file" accept="image/*" required />
+                                    <small class="form-text text-muted">Realistic photo for customer preview</small>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Flat Mockup File (Optional)</label>
+                                    <input type="file" name="Templates[0].FlatMockupFile" class="form-control flat-mockup-file" accept="image/*" />
+                                    <small class="form-text text-muted">Simple overlay mockup</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="dimension-info">
+                                        <strong>Dimensions:</strong>
+                                        <span class="template-dimensions">Not loaded</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="template-preview-container">
+                                <div class="canvas-container">
+                                    <canvas class="template-canvas" width="400" height="300"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- Hidden dimension inputs -->
+                            <input type="hidden" name="Templates[0].TemplateWidth" class="template-width" />
+                            <input type="hidden" name="Templates[0].TemplateHeight" class="template-height" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Print Areas Tab -->
+                <div class="tab-pane fade" id="printareas" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5>Print Areas</h5>
+                        <button type="button" class="btn btn-outline-primary" onclick="addPrintArea()">
+                            <i class="fas fa-plus"></i> Add Print Area
+                        </button>
+                    </div>
+
+                    <div id="printAreasContainer">
+                        <div class="print-area-item card p-4 mb-3" data-printarea-index="0">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="mb-0">Print Area 1</h6>
+                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="removePrintArea(this)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-3">
+                                    <label class="form-label">Area Name *</label>
+                                    <select name="PrintAreas[0].AreaName" class="form-select print-area-name" required>
+                                        <option value="">Select template view...</option>
+                                    </select>
+                                    <small class="form-text text-muted">Choose from available template views</small>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">Width (px) *</label>
+                                    <input name="PrintAreas[0].Width" class="form-control area-width" type="number" value="200" min="1" required />
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">Height (px) *</label>
+                                    <input name="PrintAreas[0].Height" class="form-control area-height" type="number" value="200" min="1" required />
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">X Position *</label>
+                                    <input name="PrintAreas[0].PositionX" class="form-control area-x" type="number" value="50" min="0" required />
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">Y Position *</label>
+                                    <input name="PrintAreas[0].PositionY" class="form-control area-y" type="number" value="50" min="0" required />
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-3">
+                                    <label class="form-label">Min DPI</label>
+                                    <input name="PrintAreas[0].MinDPI" class="form-control" type="number" value="300" min="72" max="600" />
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Display Order</label>
+                                    <input name="PrintAreas[0].DisplayOrder" class="form-control" type="number" value="1" min="1" />
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="validation-message mt-4"></div>
+                                </div>
+                            </div>
+
+                            <div class="print-area-editor">
+                                <div class="canvas-container">
+                                    <canvas class="template-canvas print-area-canvas" width="400" height="300"></canvas>
+                                    <div class="print-area-overlay" data-print-area="0"></div>
+                                </div>
+                                <div class="print-area-controls">
+                                    <small class="text-muted">
+                                        Drag and resize the red rectangle to position the print area.
+                                        The rectangle shows where designs will be placed on this template.
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Attributes Tab -->
+                <div class="tab-pane fade" id="attributes" role="tabpanel">
+                    <div class="card p-4">
+                        <h5 class="mb-3">Product Attributes</h5>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <!-- FIXED: Added value="true" and hidden field for proper boolean binding -->
+                                    <input type="hidden" name="HasSizes" value="false" />
+                                    <input type="checkbox" name="HasSizes" class="form-check-input" id="hasSizes" value="true" />
+                                    <label class="form-check-label" for="hasSizes">This product has sizes</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <!-- FIXED: Added value="true" and hidden field for proper boolean binding -->
+                                    <input type="hidden" name="HasColors" value="false" />
+                                    <input type="checkbox" name="HasColors" class="form-check-input" id="hasColors" value="true" />
+                                    <label class="form-check-label" for="hasColors">This product has colors</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row" id="sizeSelection" style="display: none;">
+                            <div class="col-md-6">
+                                <h6>Available Sizes</h6>
+                                <div id="sizeCheckboxes" class="border rounded p-3" style="max-height: 200px; overflow-y: auto;">
+                                    @if (ViewBag.AllSizes != null)
+                                    {
+                                        @foreach (var size in (IEnumerable<RedBubble.Application.DTOs.SizeDto>)ViewBag.AllSizes)
+                                        {
+                                            <div class="form-check mb-2">
+                                                <input type="checkbox" name="AvailableSizeIds" value="@size.Id" class="form-check-input" id="size_@size.Id" />
+                                                <label class="form-check-label" for="size_@size.Id">
+                                                    @size.SizeName - @size.Description
+                                                </label>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row" id="colorSelection" style="display: none;">
+                            <div class="col-md-6">
+                                <h6>Available Colors</h6>
+                                <div id="colorCheckboxes" class="border rounded p-3" style="max-height: 200px; overflow-y: auto;">
+                                    @if (ViewBag.AllColors != null)
+                                    {
+                                        @foreach (var color in (IEnumerable<RedBubble.Application.DTOs.ColorDto>)ViewBag.AllColors)
+                                        {
+                                            <div class="form-check mb-2">
+                                                <input type="checkbox" name="AvailableColorIds" value="@color.Id" class="form-check-input" id="color_@color.Id" />
+                                                <label class="form-check-label" for="color_@color.Id">
+                                                    <span class="color-swatch" style="display:inline-block;width:20px;height:20px;background:@color.ColorCode;border:1px solid #ccc;margin-right:8px;vertical-align:middle;border-radius:3px;"></span>
+                                                    @color.ColorName
+                                                </label>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+                <button type="button" class="btn btn-secondary" onclick="history.back()">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="submitBtn">
+                    <i class="fas fa-save"></i> Create Base Product
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        let templateCounter = 1;
+        let printAreaCounter = 1;
+        let currentTemplateImages = {};
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeEventHandlers();
+            initializePrintAreaInteraction();
+            loadProductAttributes();
+        });
+
+        function initializeEventHandlers() {
+            // Template file upload handlers
+            document.addEventListener('change', function(e) {
+                if (e.target.classList.contains('template-file')) {
+                    handleTemplateFileUpload(e.target);
+                }
+                if (e.target.classList.contains('mockup-file')) {
+                    handleMockupFileUpload(e.target);
+                }
+            });
+
+            // Template view name change - update print area dropdowns
+            document.addEventListener('input', function(e) {
+                if (e.target.classList.contains('template-view-name')) {
+                    updatePrintAreaDropdowns();
+                }
+            });
+
+            // Print area input handlers with debounce
+            let inputTimeout;
+            document.addEventListener('input', function(e) {
+                if (e.target.classList.contains('area-width') ||
+                    e.target.classList.contains('area-height') ||
+                    e.target.classList.contains('area-x') ||
+                    e.target.classList.contains('area-y')) {
+
+                    clearTimeout(inputTimeout);
+                    inputTimeout = setTimeout(() => {
+                        updatePrintAreaFromInputs(e.target);
+                    }, 300); // Debounce by 300ms
+                }
+            });
+
+            // Print area name selection change
+            document.addEventListener('change', function(e) {
+                if (e.target.classList.contains('print-area-name')) {
+                    handlePrintAreaNameChange(e.target);
+                }
+            });
+
+            // Primary template handler
+            document.addEventListener('change', function(e) {
+                if (e.target.classList.contains('template-primary')) {
+                    handlePrimaryTemplateChange(e.target);
+                }
+            });
+
+            // Attribute handlers
+            document.getElementById('hasSizes').addEventListener('change', toggleSizeSelection);
+            document.getElementById('hasColors').addEventListener('change', toggleColorSelection);
+        }
+                       function handleTemplateFileUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const templateItem = input.closest('.template-item');
+            const canvas = templateItem.querySelector('.template-canvas');
+            const dimensionsSpan = templateItem.querySelector('.template-dimensions');
+            const widthInput = templateItem.querySelector('.template-width');
+            const heightInput = templateItem.querySelector('.template-height');
+
+            dimensionsSpan.innerHTML = '<span class="loading-spinner"></span> Loading...';
+
+            if (!file.type.startsWith('image/')) {
+                dimensionsSpan.textContent = 'Error: Invalid file type';
+                alert('Please select a valid image file (JPG, PNG, GIF, etc.)');
+                input.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const ctx = canvas.getContext('2d');
+                    const canvasWidth = canvas.width;
+                    const canvasHeight = canvas.height;
+
+                    // FIXED: Proper aspect ratio calculation
+                    const imageAspectRatio = img.width / img.height;
+                    const canvasAspectRatio = canvasWidth / canvasHeight;
+
+                    let displayWidth, displayHeight, offsetX, offsetY;
+
+                    if (imageAspectRatio > canvasAspectRatio) {
+                        // Image is wider - fit by width
+                        displayWidth = canvasWidth;
+                        displayHeight = canvasWidth / imageAspectRatio;
+                        offsetX = 0;
+                        offsetY = (canvasHeight - displayHeight) / 2;
+                    } else {
+                        // Image is taller - fit by height
+                        displayHeight = canvasHeight;
+                        displayWidth = canvasHeight * imageAspectRatio;
+                        offsetX = (canvasWidth - displayWidth) / 2;
+                        offsetY = 0;
+                    }
+
+                    // Clear and draw image centered
+                    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+                    ctx.drawImage(img, offsetX, offsetY, displayWidth, displayHeight);
+
+                    // Update dimensions display
+                    dimensionsSpan.innerHTML = `<i class="fas fa-check-circle text-success me-1"></i>${img.width} × ${img.height} px`;
+                    widthInput.value = img.width;
+                    heightInput.value = img.height;
+
+                    // FIXED: Store correct template data for coordinate conversion
+                    const templateIndex = templateItem.dataset.templateIndex;
+                    currentTemplateImages[templateIndex] = {
+                        image: img,
+                        originalWidth: img.width,
+                        originalHeight: img.height,
+                        displayWidth: displayWidth,
+                        displayHeight: displayHeight,
+                        displayOffsetX: offsetX,
+                        displayOffsetY: offsetY,
+                        displayScale: displayWidth / img.width  // KEY FIX: Correct scale calculation
+                    };
+
+                    updateMatchingPrintAreas(templateItem);
+                    updatePrintAreaDropdowns();
+                };
+
+                img.onerror = function() {
+                    dimensionsSpan.innerHTML = '<i class="fas fa-exclamation-triangle text-danger me-1"></i>Error loading image';
+                    alert('Failed to load the selected image. Please try a different file.');
+                    input.value = '';
+                };
+
+                img.src = e.target.result;
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+
+        function handleMockupFileUpload(input) {
+            // Handle mockup preview if needed
+            console.log('Mockup file uploaded:', input.files[0]?.name);
+        }
+
+        function updateMatchingPrintAreas(templateItem) {
+            const viewName = templateItem.querySelector('.template-view-name').value.toLowerCase();
+            const templateIndex = templateItem.dataset.templateIndex;
+            const templateData = currentTemplateImages[templateIndex];
+
+            if (!templateData) return;
+
+            // Find matching print areas
+            document.querySelectorAll('.print-area-item').forEach(printAreaItem => {
+                const areaName = printAreaItem.querySelector('.print-area-name').value.toLowerCase();
+                if (areaName === viewName) {
+                    updatePrintAreaCanvas(printAreaItem, templateData);
+                }
+            });
+        }
+
+        function updatePrintAreaCanvas(printAreaItem, templateData) {
+            const canvas = printAreaItem.querySelector('.print-area-canvas');
+            const ctx = canvas.getContext('2d');
+
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Calculate scaling to fit canvas while maintaining aspect ratio
+            const canvasWidth = canvas.width;
+            const canvasHeight = canvas.height;
+            const imageAspectRatio = templateData.originalWidth / templateData.originalHeight;
+            const canvasAspectRatio = canvasWidth / canvasHeight;
+
+            let drawWidth, drawHeight, offsetX, offsetY;
+
+            if (imageAspectRatio > canvasAspectRatio) {
+                // Image is wider than canvas - fit by width
+                drawWidth = canvasWidth;
+                drawHeight = canvasWidth / imageAspectRatio;
+                offsetX = 0;
+                offsetY = (canvasHeight - drawHeight) / 2;
+            } else {
+                // Image is taller than canvas - fit by height
+                drawHeight = canvasHeight;
+                drawWidth = canvasHeight * imageAspectRatio;
+                offsetX = (canvasWidth - drawWidth) / 2;
+                offsetY = 0;
+            }
+
+            // Draw image
+            ctx.drawImage(templateData.image, offsetX, offsetY, drawWidth, drawHeight);
+
+            // Update template data with current display dimensions
+            templateData.displayWidth = drawWidth;
+            templateData.displayHeight = drawHeight;
+            templateData.displayOffsetX = offsetX;
+            templateData.displayOffsetY = offsetY;
+            templateData.displayScale = drawWidth / templateData.originalWidth;
+
+            // Update print area overlay position
+            updatePrintAreaOverlay(printAreaItem, templateData);
+        }
+                          function updatePrintAreaOverlay(printAreaItem, templateData) {
+            const overlay = printAreaItem.querySelector('.print-area-overlay');
+            const widthInput = printAreaItem.querySelector('.area-width');
+            const heightInput = printAreaItem.querySelector('.area-height');
+            const xInput = printAreaItem.querySelector('.area-x');
+            const yInput = printAreaItem.querySelector('.area-y');
+
+            if (!templateData || !templateData.displayScale) return;
+
+            // Get values from inputs (these are in original image coordinates)
+            const originalX = parseInt(xInput.value) || 0;
+            const originalY = parseInt(yInput.value) || 0;
+            const originalWidth = parseInt(widthInput.value) || 0;
+            const originalHeight = parseInt(heightInput.value) || 0;
+
+            // Convert to display coordinates
+            const displayX = (originalX * templateData.displayScale) + templateData.displayOffsetX;
+            const displayY = (originalY * templateData.displayScale) + templateData.displayOffsetY;
+            const displayWidth = originalWidth * templateData.displayScale;
+            const displayHeight = originalHeight * templateData.displayScale;
+
+            // Position overlay exactly where it should be
+            overlay.style.left = Math.round(displayX) + 'px';
+            overlay.style.top = Math.round(displayY) + 'px';
+            overlay.style.width = Math.round(displayWidth) + 'px';
+            overlay.style.height = Math.round(displayHeight) + 'px';
+
+            // Reset transform data (important!)
+            overlay.setAttribute('data-x', 0);
+            overlay.setAttribute('data-y', 0);
+            overlay.style.transform = 'translate(0px, 0px)';
+
+            // Debug logging
+            console.log(`Positioning overlay for area:`);
+            console.log(`  Input coords: (${originalX}, ${originalY}) ${originalWidth}x${originalHeight}`);
+            console.log(`  Display coords: (${displayX}, ${displayY}) ${displayWidth}x${displayHeight}`);
+
+            validatePrintAreaBounds(printAreaItem, templateData);
+        }
+                function validatePrintAreaBounds(printAreaItem, templateData) {
+            const validationMessage = printAreaItem.querySelector('.validation-message');
+            const widthInput = printAreaItem.querySelector('.area-width');
+            const heightInput = printAreaItem.querySelector('.area-height');
+            const xInput = printAreaItem.querySelector('.area-x');
+            const yInput = printAreaItem.querySelector('.area-y');
+
+            const x = parseInt(xInput.value) || 0;
+            const y = parseInt(yInput.value) || 0;
+            const width = parseInt(widthInput.value) || 0;
+            const height = parseInt(heightInput.value) || 0;
+
+            // Comprehensive bounds checking
+            const withinBounds = x >= 0 && y >= 0 && width > 0 && height > 0 &&
+                                (x + width) <= templateData.originalWidth &&
+                                (y + height) <= templateData.originalHeight;
+
+            const overlay = printAreaItem.querySelector('.print-area-overlay');
+
+            if (withinBounds) {
+                const centerX = x + width / 2;
+                const centerY = y + height / 2;
+                const templateCenterX = templateData.originalWidth / 2;
+                const templateCenterY = templateData.originalHeight / 2;
+
+                validationMessage.innerHTML = `
+                    <span class="validation-success">
+                        <i class="fas fa-check-circle me-1"></i>Print area positioned successfully
+                        <br><small>Center: (${Math.round(centerX)}, ${Math.round(centerY)}) of template (${templateData.originalWidth}×${templateData.originalHeight}px)</small>
+                    </span>`;
+                overlay.classList.remove('invalid');
+            } else {
+                let errorDetails = [];
+
+                if (width <= 0 || height <= 0) {
+                    errorDetails.push('Size must be positive');
+                }
+                if (x < 0) errorDetails.push(`X cannot be negative (${x})`);
+                if (y < 0) errorDetails.push(`Y cannot be negative (${y})`);
+                if (x + width > templateData.originalWidth) {
+                    errorDetails.push(`Exceeds right edge by ${(x + width) - templateData.originalWidth}px`);
+                }
+                if (y + height > templateData.originalHeight) {
+                    errorDetails.push(`Exceeds bottom edge by ${(y + height) - templateData.originalHeight}px`);
+                }
+
+                validationMessage.innerHTML = `
+                    <span class="validation-error">
+                        <i class="fas fa-exclamation-triangle me-1"></i>Print area validation failed
+                        <br><small>${errorDetails.join(', ')}</small>
+                        <br><small><strong>Template:</strong> ${templateData.originalWidth}×${templateData.originalHeight}px | <strong>Print area:</strong> (${x},${y}) ${width}×${height}px</small>
+                    </span>`;
+                overlay.classList.add('invalid');
+            }
+
+            return withinBounds;
+        }
+                function setDefaultPrintAreaValues(printAreaItem, templateData) {
+            const widthInput = printAreaItem.querySelector('.area-width');
+            const heightInput = printAreaItem.querySelector('.area-height');
+            const xInput = printAreaItem.querySelector('.area-x');
+            const yInput = printAreaItem.querySelector('.area-y');
+
+            // Skip if values are already set (e.g., when loading existing data)
+            if (widthInput.value && heightInput.value) return;
+
+            const templateWidth = templateData.originalWidth;
+            const templateHeight = templateData.originalHeight;
+
+            // Set print area to 40% of template size, centered
+            const printWidth = Math.round(templateWidth * 0.4);
+            const printHeight = Math.round(templateHeight * 0.4);
+            const printX = Math.round((templateWidth - printWidth) / 2);
+            const printY = Math.round((templateHeight - printHeight) / 2);
+
+            // Ensure minimum size
+            const finalWidth = Math.max(printWidth, 50);
+            const finalHeight = Math.max(printHeight, 50);
+            const finalX = Math.max(0, Math.min(printX, templateWidth - finalWidth));
+            const finalY = Math.max(0, Math.min(printY, templateHeight - finalHeight));
+
+            widthInput.value = finalWidth;
+            heightInput.value = finalHeight;
+            xInput.value = finalX;
+            yInput.value = finalY;
+
+            // Update the overlay immediately
+            updatePrintAreaOverlay(printAreaItem, templateData);
+        }
+                            
+
+        function updatePrintAreaDropdowns() {
+            // Get all current template view names
+            const templateViews = [];
+            document.querySelectorAll('.template-view-name').forEach(input => {
+                if (input.value.trim()) {
+                    templateViews.push({
+                        value: input.value.trim(),
+                        text: input.value.trim()
+                    });
+                }
+            });
+
+            // Update all print area dropdowns
+            document.querySelectorAll('.print-area-name').forEach(select => {
+                const currentValue = select.value;
+
+                // Clear existing options except the first one
+                select.innerHTML = '<option value="">Select template view...</option>';
+
+                // Add template view options
+                templateViews.forEach(view => {
+                    const option = document.createElement('option');
+                    option.value = view.value;
+                    option.textContent = view.text;
+                    if (view.value === currentValue) {
+                        option.selected = true;
+                    }
+                    select.appendChild(option);
+                });
+
+                // If no templates exist, show helpful message
+                if (templateViews.length === 0) {
+                    const option = document.createElement('option');
+                    option.value = '';
+                    option.textContent = 'Add templates first...';
+                    option.disabled = true;
+                    select.appendChild(option);
+                }
+            });
+        }
+
+                      function handlePrintAreaNameChange(select) {
+            const printAreaItem = select.closest('.print-area-item');
+            const selectedView = select.value;
+            const canvas = printAreaItem.querySelector('.print-area-canvas');
+            const ctx = canvas.getContext('2d');
+
+            if (selectedView) {
+                // Find matching template data and update canvas
+                for (const [index, templateData] of Object.entries(currentTemplateImages)) {
+                    const templateItem = document.querySelector(`[data-template-index="${index}"]`);
+                    const viewName = templateItem?.querySelector('.template-view-name')?.value.trim();
+
+                    if (viewName === selectedView) {
+                        updatePrintAreaCanvas(printAreaItem, templateData);
+
+                        // FIXED: Set smart default values based on template dimensions
+                        setDefaultPrintAreaValues(printAreaItem, templateData);
+                        return;
+                    }
+                }
+            }
+
+            // Clear canvas if no view selected or template not found
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Add placeholder text
+            ctx.save();
+            ctx.fillStyle = '#6c757d';
+            ctx.font = '14px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            if (!selectedView) {
+                ctx.fillText('Select a template view above', canvas.width/2, canvas.height/2);
+            } else {
+                ctx.fillText('Template not loaded yet', canvas.width/2, canvas.height/2);
+                ctx.fillText('Upload the corresponding template', canvas.width/2, canvas.height/2 + 20);
+            }
+
+            ctx.restore();
+
+            // Hide overlay and clear validation
+            const overlay = printAreaItem.querySelector('.print-area-overlay');
+            const validationMessage = printAreaItem.querySelector('.validation-message');
+            overlay.style.display = selectedView ? 'block' : 'none';
+            validationMessage.innerHTML = '';
+        }
+
+        function initializePrintAreaInteraction() {
+            // Make print area overlays draggable and resizable with proper coordinate handling
+            interact('.print-area-overlay')
+                .draggable({
+                    inertia: true,
+                    restrict: {
+                        restriction: "parent",
+                        endOnly: true,
+                        elementRect: { top: 0, left: 0, bottom: 1, right: 1 }
+                    },
+                    onmove: function(event) {
+                        const target = event.target;
+                        const printAreaItem = target.closest('.print-area-item');
+
+                        // Get current transform
+                        const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
+                        const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+
+                        // Apply transform
+                        target.style.transform = `translate(${x}px, ${y}px)`;
+                        target.setAttribute('data-x', x);
+                        target.setAttribute('data-y', y);
+
+                        // Update form inputs
+                        updateInputsFromPrintArea(printAreaItem, target);
+                    }
+                })
+                .resizable({
+                    edges: { left: true, right: true, bottom: true, top: true },
+                    restrictEdges: {
+                        outer: 'parent',
+                        endOnly: true
+                    },
+                    restrictSize: {
+                        min: { width: 20, height: 20 }
+                    },
+                    onmove: function(event) {
+                        const target = event.target;
+                        const printAreaItem = target.closest('.print-area-item');
+
+                        let x = parseFloat(target.getAttribute('data-x')) || 0;
+                        let y = parseFloat(target.getAttribute('data-y')) || 0;
+
+                        // Update size
+                        target.style.width = event.rect.width + 'px';
+                        target.style.height = event.rect.height + 'px';
+
+                        // Update position
+                        x += event.deltaRect.left;
+                        y += event.deltaRect.top;
+
+                        target.style.transform = `translate(${x}px, ${y}px)`;
+                        target.setAttribute('data-x', x);
+                        target.setAttribute('data-y', y);
+
+                        // Update form inputs
+                        updateInputsFromPrintArea(printAreaItem, target);
+                    }
+                });
+        }
+
+                                             function updateInputsFromPrintArea(printAreaItem, overlay) {
+            const widthInput = printAreaItem.querySelector('.area-width');
+            const heightInput = printAreaItem.querySelector('.area-height');
+            const xInput = printAreaItem.querySelector('.area-x');
+            const yInput = printAreaItem.querySelector('.area-y');
+
+            const areaName = printAreaItem.querySelector('.print-area-name').value.trim();
+            let templateData = null;
+
+            // Find matching template data
+            for (const [index, data] of Object.entries(currentTemplateImages)) {
+                const templateItem = document.querySelector(`[data-template-index="${index}"]`);
+                const viewName = templateItem?.querySelector('.template-view-name')?.value.trim();
+                if (viewName === areaName) {
+                    templateData = data;
+                    break;
+                }
+            }
+
+            if (!templateData || !templateData.displayScale) return;
+
+            // Get overlay's current position relative to canvas (without transforms)
+            const canvasRect = overlay.parentElement.getBoundingClientRect();
+            const overlayRect = overlay.getBoundingClientRect();
+
+            // Calculate actual display position (this is where the overlay currently is)
+            const displayX = overlayRect.left - canvasRect.left;
+            const displayY = overlayRect.top - canvasRect.top;
+            const displayWidth = overlay.offsetWidth;
+            const displayHeight = overlay.offsetHeight;
+
+            // Convert to original image coordinates
+            const originalX = Math.round((displayX - templateData.displayOffsetX) / templateData.displayScale);
+            const originalY = Math.round((displayY - templateData.displayOffsetY) / templateData.displayScale);
+            const originalWidth = Math.round(displayWidth / templateData.displayScale);
+            const originalHeight = Math.round(displayHeight / templateData.displayScale);
+
+            // Clamp to bounds and update inputs
+            const clampedX = Math.max(0, Math.min(originalX, templateData.originalWidth - originalWidth));
+            const clampedY = Math.max(0, Math.min(originalY, templateData.originalHeight - originalHeight));
+            const clampedWidth = Math.max(1, Math.min(originalWidth, templateData.originalWidth - clampedX));
+            const clampedHeight = Math.max(1, Math.min(originalHeight, templateData.originalHeight - clampedY));
+
+            // Update form inputs
+            xInput.value = clampedX;
+            yInput.value = clampedY;
+            widthInput.value = clampedWidth;
+            heightInput.value = clampedHeight;
+
+            // Debug logging
+            console.log(`Converting coordinates for ${areaName}:`);
+            console.log(`  Display: (${displayX}, ${displayY}) ${displayWidth}x${displayHeight}`);
+            console.log(`  Original: (${originalX}, ${originalY}) ${originalWidth}x${originalHeight}`);
+            console.log(`  Template: ${templateData.originalWidth}x${templateData.originalHeight}`);
+            console.log(`  Scale: ${templateData.displayScale}`);
+
+            validatePrintAreaBounds(printAreaItem, templateData);
+        }
+
+        function updatePrintAreaFromInputs(input) {
+            const printAreaItem = input.closest('.print-area-item');
+            const areaName = printAreaItem.querySelector('.print-area-name').value.trim();
+
+            // Find matching template data
+            let templateData = null;
+            for (const [index, data] of Object.entries(currentTemplateImages)) {
+                const templateItem = document.querySelector(`[data-template-index="${index}"]`);
+                const viewName = templateItem?.querySelector('.template-view-name')?.value.trim();
+                if (viewName === areaName) {
+                    templateData = data;
+                    break;
+                }
+            }
+
+            if (templateData) {
+                updatePrintAreaOverlay(printAreaItem, templateData);
+            }
+        }
+
+        function handlePrimaryTemplateChange(checkbox) {
+            if (checkbox.checked) {
+                // Uncheck other primary checkboxes
+                document.querySelectorAll('.template-primary').forEach(cb => {
+                    if (cb !== checkbox) {
+                        cb.checked = false;
+                    }
+                });
+            }
+        }
+
+        function addTemplate() {
+            const container = document.getElementById('templatesContainer');
+            const newTemplate = createTemplateItem(templateCounter);
+            container.appendChild(newTemplate);
+            templateCounter++;
+        }
+
+        function removeTemplate(button) {
+            const templateItem = button.closest('.template-item');
+            const index = templateItem.dataset.templateIndex;
+
+            // Remove from current images
+            delete currentTemplateImages[index];
+
+            // Remove from DOM
+            templateItem.remove();
+
+            // Reindex remaining templates
+            reindexTemplates();
+
+            // Update print area dropdowns
+            updatePrintAreaDropdowns();
+        }
+
+        function addPrintArea() {
+            const container = document.getElementById('printAreasContainer');
+            const newPrintArea = createPrintAreaItem(printAreaCounter);
+            container.appendChild(newPrintArea);
+            printAreaCounter++;
+
+            // Reinitialize interactions for new element
+            setTimeout(() => {
+                initializePrintAreaInteraction();
+            }, 100);
+        }
+
+        function removePrintArea(button) {
+            const printAreaItem = button.closest('.print-area-item');
+            printAreaItem.remove();
+            reindexPrintAreas();
+        }
+
+        function createTemplateItem(index) {
+            const template = document.querySelector('.template-item').cloneNode(true);
+            template.dataset.templateIndex = index;
+
+            // Update form field names and IDs
+            template.querySelectorAll('input, select, textarea').forEach(field => {
+                if (field.name) {
+                    field.name = field.name.replace(/\[\d+\]/, `[${index}]`);
+                }
+                if (field.type === 'checkbox') {
+                    field.checked = false;
+                } else if (field.type !== 'hidden') {
+                    field.value = '';
+                }
+            });
+
+            // Set default values
+            template.querySelector('.template-view-name').value = '';
+            template.querySelector('.template-primary').checked = false;
+            template.querySelector('input[type="number"]').value = index + 1;
+
+            // Clear canvas and reset state
+            const canvas = template.querySelector('.template-canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            template.querySelector('.template-dimensions').textContent = 'Not loaded';
+            template.querySelector('h6').textContent = `Template ${index + 1}`;
+
+            return template;
+        }
+                 function createPrintAreaItem(index) {
+            const printArea = document.querySelector('.print-area-item').cloneNode(true);
+            printArea.dataset.printareaIndex = index;
+
+            // Update form field names
+            printArea.querySelectorAll('input, select').forEach(field => {
+                if (field.name) {
+                    field.name = field.name.replace(/\[\d+\]/, `[${index}]`);
+                }
+            });
+
+            // FIXED: Don't set hardcoded default values - let them be set dynamically
+            // based on the actual template dimensions when a template is selected
+            printArea.querySelector('.area-width').value = '';
+            printArea.querySelector('.area-height').value = '';
+            printArea.querySelector('.area-x').value = '';
+            printArea.querySelector('.area-y').value = '';
+
+            // Update overlay data attribute
+            printArea.querySelector('.print-area-overlay').dataset.printArea = index;
+            printArea.querySelector('h6').textContent = `Print Area ${index + 1}`;
+
+            // Clear the dropdown selection
+            const dropdown = printArea.querySelector('.print-area-name');
+            dropdown.value = '';
+
+            // Clear validation message
+            printArea.querySelector('.validation-message').innerHTML = '';
+
+            // Update dropdown options
+            setTimeout(() => updatePrintAreaDropdowns(), 100);
+
+            return printArea;
+        }
+
+        function reindexTemplates() {
+            document.querySelectorAll('.template-item').forEach((item, index) => {
+                item.dataset.templateIndex = index;
+                item.querySelector('h6').textContent = `Template ${index + 1}`;
+
+                item.querySelectorAll('input, select, textarea').forEach(field => {
+                    if (field.name) {
+                        field.name = field.name.replace(/\[\d+\]/, `[${index}]`);
+                    }
+                });
+            });
+        }
+
+        function reindexPrintAreas() {
+            document.querySelectorAll('.print-area-item').forEach((item, index) => {
+                item.dataset.printareaIndex = index;
+                item.querySelector('h6').textContent = `Print Area ${index + 1}`;
+
+                item.querySelectorAll('input').forEach(field => {
+                    if (field.name) {
+                        field.name = field.name.replace(/\[\d+\]/, `[${index}]`);
+                    }
+                });
+
+                item.querySelector('.print-area-overlay').dataset.printArea = index;
+            });
+        }
+
+        function toggleSizeSelection() {
+            const sizeSelection = document.getElementById('sizeSelection');
+            const hasSizes = document.getElementById('hasSizes').checked;
+            sizeSelection.style.display = hasSizes ? 'block' : 'none';
+
+            // If unchecked, uncheck all size checkboxes
+            if (!hasSizes) {
+                document.querySelectorAll('input[name="AvailableSizeIds"]').forEach(cb => {
+                    cb.checked = false;
+                });
+            }
+        }
+
+        function toggleColorSelection() {
+            const colorSelection = document.getElementById('colorSelection');
+            const hasColors = document.getElementById('hasColors').checked;
+            colorSelection.style.display = hasColors ? 'block' : 'none';
+
+            // If unchecked, uncheck all color checkboxes
+            if (!hasColors) {
+                document.querySelectorAll('input[name="AvailableColorIds"]').forEach(cb => {
+                    cb.checked = false;
+                });
+            }
+        }
+
+        function loadProductAttributes() {
+            // Initialize print area dropdowns on page load
+            updatePrintAreaDropdowns();
+        }
+
+        // FIXED: Improved form validation with detailed error reporting
+        document.getElementById('productForm').addEventListener('submit', function(e) {
+            let isValid = true;
+            let errorMessages = [];
+
+            // Disable submit button to prevent double submission
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
+
+            // Basic validation
+            const requiredFields = this.querySelectorAll('[required]');
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    field.classList.add('is-invalid');
+                    isValid = false;
+                    errorMessages.push(`${field.closest('.form-group, .mb-3')?.querySelector('label')?.textContent || field.name} is required`);
+                } else {
+                    field.classList.remove('is-invalid');
+                }
+            });
+
+            // Check if at least one template has primary flag
+            const primaryTemplates = document.querySelectorAll('.template-primary:checked');
+            if (primaryTemplates.length === 0) {
+                errorMessages.push('At least one template must be marked as primary.');
+                isValid = false;
+            }
+
+            // Validate print area bounds
+            let invalidAreas = 0;
+            document.querySelectorAll('.print-area-item').forEach((item, index) => {
+                const areaName = item.querySelector('.print-area-name').value;
+                if (areaName) {
+                    // Find corresponding template data
+                    for (const [templateIndex, templateData] of Object.entries(currentTemplateImages)) {
+                        const templateItem = document.querySelector(`[data-template-index="${templateIndex}"]`);
+                        const viewName = templateItem?.querySelector('.template-view-name')?.value.trim();
+                        if (viewName === areaName) {
+                            if (!validatePrintAreaBounds(item, templateData)) {
+                                invalidAreas++;
+                            }
+                            break;
+                        }
+                    }
+                }
+            });
+
+            if (invalidAreas > 0) {
+                errorMessages.push(`${invalidAreas} print area(s) exceed template boundaries. Please adjust them.`);
+                isValid = false;
+            }
+
+            // Validate sizes/colors selection if checkboxes are checked
+            const hasSizes = document.getElementById('hasSizes').checked;
+            const hasColors = document.getElementById('hasColors').checked;
+
+            if (hasSizes) {
+                const selectedSizes = document.querySelectorAll('input[name="AvailableSizeIds"]:checked');
+                if (selectedSizes.length === 0) {
+                    errorMessages.push('Please select at least one size for this product.');
+                    isValid = false;
+                }
+            }
+
+            if (hasColors) {
+                const selectedColors = document.querySelectorAll('input[name="AvailableColorIds"]:checked');
+                if (selectedColors.length === 0) {
+                    errorMessages.push('Please select at least one color for this product.');
+                    isValid = false;
+                }
+            }
+
+            // Validate that print areas reference existing template views
+            const templateViews = Array.from(document.querySelectorAll('.template-view-name'))
+                .map(input => input.value.trim())
+                .filter(name => name);
+
+            document.querySelectorAll('.print-area-name').forEach(select => {
+                if (select.value && !templateViews.includes(select.value)) {
+                    errorMessages.push(`Print area "${select.value}" references a template view that doesn't exist.`);
+                    isValid = false;
+                }
+            });
+
+            if (!isValid) {
+                e.preventDefault();
+
+                // Re-enable submit button
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-save"></i> Create Base Product';
+
+                // Show error messages
+                alert('Please fix the following errors:\n\n' + errorMessages.join('\n'));
+                console.error('Form validation errors:', errorMessages);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+﻿@model IEnumerable<RedBubble.Application.DTOs.ColorDto>
+
+@{
+    ViewData["Title"] = "Colors Management";
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">@ViewData["Title"]</h1>
+    <a asp-action="Create" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+        <i class="fas fa-plus fa-sm text-white-50"></i> Add New Color
+    </a>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Colors List</h6>
+    </div>
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered" id="colorTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Color Preview</th>
+                            <th>Color Name</th>
+                            <th>Color Code</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int serial = 1;
+                        }
+                        @foreach (var color in Model.OrderBy(c => c.Id))
+                        {
+                            <tr>
+                                <td>@(serial++)</td>
+                                <td class="text-center">
+                                    <div style="width: 30px; height: 30px; background-color: @color.ColorCode;
+                                                border: 1px solid #ccc; border-radius: 4px; display: inline-block;"
+                                         title="@color.ColorCode">
+                                    </div>
+                                </td>
+                                <td>@color.ColorName</td>
+                                <td><span class="badge bg-secondary">@color.ColorCode</span></td>
+                                <td>
+                                    @if (color.IsActive)
+                                    {
+                                        <span class="badge bg-success">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Inactive</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                   
+                                        <a asp-action="Edit" asp-route-id="@color.Id"
+                                           class="btn btn-warning btn-sm ms-2">
+                                            Edit
+                                        </a>
+                                        <form asp-action="Delete" asp-route-id="@color.Id" method="post" class="d-inline ms-2">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-danger btn-sm"
+                                                    onclick="return confirm('Are you sure you want to delete this color?');">
+                                                Delete
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-palette fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">No colors found</h5>
+                <p class="text-muted">Start by adding your first color.</p>
+                <a asp-action="Create" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add First Color
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#colorTable').DataTable({
+                "paging": false,          
+                "info": false,            
+                "ordering": false,        
+                "searching": false,       
+                "columnDefs": [
+                    { "className": "text-center", "targets": [0, 1, 5] } 
+                ],
+                "dom": "t<'row mt-3'<'col-md-7'l><'col-md-5'p>>",
+                "language": {
+                    "lengthMenu": "عرض _MENU_ عنصر لكل صفحة"
+                }
+            });
+        });
+    </script>
+}

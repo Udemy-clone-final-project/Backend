@@ -1,0 +1,167 @@
+﻿@model RedBubble.Application.DTOs.Products.BaseProductDto
+
+@{
+    ViewData["Title"] = "Product Details";
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">@Model.Name</h1>
+    <div>
+        <a class="btn btn-warning btn-sm shadow-sm" asp-action="Edit" asp-route-id="@Model.Id">
+            <i class="fas fa-edit fa-sm text-white-50"></i> Edit
+        </a>
+        <a class="btn btn-secondary btn-sm shadow-sm" asp-action="Index">
+            <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to List
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Base Product Information</h6>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-3">Name</dt>
+                    <dd class="col-sm-9">@Model.Name</dd>
+
+                    <dt class="col-sm-3">Base Price</dt>
+                    <dd class="col-sm-9">$@Model.BasePrice.ToString("F2")</dd>
+
+                    <dt class="col-sm-3">Category</dt>
+                    <dd class="col-sm-9">@Model.CategoryName</dd>
+
+                    <dt class="col-sm-3">Has Sizes</dt>
+                    <dd class="col-sm-9">@Model.HasSizes</dd>
+
+                    <dt class="col-sm-3">Has Colors</dt>
+                    <dd class="col-sm-9">@Model.HasColors</dd>
+
+                    <dt class="col-sm-3">Is Active</dt>
+                    <dd class="col-sm-9">@Model.IsActive</dd>
+
+                    <dt class="col-sm-3">Description</dt>
+                    <dd class="col-sm-9">@Model.Description</dd>
+                </dl>
+            </div>
+        </div>
+
+        <!-- Print Areas -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-secondary">Print Areas</h6>
+            </div>
+            <div class="card-body">
+                @if (Model.PrintAreas != null && Model.PrintAreas.Any())
+                {
+                    <table class="table table-sm table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Area Name</th>
+                                <th>Width (in)</th>
+                                <th>Height (in)</th>
+                                <th>DPI</th>
+                                <th>Order</th>
+                                <th>Active</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var area in Model.PrintAreas.OrderBy(a => a.DisplayOrder))
+                            {
+                                <tr>
+                                    <td>@area.AreaName</td>
+                                    <td>@area.Width</td>
+                                    <td>@area.Height</td>
+                                    <td>@area.MinDPI</td>
+                                    <td>@area.DisplayOrder</td>
+                                    <td>@(area.IsActive ? "Yes" : "No")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p class="text-muted">No print areas defined.</p>
+                }
+            </div>
+        </div>
+
+        <!-- Templates -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-secondary">Templates & Mockups</h6>
+            </div>
+            <div class="card-body">
+                @if (Model.Templates != null && Model.Templates.Any())
+                {
+                    <table class="table table-sm table-bordered align-middle">
+                        <thead>
+                            <tr>
+                                <th>View Name</th>
+                                <th>Size (px)</th>
+                                <th>Primary</th>
+                                <th>Order</th>
+                                <th>Template</th>
+                                <th>Mockup</th>
+                                <th>Active</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var t in Model.Templates.OrderBy(t => t.DisplayOrder))
+                            {
+                                <tr>
+                                    <td>@t.ViewName</td>
+                                    <td>@t.TemplateWidth x @t.TemplateHeight</td>
+                                    <td>@(t.IsPrimary ? "Yes" : "No")</td>
+                                    <td>@t.DisplayOrder</td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(t.TemplateUrl))
+                                        {
+                                            <img src="@t.TemplateUrl" alt="Template" class="img-thumbnail" style="max-height:60px;" />
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(t.MockupUrl))
+                                        {
+                                            <img src="@t.MockupUrl" alt="Mockup" class="img-thumbnail" style="max-height:60px;" />
+                                        }
+                                    </td>
+                                    <td>@(t.IsActive ? "Yes" : "No")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p class="text-muted">No templates defined.</p>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            Quick Stats
+                        </div>
+                        <div class="text-xs text-gray-900">
+                            <p><strong>Print Areas:</strong> @Model.PrintAreas.Count</p>
+                            <p><strong>Templates:</strong> @Model.Templates.Count</p>
+                            <p><strong>Primary Templates:</strong> @Model.Templates.Count(t => t.IsPrimary)</p>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-chart-bar fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

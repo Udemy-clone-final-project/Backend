@@ -1,0 +1,464 @@
+﻿﻿@using RedBubble.Domain.Entities.Models
+@using RedBubble.Domain.Entities.Models.Orders
+
+
+@model List<Order>
+
+@{
+    ViewData["Title"] = "Orders Management";
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Orders Management</h1>
+    <div class="d-flex">
+        <button class="btn btn-success btn-sm me-2" onclick="refreshOrders()">
+            <i class="fas fa-sync-alt"></i> Refresh
+        </button>
+        <button class="btn btn-primary btn-sm" onclick="exportOrders()">
+            <i class="fas fa-download"></i> Export
+        </button>
+    </div>
+</div>
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Dashboard</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Orders</li>
+    </ol>
+</nav>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle"></i> @TempData["SuccessMessage"]
+        <button type="button" class="close" data-dismiss="alert">
+            <span>&times;</span>
+        </button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-triangle"></i> @TempData["ErrorMessage"]
+        <button type="button" class="close" data-dismiss="alert">
+            <span>&times;</span>
+        </button>
+    </div>
+}
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Orders</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Count</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-shopping-cart fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Completed</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Count(o => o.Status == OrderStatus.Delivered)</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Pending</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Count(o => o.Status == OrderStatus.Pending)</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-clock fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Total Revenue</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">$@Model.Sum(o => o.TotalAmount).ToString("N2")</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Orders Table -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary">
+            <i class="fas fa-list"></i> Orders List
+        </h6>
+        <div class="dropdown no-arrow">
+            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                <div class="dropdown-header">Filter Options:</div>
+                <a class="dropdown-item" href="#" onclick="filterOrders('all')">All Orders</a>
+                <a class="dropdown-item" href="#" onclick="filterOrders('pending')">Pending</a>
+                <a class="dropdown-item" href="#" onclick="filterOrders('processing')">Processing</a>
+                <a class="dropdown-item" href="#" onclick="filterOrders('shipped')">Shipped</a>
+                <a class="dropdown-item" href="#" onclick="filterOrders('delivered')">Delivered</a>
+                <a class="dropdown-item" href="#" onclick="filterOrders('cancelled')">Cancelled</a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover" id="ordersTable" width="100%" cellspacing="0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>
+                                <input type="checkbox" id="selectAll" class="form-check-input">
+                            </th>
+                            <th>Order #</th>
+                            <th>Customer</th>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Shipping Address</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in Model)
+                        {
+                            <tr data-status="@order.Status.ToString().ToLower()">
+                                <td>
+                                    <input type="checkbox" class="form-check-input order-checkbox" value="@order.Id">
+                                </td>
+                                <td>
+                                    <strong>#@order.Id</strong>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold">@(order.Customer?.DisplayName ?? "N/A")</div>
+                                            <small class="text-muted">@order.CustomerId</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>@order.CreatedOn.ToString("MMM dd, yyyy")</div>
+                                    <small class="text-muted">@order.CreatedOn.ToString("HH:mm")</small>
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-success">$@order.TotalAmount.ToString("N2")</span>
+                                </td>
+                                <td>
+                                    <form asp-action="ChangeStatus" asp-controller="Order" method="post" class="d-inline" id="statusForm_@order.Id">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="orderId" value="@order.Id" />
+                                        <select name="status"
+                                                class="form-select form-select-sm status-select"
+                                                onchange="changeOrderStatus(@order.Id, this.value)"
+                                                @(order.Status == OrderStatus.Cancelled ? "disabled" : "")>
+                                            <option value="0" selected="@(order.Status == OrderStatus.Pending)">Pending</option>
+                                            <option value="1" selected="@(order.Status == OrderStatus.Processing)">Processing</option>
+                                            <option value="2" selected="@(order.Status == OrderStatus.Shipped)">Shipped</option>
+                                            <option value="3" selected="@(order.Status == OrderStatus.Delivered)">Delivered</option>
+                                        </select>
+                                    </form>
+                                </td>
+                                <td>
+                                    <div class="text-truncate" style="max-width: 200px;" title="@order.ShippingAddress.Street, @order.ShippingAddress.City, @order.ShippingAddress.State">
+                                        <i class="fas fa-map-marker-alt text-muted me-1"></i>
+                                        @order.ShippingAddress.Street, @order.ShippingAddress.City, @order.ShippingAddress.State
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a asp-action="Details" asp-route-id="@order.Id" class="btn btn-outline-info btn-sm" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        @if (order.Status != OrderStatus.Cancelled)
+                                        {
+                                            <form asp-action="ChangeStatus" asp-controller="Order" method="post" class="d-inline"
+                                                  onsubmit="return cancelOrder(@order.Id);">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="orderId" value="@order.Id" />
+                                                <input type="hidden" name="status" value="4" />
+                                                <button type="submit" class="btn btn-outline-danger btn-sm" title="Cancel Order">
+                                                    <i class="fas fa-ban"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <div class="empty-state">
+                    <i class="fas fa-shopping-cart fa-4x text-gray-300 mb-4"></i>
+                    <h4 class="text-gray-600 mb-3">No orders found</h4>
+                    <p class="text-gray-500 mb-4">No orders are currently available in the system.</p>
+                    <button class="btn btn-primary" onclick="refreshOrders()">
+                        <i class="fas fa-sync-alt me-2"></i>Refresh
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Custom CSS -->
+<style>
+    .border-left-primary {
+        border-left: 0.25rem solid #4e73df !important;
+    }
+
+    .border-left-success {
+        border-left: 0.25rem solid #1cc88a !important;
+    }
+
+    .border-left-warning {
+        border-left: 0.25rem solid #f6c23e !important;
+    }
+
+    .border-left-info {
+        border-left: 0.25rem solid #36b9cc !important;
+    }
+
+    .avatar-sm {
+        width: 2rem;
+        height: 2rem;
+        font-size: 0.875rem;
+    }
+
+    .status-select {
+        min-width: 120px;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(0,0,0,.075);
+    }
+
+    .empty-state {
+        padding: 3rem 1rem;
+    }
+
+    .btn-group .btn {
+        margin-right: 0.25rem;
+    }
+
+        .btn-group .btn:last-child {
+            margin-right: 0;
+        }
+
+    .text-truncate {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .dropdown-menu {
+        border: 0;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    }
+
+    .dropdown-item:hover {
+        background-color: #f8f9fc;
+    }
+
+    .form-check-input:checked {
+        background-color: #4e73df;
+        border-color: #4e73df;
+    }
+
+    .table th {
+        border-top: none;
+        font-weight: 600;
+        color: #5a5c69;
+        background-color: #f8f9fc;
+    }
+
+    .card {
+        border: none;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    }
+
+    .card-header {
+        background-color: #f8f9fc;
+        border-bottom: 1px solid #e3e6f0;
+    }
+</style>
+
+<!-- JavaScript -->
+<script>
+    // Select All functionality
+    document.getElementById('selectAll').addEventListener('change', function() {
+        const checkboxes = document.querySelectorAll('.order-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = this.checked;
+        });
+    });
+
+    // Filter orders by status
+    function filterOrders(status) {
+        const rows = document.querySelectorAll('#ordersTable tbody tr');
+        rows.forEach(row => {
+            if (status === 'all' || row.dataset.status === status) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        // Update dropdown text
+        const dropdownToggle = document.querySelector('[data-bs-toggle="dropdown"]');
+        const statusText = status === 'all' ? 'All Orders' : status.charAt(0).toUpperCase() + status.slice(1);
+        dropdownToggle.innerHTML = `<i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i> ${statusText}`;
+    }
+
+    // Refresh orders
+    function refreshOrders() {
+        window.location.reload();
+    }
+
+    // Export orders (placeholder)
+    function exportOrders() {
+        // This would typically export to CSV or Excel
+        alert('Export functionality would be implemented here');
+    }
+
+    // Change order status function
+    function changeOrderStatus(orderId, statusValue) {
+        console.log(`Changing order ${orderId} to status ${statusValue}`);
+        
+        const select = document.querySelector(`#statusForm_${orderId} select`);
+        const originalValue = select.value;
+        
+        // Add loading state
+        select.disabled = true;
+        select.innerHTML = '<option>Updating...</option>';
+        
+        // Create form data
+        const formData = new FormData();
+        formData.append('orderId', orderId);
+        formData.append('status', statusValue);
+        
+        // Submit via fetch for better error handling
+        fetch('/Order/ChangeStatus', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log(`Order ${orderId} status updated successfully`);
+                // Reload the page to show updated status
+                window.location.reload();
+            } else {
+                throw new Error('Failed to update order status');
+            }
+        })
+        .catch(error => {
+            console.error('Error updating order status:', error);
+            // Restore original value
+            select.disabled = false;
+            select.value = originalValue;
+            select.innerHTML = `
+                <option value="0">Pending</option>
+                <option value="1">Processing</option>
+                <option value="2">Shipped</option>
+                <option value="3">Delivered</option>
+            `;
+            select.value = originalValue;
+            alert('Failed to update order status. Please try again.');
+        });
+    }
+
+    // Cancel order function
+    function cancelOrder(orderId) {
+        if (confirm('Are you sure you want to cancel this order?')) {
+            console.log(`Cancelling order ${orderId}`);
+            
+            const formData = new FormData();
+            formData.append('orderId', orderId);
+            formData.append('status', '4'); // Cancelled status
+            
+            fetch('/Order/ChangeStatus', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log(`Order ${orderId} cancelled successfully`);
+                    window.location.reload();
+                } else {
+                    throw new Error('Failed to cancel order');
+                }
+            })
+            .catch(error => {
+                console.error('Error cancelling order:', error);
+                alert('Failed to cancel order. Please try again.');
+            });
+        }
+        return false; // Prevent form submission
+    }
+
+    // Add confirmation for bulk actions
+    function bulkAction(action) {
+        const selectedOrders = Array.from(document.querySelectorAll('.order-checkbox:checked')).map(cb => cb.value);
+        if (selectedOrders.length === 0) {
+            alert('Please select at least one order');
+            return;
+        }
+
+        if (confirm(`Are you sure you want to ${action} ${selectedOrders.length} order(s)?`)) {
+            // Implement bulk action
+            console.log(`${action} orders:`, selectedOrders);
+        }
+    }
+
+    // Initialize tooltips
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add any initialization code here
+        console.log('Orders page loaded');
+    });
+</script>

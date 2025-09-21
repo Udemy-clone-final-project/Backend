@@ -1,0 +1,433 @@
+@using RedBubble.Domain.Entities.Models
+@using RedBubble.Domain.Entities.Models.Orders
+@model Order
+
+@{
+    ViewData["Title"] = "Order Details";
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Order Details #@Model.Id</h1>
+    <div class="d-flex">
+        <a asp-action="GetAll" asp-controller="Order" class="btn btn-secondary btn-sm me-2">
+            <i class="fas fa-arrow-left"></i> Back to Orders
+        </a>
+        <button class="btn btn-primary btn-sm" onclick="printOrder()">
+            <i class="fas fa-print"></i> Print
+        </button>
+    </div>
+</div>
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Dashboard</a></li>
+        <li class="breadcrumb-item"><a asp-controller="Order" asp-action="GetAll">Orders</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Order #@Model.Id</li>
+    </ol>
+</nav>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle"></i> @TempData["SuccessMessage"]
+        <button type="button" class="close" data-dismiss="alert">
+            <span>&times;</span>
+        </button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-triangle"></i> @TempData["ErrorMessage"]
+        <button type="button" class="close" data-dismiss="alert">
+            <span>&times;</span>
+        </button>
+    </div>
+}
+
+<!-- Order Status Banner -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="alert alert-@(Model.Status switch {
+            OrderStatus.Pending => "warning",
+            OrderStatus.Processing => "info", 
+            OrderStatus.Shipped => "primary",
+            OrderStatus.Delivered => "success",
+            OrderStatus.Cancelled => "danger",
+            _ => "secondary"
+        }) alert-dismissible fade show" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-@(Model.Status switch {
+                    OrderStatus.Pending => "clock",
+                    OrderStatus.Processing => "cog",
+                    OrderStatus.Shipped => "truck",
+                    OrderStatus.Delivered => "check-circle",
+                    OrderStatus.Cancelled => "ban",
+                    _ => "question"
+                }) fa-2x me-3"></i>
+                <div>
+                    <h4 class="alert-heading mb-1">Order @Model.Status</h4>
+                    <p class="mb-0">Order #@Model.Id was placed on @Model.OrderDate.ToString("MMMM dd, yyyy 'at' HH:mm")</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Order Information -->
+    <div class="col-lg-8">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-info-circle"></i> Order Information
+                </h6>
+                <span class="badge badge-@(Model.Status switch {
+                    OrderStatus.Pending => "warning",
+                    OrderStatus.Processing => "info",
+                    OrderStatus.Shipped => "primary", 
+                    OrderStatus.Delivered => "success",
+                    OrderStatus.Cancelled => "danger",
+                    _ => "secondary"
+                }) fs-6">@Model.Status</span>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="info-item mb-3">
+                            <label class="text-muted small">Order ID</label>
+                            <div class="fw-bold">#@Model.Id</div>
+                        </div>
+                        <div class="info-item mb-3">
+                            <label class="text-muted small">Order Date</label>
+                            <div class="fw-bold">@Model.OrderDate.ToString("MMM dd, yyyy HH:mm")</div>
+                        </div>
+                        <div class="info-item mb-3">
+                            <label class="text-muted small">Customer ID</label>
+                            <div class="fw-bold">@Model.CustomerId</div>
+                        </div>
+                        @if (Model.Customer != null)
+                        {
+                            <div class="info-item mb-3">
+                                <label class="text-muted small">Customer Name</label>
+                                <div class="fw-bold">@Model.Customer.DisplayName</div>
+                            </div>
+                            <div class="info-item mb-3">
+                                <label class="text-muted small">Customer Email</label>
+                                <div class="fw-bold">
+                                    <a href="mailto:@Model.Customer.Email" class="text-decoration-none">@Model.Customer.Email</a>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-item mb-3">
+                            <label class="text-muted small">Subtotal</label>
+                            <div class="fw-bold text-success fs-5">$@Model.Subtotal.ToString("N2")</div>
+                        </div>
+                        <div class="info-item mb-3">
+                            <label class="text-muted small">Total Amount</label>
+                            <div class="fw-bold text-success fs-4">$@Model.TotalAmount.ToString("N2")</div>
+                        </div>
+                        @if (!string.IsNullOrEmpty(Model.PaymentIntentId))
+                        {
+                            <div class="info-item mb-3">
+                                <label class="text-muted small">Payment Intent ID</label>
+                                <div class="fw-bold font-monospace small">@Model.PaymentIntentId</div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Items -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-shopping-bag"></i> Order Items (@Model.OrderItems?.Count ?? 0)
+                </h6>
+                <span class="badge bg-primary">@Model.OrderItems?.Count ?? 0 items</span>
+            </div>
+            <div class="card-body">
+                @if (Model.OrderItems != null && Model.OrderItems.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th width="50">Image</th>
+                                    <th>Product Details</th>
+                                    <th width="100">Quantity</th>
+                                    <th width="120">Unit Price</th>
+                                    <th width="120">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.OrderItems)
+                                {
+                                    <tr>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(item.ProductVariantOrdered?.PictureUrl))
+                                            {
+                                                <img src="@item.ProductVariantOrdered.PictureUrl" 
+                                                     alt="Product Image" 
+                                                     class="img-thumbnail rounded" 
+                                                     style="width: 60px; height: 60px; object-fit: cover;">
+                                            }
+                                            else
+                                            {
+                                                <div class="bg-light rounded d-flex align-items-center justify-content-center" 
+                                                     style="width: 60px; height: 60px;">
+                                                    <i class="fas fa-image text-muted"></i>
+                                                </div>
+                                            }
+                                        </td>
+                                        <td>
+                                            <div class="fw-bold text-dark">@item.ProductVariantOrdered?.ProductName</div>
+                                            <div class="text-muted small">Design: @item.ProductVariantOrdered?.DesignTitle</div>
+                                            @if (!string.IsNullOrEmpty(item.ProductVariantOrdered?.ColorName))
+                                            {
+                                                <span class="badge bg-secondary me-1">@item.ProductVariantOrdered.ColorName</span>
+                                            }
+                                            @if (!string.IsNullOrEmpty(item.ProductVariantOrdered?.SizeName))
+                                            {
+                                                <span class="badge bg-info">@item.ProductVariantOrdered.SizeName</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-primary fs-6">@item.Quantity</span>
+                                        </td>
+                                        <td>
+                                            <span class="fw-bold text-success">$@item.Price.ToString("N2")</span>
+                                        </td>
+                                        <td>
+                                            <span class="fw-bold text-success fs-5">$@((item.Price * item.Quantity).ToString("N2"))</span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot class="table-light">
+                                <tr>
+                                    <td colspan="4" class="text-end fw-bold">Subtotal:</td>
+                                    <td class="fw-bold text-success fs-5">$@Model.Subtotal.ToString("N2")</td>
+                                </tr>
+                                @if (Model.DeliveryMethod != null)
+                                {
+                                    <tr>
+                                        <td colspan="4" class="text-end fw-bold">Shipping (@Model.DeliveryMethod.ShortName):</td>
+                                        <td class="fw-bold text-success fs-5">$@Model.DeliveryMethod.Cost.ToString("N2")</td>
+                                    </tr>
+                                }
+                                <tr class="table-active">
+                                    <td colspan="4" class="text-end fw-bold fs-5">Total:</td>
+                                    <td class="fw-bold text-success fs-4">$@Model.TotalAmount.ToString("N2")</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="fas fa-shopping-bag fa-3x text-gray-300 mb-3"></i>
+                        <h5 class="text-gray-600">No items found</h5>
+                        <p class="text-gray-500">No items were found for this order.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Shipping Information -->
+    <div class="col-lg-4">
+        <!-- Shipping Address -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-map-marker-alt"></i> Shipping Address
+                </h6>
+            </div>
+            <div class="card-body">
+                @if (Model.ShippingAddress != null)
+                {
+                    <div class="shipping-address">
+                        <div class="address-line mb-2">
+                            <i class="fas fa-home text-muted me-2"></i>
+                            <span class="fw-bold">@Model.ShippingAddress.Street</span>
+                        </div>
+                        <div class="address-line mb-2">
+                            <i class="fas fa-city text-muted me-2"></i>
+                            <span>@Model.ShippingAddress.City, @Model.ShippingAddress.State</span>
+                        </div>
+                        <div class="address-line mb-2">
+                            <i class="fas fa-flag text-muted me-2"></i>
+                            <span>@Model.ShippingAddress.Country @Model.ShippingAddress.PostalCode</span>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-3">
+                        <i class="fas fa-map-marker-alt fa-2x text-gray-300 mb-2"></i>
+                        <p class="text-muted">No shipping address available</p>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Delivery Method -->
+        @if (Model.DeliveryMethod != null)
+        {
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-truck"></i> Delivery Method
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="delivery-info">
+                        <div class="info-item mb-3">
+                            <label class="text-muted small">Method</label>
+                            <div class="fw-bold">@Model.DeliveryMethod.ShortName</div>
+                        </div>
+                        <div class="info-item mb-3">
+                            <label class="text-muted small">Description</label>
+                            <div>@Model.DeliveryMethod.Description</div>
+                        </div>
+                        <div class="info-item mb-3">
+                            <label class="text-muted small">Delivery Time</label>
+                            <div>@Model.DeliveryMethod.DeliveryTime</div>
+                        </div>
+                        <div class="info-item">
+                            <label class="text-muted small">Cost</label>
+                            <div class="fw-bold text-success fs-5">$@Model.DeliveryMethod.Cost.ToString("N2")</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Actions -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-cogs"></i> Order Actions
+                </h6>
+            </div>
+            <div class="card-body">
+                <form asp-action="ChangeStatus" asp-controller="Order" method="post" class="mb-3">
+                    <input type="hidden" name="orderId" value="@Model.Id" />
+                    <div class="mb-3">
+                        <label for="status" class="form-label">Change Status:</label>
+                        <select name="status" class="form-select" @(Model.Status == OrderStatus.Cancelled ? "disabled" : "")>
+                            <option value="@((int)OrderStatus.Pending)" selected="@(Model.Status == OrderStatus.Pending)">Pending</option>
+                            <option value="@((int)OrderStatus.Processing)" selected="@(Model.Status == OrderStatus.Processing)">Processing</option>
+                            <option value="@((int)OrderStatus.Shipped)" selected="@(Model.Status == OrderStatus.Shipped)">Shipped</option>
+                            <option value="@((int)OrderStatus.Delivered)" selected="@(Model.Status == OrderStatus.Delivered)">Delivered</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100" @(Model.Status == OrderStatus.Cancelled ? "disabled" : "")>
+                        <i class="fas fa-save me-2"></i>Update Status
+                    </button>
+                </form>
+
+                @if (Model.Status != OrderStatus.Cancelled)
+                {
+                    <hr>
+                    <form asp-action="ChangeStatus" asp-controller="Order" method="post" 
+                          onsubmit="return confirm('Are you sure you want to cancel this order?');">
+                        <input type="hidden" name="orderId" value="@Model.Id" />
+                        <input type="hidden" name="status" value="@((int)OrderStatus.Cancelled)" />
+                        <button type="submit" class="btn btn-danger w-100">
+                            <i class="fas fa-ban me-2"></i>Cancel Order
+                        </button>
+                    </form>
+                }
+
+                <hr>
+                <div class="d-grid gap-2">
+                    <a asp-action="GetAll" asp-controller="Order" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Orders
+                    </a>
+                    <button class="btn btn-outline-info" onclick="printOrder()">
+                        <i class="fas fa-print me-2"></i>Print Order
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom CSS -->
+<style>
+    .info-item {
+        border-bottom: 1px solid #f8f9fc;
+        padding-bottom: 0.75rem;
+    }
+    .info-item:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+    .shipping-address .address-line {
+        display: flex;
+        align-items: center;
+    }
+    .delivery-info .info-item {
+        border-bottom: 1px solid #f8f9fc;
+    }
+    .delivery-info .info-item:last-child {
+        border-bottom: none;
+    }
+    .table-hover tbody tr:hover {
+        background-color: rgba(0,0,0,.075);
+    }
+    .img-thumbnail {
+        border: 1px solid #dee2e6;
+    }
+    .badge {
+        font-size: 0.75em;
+    }
+    .card {
+        border: none;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    }
+    .card-header {
+        background-color: #f8f9fc;
+        border-bottom: 1px solid #e3e6f0;
+    }
+    .btn-group .btn {
+        margin-right: 0.25rem;
+    }
+    .btn-group .btn:last-child {
+        margin-right: 0;
+    }
+</style>
+
+<!-- JavaScript -->
+<script>
+    function printOrder() {
+        window.print();
+    }
+
+    // Add loading state to status changes
+    document.querySelectorAll('select[name="status"]').forEach(select => {
+        select.addEventListener('change', function() {
+            const form = this.closest('form');
+            const submitBtn = form.querySelector('button[type="submit"]');
+            
+            // Add loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Updating...';
+            
+            // Submit form
+            form.submit();
+        });
+    });
+
+    // Initialize tooltips
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Order details page loaded');
+    });
+</script> 

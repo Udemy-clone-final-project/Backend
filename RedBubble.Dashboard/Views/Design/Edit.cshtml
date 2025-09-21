@@ -1,0 +1,246 @@
+﻿@model RedBubble.Application.DTOs.Design.UpdateDesignDto
+
+@{
+    ViewData["Title"] = "Edit Design";
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Edit Design</h1>
+    <a asp-action="Index" class="btn btn-sm btn-secondary shadow-sm">
+        <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to List
+    </a>
+</div>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="card shadow">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Edit Design</h6>
+    </div>
+    <div class="card-body">
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
+            <input asp-for="Id" type="hidden" />
+            <input asp-for="ImageUrl" type="hidden" />
+            <input asp-for="FileName" type="hidden" />
+            <input asp-for="AdminId" type="hidden" />
+
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Title" class="form-label">Title</label>
+                    <input asp-for="Title" class="form-control" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Price" class="form-label">Price</label>
+                    <input asp-for="Price" class="form-control" type="number" step="0.01" />
+                    <span asp-validation-for="Price" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label">Description</label>
+                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3 form-check">
+                <input asp-for="IsActive" class="form-check-input" type="checkbox" />
+                <label asp-for="IsActive" class="form-check-label">Active</label>
+            </div>
+
+            <!-- Current and New Image Section -->
+            <div class="mb-4">
+                <h6 class="mb-3">Design Image</h6>
+
+                <!-- Current Image -->
+                @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                {
+                    <div class="mb-3">
+                        <label class="form-label">Current Image:</label>
+                        <div class="border rounded p-2" style="max-width: 300px;">
+                            <img src="@Model.ImageUrl" alt="Current image" class="img-fluid" style="max-height: 200px;" />
+                            <div class="mt-2">
+                                <small class="text-muted">@(Model.FileName ?? "No filename")</small>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <!-- Upload New Image -->
+                <div class="row">
+                    <div class="col-md-8">
+                        <label for="ImageFile" class="form-label">Upload New Image (Optional)</label>
+                        <input type="file" name="ImageFile" id="ImageFile" class="form-control" accept="image/*" />
+                        <div class="form-text">
+                            Leave empty to keep current image. Supported formats: JPEG, PNG, GIF, WebP. Max size: 5MB.
+                        </div>
+                        <span id="image-error" class="text-danger"></span>
+
+                        <!-- Display server-side validation errors for ImageFile -->
+                        @if (ViewData.ModelState["ImageFile"]?.Errors.Count > 0)
+                        {
+                            <div class="text-danger">
+                                @foreach (var error in ViewData.ModelState["ImageFile"].Errors)
+                                {
+                                    <small>@error.ErrorMessage</small>
+                            
+                                    <br />
+                                }
+                            </div>
+                        }
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="AltText" class="form-label">Alt Text</label>
+                        <input asp-for="AltText" class="form-control" placeholder="Describe the image..." />
+                        <span asp-validation-for="AltText" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <!-- New Image Preview -->
+                <div id="image-preview" class="mt-3" style="display: none;">
+                    <label class="form-label">New Image Preview:</label>
+                    <div class="border rounded p-2" style="max-width: 300px;">
+                        <img id="preview-img" src="" alt="Preview" class="img-fluid" style="max-height: 200px;" />
+                        <div class="mt-2">
+                            <small id="file-info" class="text-muted"></small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Update Design
+                </button>
+                <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-info">
+                    <i class="fas fa-eye"></i> View Details
+                </a>
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(document).ready(function () {
+            console.log('Edit Design page loaded');
+
+            // File upload preview and validation
+            $('#ImageFile').on('change', function (e) {
+                console.log('File input changed');
+                const file = e.target.files[0];
+                const errorElement = $('#image-error');
+                const previewElement = $('#image-preview');
+                const previewImg = $('#preview-img');
+                const fileInfo = $('#file-info');
+
+                // Clear previous errors
+                errorElement.text('');
+                previewElement.hide();
+
+                if (!file) {
+                    console.log('No file selected');
+                    return;
+                }
+
+                console.log('File selected:', file.name, 'Size:', file.size, 'Type:', file.type);
+
+                // Validate file type
+                const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+                if (!allowedTypes.includes(file.type)) {
+                    console.log('Invalid file type:', file.type);
+                    errorElement.text('Please select a valid image file (JPEG, PNG, GIF, or WebP).');
+                    return;
+                }
+
+                // Validate file size (5MB to match server-side validation)
+                const maxSize = 5 * 1024 * 1024; // 5MB
+                if (file.size > maxSize) {
+                    console.log('File too large:', file.size, 'Max:', maxSize);
+                    errorElement.text('File size must be less than 5MB.');
+                    return;
+                }
+
+                console.log('File validation passed, showing preview');
+
+                // Show preview
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    console.log('FileReader loaded, setting preview');
+                    previewImg.attr('src', e.target.result);
+                    fileInfo.text(`File: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`);
+                    previewElement.show();
+                };
+                reader.onerror = function(e) {
+                    console.error('FileReader error:', e);
+                    errorElement.text('Error reading file. Please try again.');
+                };
+                reader.readAsDataURL(file);
+            });
+
+            // Form submission validation
+            $('form').on('submit', function(e) {
+                console.log('Form submission started');
+                const imageFile = $('#ImageFile')[0].files[0];
+
+                if (imageFile) {
+                    console.log('Validating file on submit:', imageFile.name);
+                    // Validate file size one more time on submit
+                    const maxSize = 5 * 1024 * 1024;
+                    if (imageFile.size > maxSize) {
+                        console.log('File too large on submit:', imageFile.size);
+                        e.preventDefault();
+                        $('#image-error').text('File size must be less than 5MB.');
+                        return false;
+                    }
+
+                    // Show loading state
+                    const submitBtn = $(this).find('button[type="submit"]');
+                    submitBtn.prop('disabled', true);
+                    submitBtn.html('<i class="fas fa-spinner fa-spin"></i> Updating...');
+                }
+
+                console.log('Form validation passed, submitting');
+            });
+
+            // Reset form state if there are validation errors
+            @if (!ViewData.ModelState.IsValid)
+            {
+                    <text>
+                    console.log('Form has validation errors, resetting submit button');
+                    $('button[type="submit"]').prop('disabled', false).html('<i class="fas fa-save"></i> Update Design');
+                    </text>
+            }
+        });
+    </script>
+}
