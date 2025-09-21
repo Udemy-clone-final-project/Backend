@@ -7,7 +7,7 @@ using RedBubble.Application.Services.Interfaces;
 
 namespace RedBubble.Dashboard.Controllers
 {
-    [AllowAnonymous]
+    [Authorize(Roles = "Admin")]
     public class CategoryController : Controller
     {
        

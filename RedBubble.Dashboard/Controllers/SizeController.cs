@@ -5,7 +5,7 @@ using RedBubble.Application.Interfaces;
 
 namespace RedBubble.Dashboard.Controllers
 {
-    [AllowAnonymous]
+    [Authorize(Roles = "Admin")]
     public class SizeController : Controller
     {
         private readonly IServiceManager serviceManager;

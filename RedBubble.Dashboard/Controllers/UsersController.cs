@@ -10,8 +10,8 @@ using System.Threading.Tasks;
 
 namespace RedBubble.Dashboard.Controllers
 {
-    // [Authorize(Roles = "Admin")]
-    [AllowAnonymous]
+
+    [Authorize(Roles = "Admin")]
     public class UsersController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
