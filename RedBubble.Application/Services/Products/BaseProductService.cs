@@ -695,7 +695,7 @@ namespace RedBubble.Application.Services
             // If deactivating, cascade to related entities
             if (!isActive)
             {
-                await SoftDeleteRelatedAsync(id,"admin");
+                await SoftDeleteRelatedAsync(id, "admin");
             }
 
             await _unitOfWork.CompleteAsync();
@@ -750,7 +750,7 @@ namespace RedBubble.Application.Services
             var hasActiveVariants = await variantRepo.GetAll()
                 .Include(v => v.OrderItems) // Check for orders
                 .Where(v => v.BaseProductId == id && v.IsActive)
-                .AnyAsync(v => v.OrderItems.Any(oi => oi.Order.Status == Domain.Entities.Models.Orders.OrderStatus.Pending
+                .AnyAsync(v => v.OrderItems.Any(oi => oi.Order.Status == OrderStatus.Pending
                                                     ));
 
             // You can delete even if there are variants, but not if there are pending orders
@@ -842,7 +842,7 @@ namespace RedBubble.Application.Services
                 repo.Update(product);
 
                 // Cascade deactivation
-                await SoftDeleteRelatedAsync(product.Id,"admin1");
+                await SoftDeleteRelatedAsync(product.Id, "admin1");
             }
 
             await _unitOfWork.CompleteAsync();

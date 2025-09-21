@@ -215,6 +215,11 @@ namespace RedBubble.Web.Controllers
 
             var updateDto = MapToUpdateDto(product);
             await PopulateDropdownsAsync();
+
+            // Add current selections to ViewBag for proper rendering
+            ViewBag.CurrentSizeIds = product.AvailableSizes.Where(s => s.IsActive).Select(s => s.SizeId).ToList();
+            ViewBag.CurrentColorIds = product.AvailableColors.Where(c => c.IsActive).Select(c => c.ColorId).ToList();
+
             return View(updateDto);
         }
 
@@ -224,24 +229,89 @@ namespace RedBubble.Web.Controllers
         {
             if (id != updateDto.Id) return BadRequest();
 
-            // FIXED: Manual checkbox parsing for edit as well
-            updateDto.HasColors = Request.Form["HasColors"].Contains("true");
-            updateDto.HasSizes = Request.Form["HasSizes"].Contains("true");
-
-            if (!ModelState.IsValid)
-            {
-                await PopulateDropdownsAsync();
-                return View(updateDto);
-            }
-
             try
             {
-                // Process updated template file uploads
-                if (updateDto.Templates != null)
+                // FIXED: Manual checkbox parsing for edit as well
+                updateDto.HasColors = Request.Form["HasColors"].Contains("true");
+                updateDto.HasSizes = Request.Form["HasSizes"].Contains("true");
+                updateDto.IsActive = Request.Form["IsActive"].Contains("true");
+
+                // Log received data for debugging
+                Console.WriteLine($"Edit - HasColors: {updateDto.HasColors}, HasSizes: {updateDto.HasSizes}");
+                Console.WriteLine($"Templates count: {updateDto.Templates?.Count ?? 0}");
+                Console.WriteLine($"PrintAreas count: {updateDto.PrintAreas?.Count ?? 0}");
+
+                if (!ModelState.IsValid)
                 {
-                    foreach (var template in updateDto.Templates)
+                    foreach (var error in ModelState)
                     {
-                        await ProcessTemplateUploadsAsync(template);
+                        if (error.Value.Errors.Count > 0)
+                        {
+                            Console.WriteLine($"Validation error in {error.Key}: {string.Join(", ", error.Value.Errors.Select(e => e.ErrorMessage))}");
+                        }
+                    }
+                    await PopulateDropdownsAsync();
+                    ViewBag.CurrentSizeIds = updateDto.AvailableSizeIds;
+                    ViewBag.CurrentColorIds = updateDto.AvailableColorIds;
+                    return View(updateDto);
+                }
+
+                // Process template file uploads if new files are provided
+                if (updateDto.Templates != null && updateDto.Templates.Any())
+                {
+                    for (int i = 0; i < updateDto.Templates.Count; i++)
+                    {
+                        var template = updateDto.Templates[i];
+                        try
+                        {
+                            // Only process if new files are uploaded
+                            await ProcessTemplateUploadsAsync(template);
+                        }
+                        catch (Exception ex)
+                        {
+                            ModelState.AddModelError($"Templates[{i}]", $"Template upload failed: {ex.Message}");
+                            await PopulateDropdownsAsync();
+                            ViewBag.CurrentSizeIds = updateDto.AvailableSizeIds;
+                            ViewBag.CurrentColorIds = updateDto.AvailableColorIds;
+                            return View(updateDto);
+                        }
+                    }
+                }
+
+                // Validate business rules
+                if (updateDto.HasSizes && (updateDto.AvailableSizeIds == null || !updateDto.AvailableSizeIds.Any()))
+                {
+                    ModelState.AddModelError("AvailableSizeIds", "Please select at least one size when 'Has Sizes' is enabled.");
+                    await PopulateDropdownsAsync();
+                    ViewBag.CurrentSizeIds = updateDto.AvailableSizeIds;
+                    ViewBag.CurrentColorIds = updateDto.AvailableColorIds;
+                    return View(updateDto);
+                }
+
+                if (updateDto.HasColors && (updateDto.AvailableColorIds == null || !updateDto.AvailableColorIds.Any()))
+                {
+                    ModelState.AddModelError("AvailableColorIds", "Please select at least one color when 'Has Colors' is enabled.");
+                    await PopulateDropdownsAsync();
+                    ViewBag.CurrentSizeIds = updateDto.AvailableSizeIds;
+                    ViewBag.CurrentColorIds = updateDto.AvailableColorIds;
+                    return View(updateDto);
+                }
+
+                // Ensure exactly one primary template
+                if (updateDto.Templates != null && updateDto.Templates.Any())
+                {
+                    var primaryCount = updateDto.Templates.Count(t => t.IsPrimary);
+                    if (primaryCount == 0)
+                    {
+                        updateDto.Templates.First().IsPrimary = true;
+                    }
+                    else if (primaryCount > 1)
+                    {
+                        ModelState.AddModelError("Templates", "Only one template can be marked as primary.");
+                        await PopulateDropdownsAsync();
+                        ViewBag.CurrentSizeIds = updateDto.AvailableSizeIds;
+                        ViewBag.CurrentColorIds = updateDto.AvailableColorIds;
+                        return View(updateDto);
                     }
                 }
 
@@ -255,7 +325,57 @@ namespace RedBubble.Web.Controllers
             {
                 ModelState.AddModelError("", ex.Message);
                 await PopulateDropdownsAsync();
+                ViewBag.CurrentSizeIds = updateDto.AvailableSizeIds;
+                ViewBag.CurrentColorIds = updateDto.AvailableColorIds;
                 return View(updateDto);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Unexpected error updating base product: {ex}");
+                ModelState.AddModelError("", "An unexpected error occurred while updating the product. Please check the logs and try again.");
+                await PopulateDropdownsAsync();
+                ViewBag.CurrentSizeIds = updateDto.AvailableSizeIds;
+                ViewBag.CurrentColorIds = updateDto.AvailableColorIds;
+                return View(updateDto);
+            }
+        }
+
+        // FIXED: Update the ProcessTemplateUploadsAsync method to handle UpdateTemplateDto
+        private async Task ProcessTemplateUploadsAsync(UpdateTemplateDto template)
+        {
+            if (template.TemplateFile != null && template.TemplateFile.Length > 0)
+            {
+                // Validate file before upload
+                if (!_fileService.IsValidImageFile(template.TemplateFile))
+                {
+                    throw new ArgumentException($"Template file '{template.TemplateFile.FileName}' is not a valid image file.");
+                }
+
+                // Upload file and extract dimensions
+                template.TemplateUrl = await _fileService.UploadImageAsync(template.TemplateFile, "templates");
+                var (width, height) = await _imageService.GetImageDimensionsAsync(template.TemplateFile);
+                template.TemplateWidth = width;
+                template.TemplateHeight = height;
+            }
+
+            if (template.MockupFile != null && template.MockupFile.Length > 0)
+            {
+                if (!_fileService.IsValidImageFile(template.MockupFile))
+                {
+                    throw new ArgumentException($"Mockup file '{template.MockupFile.FileName}' is not a valid image file.");
+                }
+
+                template.MockupUrl = await _fileService.UploadImageAsync(template.MockupFile, "mockups");
+            }
+
+            if (template.FlatMockupFile != null && template.FlatMockupFile.Length > 0)
+            {
+                if (!_fileService.IsValidImageFile(template.FlatMockupFile))
+                {
+                    throw new ArgumentException($"Flat mockup file '{template.FlatMockupFile.FileName}' is not a valid image file.");
+                }
+
+                template.FlatMockupUrl = await _fileService.UploadImageAsync(template.FlatMockupFile, "mockups");
             }
         }
 
